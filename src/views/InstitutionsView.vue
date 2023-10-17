@@ -63,7 +63,7 @@
               <v-btn
                 color="blue-darken-1"
                 variant="text"
-                @click="dialog = false"
+                @click="dialog = false; editedItem = defaultItem"
               >
                 Cancelar
               </v-btn>
@@ -73,6 +73,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+<!-- Confirm delete -->
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5"
@@ -96,6 +97,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+
       </v-toolbar>
     </template>
     <!-- eslint-disable-next-line -->
@@ -135,13 +137,13 @@ export default {
       type: "",
       country_code: "",
     },
-    defaultItem: {
-      _id: "",
+    defaultItem: {      
       name: "",
       name_abbr: "",
       type: "",
       country_code: "",
     },
+    recoveryItem: {},
   }),
 
   computed: {
@@ -192,6 +194,7 @@ export default {
 
     save() {
       if (this.editedItem._id) {
+        console.log('edited');
         this.$axios
           .put("institutions/" + this.editedItem._id, this.editedItem)
           .then((response) => {
@@ -201,7 +204,9 @@ export default {
           .catch((error) => {
             console.error(error);
           });
+          this.editedItem = this.defaultItem;
       } else {
+        console.log('saved');
         this.$axios
           .post("institutions/", this.editedItem)
           .then((response) => {
@@ -211,8 +216,8 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-      }
-      this.editedItem = this.defaultItem;
+          this.editedItem = this.defaultItem;
+      }      
       this.dialog = false;
     },
   },
