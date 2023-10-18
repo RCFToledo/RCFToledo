@@ -1,13 +1,13 @@
 <template>
-  <v-data-table    
+  <v-data-table
     :headers="headers"
     :items="items"
     :sort-by="[{ key: 'name', order: 'asc' }]"
-    class="elevation-1"    
+    class="elevation-1"
   >
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>Instituições</v-toolbar-title>        
+        <v-toolbar-title>Instituições</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-dialog v-model="dialog" max-width="500px">
           <template v-slot:activator="{ props }">
@@ -42,17 +42,25 @@
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12">
-                    <v-select
-                      v-model="editedItem.type"
-                      label="Tipo"
-                      :items="['both', 'education', 'research']"
-                    ></v-select>
+                    <v-checkbox
+          v-model="item.type"
+          :label="getTypeTitle('education')"
+          :value="getTypeValue('education')"
+        ></v-checkbox>
+        <v-checkbox
+          v-model="item.type"
+          :label="getTypeTitle('research')"
+          :value="getTypeValue('research')"
+        ></v-checkbox>
                   </v-col>
                   <v-col cols="12">
-                    <v-text-field
+                    <v-select
                       v-model="editedItem.country_code"
-                      label="Código do País"
-                    ></v-text-field>
+                      label="País"
+                      :items="itemsCountryCode"
+                      item-title="codeTitle"
+                      item-value="codeValue"
+                    ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -62,18 +70,21 @@
               <v-spacer></v-spacer>
               <v-btn
                 color="blue-darken-1"
-                variant="text"
-                @click="dialog = false; editedItem = defaultItem"
+                variant="plain"
+                @click="
+                  dialog = false;
+                  editedItem = defaultItem;
+                "
               >
                 Cancelar
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="save">
+              <v-btn color="blue-darken-1" variant="plain" @click="save">
                 Salvar
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
-<!-- Confirm delete -->
+        <!-- Confirm delete -->
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5"
@@ -97,8 +108,15 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-
       </v-toolbar>
+    </template>
+    <!-- eslint-disable-next-line -->
+    <template v-slot:item.type="{ item }">
+      {{ getTypeTitle(item.raw.type) }}
+    </template>
+    <!-- eslint-disable-next-line -->
+    <template v-slot:item.country_code="{ item }">
+      {{ getCountryCodeTitle(item.raw.country_code) }}
     </template>
     <!-- eslint-disable-next-line -->
     <template v-slot:item.actions="{ item }">
@@ -115,6 +133,11 @@
   <script>
 export default {
   data: () => ({
+    itemsType: [      
+      { typeTitle: "Educação", typeValue: "education" },
+      { typeTitle: "Pesquisa", typeValue: "research" },
+    ],
+    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -137,7 +160,7 @@ export default {
       type: "",
       country_code: "",
     },
-    defaultItem: {      
+    defaultItem: {
       name: "",
       name_abbr: "",
       type: "",
@@ -161,7 +184,6 @@ export default {
       this.$axios
         .get("institutions/")
         .then((response) => {
-          console.log(response);
           this.items = response.data;
         })
         .catch((error) => {
@@ -194,7 +216,6 @@ export default {
 
     save() {
       if (this.editedItem._id) {
-        console.log('edited');
         this.$axios
           .put("institutions/" + this.editedItem._id, this.editedItem)
           .then((response) => {
@@ -204,9 +225,8 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-          this.editedItem = this.defaultItem;
+        this.editedItem = this.defaultItem;
       } else {
-        console.log('saved');
         this.$axios
           .post("institutions/", this.editedItem)
           .then((response) => {
@@ -216,9 +236,19 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-          this.editedItem = this.defaultItem;
-      }      
+        this.editedItem = this.defaultItem;
+      }
       this.dialog = false;
+    },
+    getTypeTitle(type) {
+      const typeItem = this.itemsType.find((item) => item.typeValue === type);
+      return typeItem ? typeItem.typeTitle : "";
+    },
+    getCountryCodeTitle(type) {
+      const typeItem = this.itemsCountryCode.find(
+        (item) => item.codeValue === type
+      );
+      return typeItem ? typeItem.codeTitle : "";
     },
   },
 };
