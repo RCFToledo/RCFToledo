@@ -42,16 +42,13 @@
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12">
-                    <v-checkbox
-          v-model="item.type"
-          :label="getTypeTitle('education')"
-          :value="getTypeValue('education')"
-        ></v-checkbox>
-        <v-checkbox
-          v-model="item.type"
-          :label="getTypeTitle('research')"
-          :value="getTypeValue('research')"
-        ></v-checkbox>
+                    <v-select
+                      v-model="editedItem.type"
+                      label="Tipo"
+                      :items="itemsType"
+                      item-title="typeTitle"
+                      item-value="typeValue"
+                    ></v-select>
                   </v-col>
                   <v-col cols="12">
                     <v-select
@@ -60,7 +57,7 @@
                       :items="itemsCountryCode"
                       item-title="codeTitle"
                       item-value="codeValue"
-                    ></v-select>
+                    ></v-select>                    
                   </v-col>
                 </v-row>
               </v-container>
@@ -113,11 +110,11 @@
     <!-- eslint-disable-next-line -->
     <template v-slot:item.type="{ item }">
       {{ getTypeTitle(item.raw.type) }}
-    </template>
+    </template>    
     <!-- eslint-disable-next-line -->
     <template v-slot:item.country_code="{ item }">
       {{ getCountryCodeTitle(item.raw.country_code) }}
-    </template>
+    </template>    
     <!-- eslint-disable-next-line -->
     <template v-slot:item.actions="{ item }">
       <v-icon size="small" class="me-2" @click="editItem(item.raw)">
@@ -125,7 +122,7 @@
       </v-icon>
       <v-icon size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
     </template>
-    <template v-slot:no-data> Não há dados para exibir! </template>
+    <template v-slot:no-data> Não há dados para exibir! </template>   
   </v-data-table>
 </template>
 
@@ -133,11 +130,14 @@
   <script>
 export default {
   data: () => ({
-    itemsType: [      
+    itemsType: [
+      { typeTitle: "Ambos", typeValue: "both" },
       { typeTitle: "Educação", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
     ],
-    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
+    itemsCountryCode:[
+      { codeTitle: "Brasil" , codeValue: "BR"},
+    ],
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -148,7 +148,7 @@ export default {
         key: "name",
       },
       { title: "Nome Abreviado", key: "abbr_name" },
-      { title: "Tipo", key: "type" },
+      { title: "Tipo", key: "type"},
       { title: "Código do País", key: "country_code" },
       { title: "Ações", key: "actions", sortable: false },
     ],
@@ -172,7 +172,7 @@ export default {
   computed: {
     formTitle() {
       return !this.editedItem._id ? "Nova Instituição" : "Editar Instituição";
-    },
+    },    
   },
 
   created() {
@@ -183,7 +183,7 @@ export default {
     initialize() {
       this.$axios
         .get("institutions/")
-        .then((response) => {
+        .then((response) => {          
           this.items = response.data;
         })
         .catch((error) => {
@@ -204,8 +204,8 @@ export default {
     deleteItemConfirm() {
       this.$axios
         .delete("institutions/" + this.editedItem._id)
-        .then((response) => {
-          console.log(response);
+        .then((response) => {    
+          console.log(response)      
           this.initialize();
         })
         .catch((error) => {
@@ -215,18 +215,18 @@ export default {
     },
 
     save() {
-      if (this.editedItem._id) {
+      if (this.editedItem._id) {        
         this.$axios
           .put("institutions/" + this.editedItem._id, this.editedItem)
           .then((response) => {
-            console.log(response);
+            console.log(response.statusText);
             this.initialize();
           })
           .catch((error) => {
             console.error(error);
           });
         this.editedItem = this.defaultItem;
-      } else {
+      } else {        
         this.$axios
           .post("institutions/", this.editedItem)
           .then((response) => {
@@ -240,16 +240,14 @@ export default {
       }
       this.dialog = false;
     },
-    getTypeTitle(type) {
-      const typeItem = this.itemsType.find((item) => item.typeValue === type);
-      return typeItem ? typeItem.typeTitle : "";
+    getTypeTitle(type) {      
+      const typeItem = this.itemsType.find(item => item.typeValue === type);
+      return typeItem ? typeItem.typeTitle : '';
     },
-    getCountryCodeTitle(type) {
-      const typeItem = this.itemsCountryCode.find(
-        (item) => item.codeValue === type
-      );
-      return typeItem ? typeItem.codeTitle : "";
-    },
+    getCountryCodeTitle(type) {        
+      const typeItem = this.itemsCountryCode.find(item => item.codeValue === type);
+      return typeItem ? typeItem.codeTitle : '';
+    },    
   },
 };
 </script>
