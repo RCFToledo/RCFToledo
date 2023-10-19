@@ -10,6 +10,7 @@ import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bootstrap.css';
 
+
 loadFonts();
 
 const app = createApp(App);
