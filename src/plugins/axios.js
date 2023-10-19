@@ -18,6 +18,7 @@ export default {
     // Configure o Axios da maneira que você deseja
     axios.defaults.baseURL = 'http://177.220.83.21:3000/';
     axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+    axios.defaults.validateStatus = function (status) { return (status >= 200 && status < 300) || status == 422; },
 
     // Adicione o interceptor global para definir o cabeçalho Authorization
     axios.interceptors.request.use((config) => authInterceptor(config, keycloak));
