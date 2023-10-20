@@ -113,6 +113,11 @@ export default {
           icon: "mdi-briefcase",
           to: "/departments",
         },
+        {
+          title: "Pessoas",
+          icon: "mdi-account-multiple",
+          to: "/peoples",
+        },
       ],
     };
   },
