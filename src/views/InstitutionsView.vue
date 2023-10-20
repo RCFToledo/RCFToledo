@@ -5,10 +5,10 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="800px">
+          <v-dialog v-model="dialog" max-width="800px" :persistent="true">
             <template v-slot:activator="{ props }">
-              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal" dark
-                @click="editedItem = { ...defaultItem }"></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="editedItem = { ...defaultItem }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -18,41 +18,39 @@
               </v-card-title>
 
               <v-card-text>
-                <v-container>
-                  <v-form ref="form" lazy-validation>
-                    <v-row dense>
-                      <v-col cols="12">
-                        <v-text-field v-model="editedItem.name" :rules="[
-                          () => !!editedItem.name || 'Nome é requerido!',
-                        ]" label="Nome" :counter="120" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field v-model="editedItem.abbr_name" label="Nome Abreviado" :rules="[
-                          () =>
-                            !!editedItem.abbr_name ||
-                            'Nome Abreviado é requerido!',
-                        ]" :counter="20"></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select v-model="editedItem.type" multiple label="Tipo" :items="itemsType"
-                          item-title="typeTitle" item-value="typeValue" :rules="[
-                            () => !!editedItem.type || 'Tipo é requerido!',
-                          ]"></v-select>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select v-model="editedItem.country_code" label="País" :items="itemsCountryCode"
-                          item-title="codeTitle" item-value="codeValue" :rules="[
-                            () =>
-                              !!editedItem.country_code || 'País é requerido!',
-                          ]"></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-container>
-              </v-card-text>
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
+                <v-form ref="form" lazy-validation>
+                  <v-row dense>
+                    <v-col cols="12">
+                      <v-text-field v-model="editedItem.name" :rules="[
+                        () => !!editedItem.name || 'Nome é requerido!',
+                      ]" label="Nome" @update:model-value="amountChar=120" :counter="amountChar" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field v-model="editedItem.abbr_name" label="Nome Abreviado" :rules="[
+                        () =>
+                          !!editedItem.abbr_name ||
+                          'Nome Abreviado é requerido!',
+                      ]" @update:model-value="amountChar=20" :counter="amountChar"></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select v-model="editedItem.type" multiple label="Tipo" :items="itemsType" item-title="typeTitle"
+                        item-value="typeValue" :rules="[
+                          () => !!editedItem.type || 'Tipo é requerido!',
+                        ]"></v-select>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select v-model="editedItem.country_code" label="País" :items="itemsCountryCode"
+                        item-title="codeTitle" item-value="codeValue" :rules="[
+                          () =>
+                            !!editedItem.country_code || 'País é requerido!',
+                        ]"></v-select>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="blue-darken-1" variant="plain" @click="
                   dialog = false;
                 initialize();
@@ -71,16 +69,13 @@
               <v-card-title class="bg-primary">
                 Confirmar exclusão
               </v-card-title>
-              <v-spacer></v-spacer>
-              <v-card-text class="text-body-1 text-md-center"><v-icon icon="mdi-alert"></v-icon>  Tem certeza que deseja excluir esse item?</v-card-text>
-              <v-spacer></v-spacer>
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4"><v-icon icon="mdi-alert" size="large"></v-icon>
+                Tem certeza que deseja
+                excluir esse item?</v-card-text>
               <v-divider></v-divider>
-              <v-card-actions class="bg-grey-lighten-3">
-
-                <v-spacer></v-spacer>
+              <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="blue-darken-1" variant="plain" @click="dialogDelete = false">Cancelar</v-btn>
                 <v-btn color="primary" variant="tonal" @click="deleteItemConfirm">Excluir</v-btn>
-                <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -111,6 +106,8 @@
 export default {
   data: () => ({
     valid: false,
+    search: '',
+    amountChar: null,
     itemsType: [
       { typeTitle: "Educação", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
