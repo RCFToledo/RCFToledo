@@ -108,6 +108,11 @@ export default {
           icon: "mdi-school",
           to: "/institutions",
         },
+        {
+          title: "Departamentos",
+          icon: "mdi-briefcase",
+          to: "/departments",
+        },
       ],
     };
   },
