@@ -113,6 +113,11 @@ export default {
           icon: "mdi-briefcase",
           to: "/departments",
         },
+        {
+          title: "Pessoas",
+          icon: "mdi-account-multiple",
+          to: "/peoples",
+        },
       ],
     };
   },
@@ -123,4 +128,3 @@ export default {
   background-color: #f5f5f5; /* Altere a cor de fundo para a cor desejada */
 }
 </style>
-
