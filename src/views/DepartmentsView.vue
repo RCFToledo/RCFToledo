@@ -9,7 +9,7 @@
             <v-card>
               <v-card-title class="bg-primary">
                 <v-spacer></v-spacer>
-                <span class="text-h5">{{ `Membros (${departments.name})`  }}</span>
+                <span class="text-h5">{{ `Membros - ${departments.name}`  }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
 
@@ -59,25 +59,6 @@
             </v-card>
           </v-dialog>
           <!-- Confirm delete -->
-          <v-dialog v-model="dialogDelete" max-width="420px">
-            <v-card class="rounded-lg">
-              <v-card-title class="bg-primary">
-                Confirmar exclusão
-              </v-card-title>
-              <v-spacer></v-spacer>
-              <v-card-text class="text-body-1 text-md-center"><v-icon icon="mdi-alert"></v-icon> Tem certeza que deseja
-                excluir esse item?</v-card-text>
-              <v-spacer></v-spacer>
-              <v-divider></v-divider>
-              <v-card-actions class="bg-grey-lighten-3">
-
-                <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogDelete = false">Cancelar</v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteItemConfirm">Excluir</v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
@@ -103,15 +84,8 @@
 <script>
 export default {
   data: () => ({
-    charAmount: null,
     valid: false,
-    itemsType: [
-      { typeTitle: "Educação", typeValue: "education" },
-      { typeTitle: "Pesquisa", typeValue: "research" },
-    ],
-    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
     dialog: false,
-    dialogDelete: false,
     headers: [
       {
         title: "Nome",
@@ -125,7 +99,7 @@ export default {
     items: [],
     editedIndex: -1,
     departments: [],
-    defaultItem: {
+    defaultDepatment: {
       id_: null,
       name: null,
       abbr_name: null,
@@ -159,28 +133,6 @@ export default {
     visualizeMembers(item) {
       this.departments = item;
       this.dialog = true;
-    },
-
-    getTypeTitle(type) {
-      const selectedTypes = [];
-      if (Array.isArray(type)) {
-        type.forEach((value) => {
-          const typeItem = this.itemsType.find(
-            (item) => item.typeValue === value
-          );
-          if (typeItem) {
-            selectedTypes.push(typeItem.typeTitle);
-          }
-        });
-      }
-      return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
-    },
-
-    getCountryCodeTitle(type) {
-      const typeItem = this.itemsCountryCode.find(
-        (item) => item.codeValue === type
-      );
-      return typeItem ? typeItem.codeTitle : "";
     },
   },
 };

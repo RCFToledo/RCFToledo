@@ -15,7 +15,7 @@
                 v-bind="props"
                 variant="tonal"
                 dark
-                @click="editedItem = { ...defaultItem }"
+                @click="institution = { ...defaultInstitution }"
               ></v-btn>
             </template>
             <v-card>
@@ -29,50 +29,51 @@
                   <v-row dense>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.name"
+                        v-model="institution.name"
+
                         :rules="[
-                          () => !!editedItem.name || 'Nome é requerido!',
+                          () => !!institution.name || 'Nome é requerido!',
+                          () => !(institution.name.length > 60) || 'Nome maior que o suportado',
                         ]"
                         label="Nome"
-                        :counter="120"
+                        :counter="60"
                         required
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
-                        v-model="editedItem.abbr_name"
+                        v-model="institution.abbr_name"
                         label="Nome Abreviado"
                         :rules="[
-                          () =>
-                            !!editedItem.abbr_name ||
-                            'Nome Abreviado é requerido!',
+                          () => !!institution.abbr_name  || 'Nome Abreviado é requerido!',
+                          () => !(institution.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                         ]"
                         :counter="20"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-select
-                        v-model="editedItem.type"
+                        v-model="institution.type"
                         multiple
                         label="Tipo"
-                        :items="itemsType"
+                        :items="institutionsType"
                         item-title="typeTitle"
                         item-value="typeValue"
                         :rules="[
-                          () => !!editedItem.type || 'Tipo é requerido!',
+                          () => !!institution.type || 'Tipo é requerido!',
                         ]"
                       ></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-select
-                        v-model="editedItem.country_code"
+                        v-model="institution.country_code"
                         label="País"
-                        :items="itemsCountryCode"
-                        item-title="codeTitle"
-                        item-value="codeValue"
+                        :items="institutionsCountryCode"
+                        item-title="countryTitle"
+                        item-value="countryValue"
                         :rules="[
                           () =>
-                            !!editedItem.country_code || 'País é requerido!',
+                            !!institution.country_code || 'País é requerido!',
                         ]"
                       ></v-select>
                     </v-col>
@@ -93,7 +94,7 @@
             </v-card>
           </v-dialog>
           <!-- Confirm delete -->
-          <v-dialog v-model="dialogDelete" max-width="420px">
+          <v-dialog v-model="institutionsDelete" max-width="420px">
             <v-card class="rounded-lg">
               <v-card-title class="bg-primary">
                 Confirmar exclusão
@@ -107,14 +108,14 @@
                 <v-btn
                   color="blue-darken-1"
                   variant="plain"
-                  @click="dialogDelete = false"
+                  @click="institutionsDelete = false"
                 >
                   Cancelar
                 </v-btn>
                 <v-btn
                   color="primary"
                   variant="tonal"
-                  @click="deleteItemConfirm"
+                  @click="deleteInstitutionsConfirm"
                 >
                   Excluir
                 </v-btn>
@@ -129,14 +130,14 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
-        {{ getCountryCodeTitle(item.raw.country_code) }}
+        {{ getCountryCountryTitle(item.raw.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editItem(item.raw)">mdi-pencil</v-icon>
-        <v-icon size="small" @click="deleteItem(item.raw)">mdi-delete</v-icon>
+        <v-icon size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
+        <v-icon size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
       </template>
-      <template v-slot:no-data> Não há dados para exibir! </template>
+      <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
 </template>
@@ -146,13 +147,13 @@
 export default {
   data: () => ({
     valid: false,
-    itemsType: [
+    institutionsType: [
       { typeTitle: "Educação", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
     ],
-    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
+    institutionsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
     dialog: false,
-    dialogDelete: false,
+    institutionsDelete: false,
     headers: [
       {
         title: "Nome",
@@ -166,8 +167,8 @@ export default {
     ],
     items: [],
     editedIndex: -1,
-    editedItem: {},
-    defaultItem: {
+    institution: {},
+    defaultInstitution: {
       id_: null,
       name: null,
       abbr_name: null,
@@ -178,7 +179,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.editedItem.id_ ? "Nova Instituição" : "Editar Instituição";
+      return !this.institution.id_ ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
@@ -204,24 +205,24 @@ export default {
         });
     },
 
-    editItem(item) {
-      this.editedItem = item;
+    editInstitutions(item) {
+      this.institution = item;
       this.dialog = true;
     },
 
-    deleteItem(item) {
-      this.editedItem = item;
-      this.dialogDelete = true;
+    deleteInstitutions(item) {
+      this.institution = item;
+      this.institutionsDelete = true;
     },
 
-    deleteItemConfirm() {
+    deleteInstitutionsConfirm() {
       this.$axios
-        .delete("institutions/" + this.editedItem._id)
+        .delete("institutions/" + this.institution._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
-            this.dialogDelete = false;
+            this.institutionsDelete = false;
             this.$toast.success(response.statusText);
           } else {
             this.$toast.error(response.statusText);
@@ -230,18 +231,18 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      this.editedItem = this.defaultItem;
+      this.institution = this.defaultInstitution;
     },
 
     save() {
-      if (this.editedItem._id) {
+      if (this.institution._id) {
         this.$axios
-          .put("institutions/" + this.editedItem._id, this.editedItem)
+          .put("institutions/" + this.institution._id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.editedItem = this.defaultItem;
+              this.institution = this.defaultInstitution;
               this.$toast.success(response.statusText);
               this.dialog = false;
             } else {
@@ -253,12 +254,12 @@ export default {
           });
       } else {
         this.$axios
-          .post("institutions/", this.editedItem)
+          .post("institutions/", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.editedItem = this.defaultItem;
+              this.institution = this.defaultInstitution;
               this.$toast.success(response.statusText);
               this.dialog = false;
             } else {
@@ -274,22 +275,22 @@ export default {
       const selectedTypes = [];
       if (Array.isArray(type)) {
         type.forEach((value) => {
-          const typeItem = this.itemsType.find(
+          const typeInstitutions = this.institutionsType.find(
             (item) => item.typeValue === value
           );
-          if (typeItem) {
-            selectedTypes.push(typeItem.typeTitle);
+          if (typeInstitutions) {
+            selectedTypes.push(typeInstitutions.typeTitle);
           }
         });
       }
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCodeTitle(type) {
-      const typeItem = this.itemsCountryCode.find(
-        (item) => item.codeValue === type
+    getCountryCountryTitle(type) {
+      const typeInstitutions = this.institutionsCountryCode.find(
+        (item) => item.countryValue === type
       );
-      return typeItem ? typeItem.codeTitle : "";
+      return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
   },
 }
