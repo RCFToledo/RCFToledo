@@ -29,78 +29,71 @@
                 <span class="text-h5">{{ formTitle }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-
               <v-card-text>
-                
-                  <v-form ref="form" lazy-validation>
-                    <v-row dense>
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.name"
-                          :rules="[
-                            () => !!editedItem.name || 'Nome é requerido!',
-                          ]"
-                          label="Nome"
-                          :counter="120"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedItem.abbr_name"
-                          label="Nome Abreviado"
-                          :rules="[
-                            () =>
-                              !!editedItem.abbr_name ||
-                              'Nome Abreviado é requerido!',
-                          ]"
-                          :counter="20"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select
-                          v-model="editedItem.type"
-                          multiple
-                          label="Tipo"
-                          :items="itemsType"
-                          item-title="typeTitle"
-                          item-value="typeValue"
-                          :rules="[
-                            () => !!editedItem.type || 'Tipo é requerido!',
-                          ]"
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select
-                          v-model="editedItem.country_code"
-                          label="País"
-                          :items="itemsCountryCode"
-                          item-title="codeTitle"
-                          item-value="codeValue"
-                          :rules="[
-                            () =>
-                              !!editedItem.country_code || 'País é requerido!',
-                          ]"
-                        ></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-form>                
+                <v-form ref="form" lazy-validation>
+                  <v-row dense>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="editedItem.name"
+                        :rules="[
+                          () => !!editedItem.name || 'Nome é requerido!',
+                        ]"
+                        label="Nome"
+                        :counter="120"
+                        required
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field
+                        v-model="editedItem.abbr_name"
+                        label="Nome Abreviado"
+                        :rules="[
+                          () =>
+                            !!editedItem.abbr_name ||
+                            'Nome Abreviado é requerido!',
+                        ]"
+                        :counter="20"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="editedItem.type"
+                        multiple
+                        label="Tipo"
+                        :items="itemsType"
+                        item-title="typeTitle"
+                        item-value="typeValue"
+                        :rules="[
+                          () => !!editedItem.type || 'Tipo é requerido!',
+                        ]"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-select
+                        v-model="editedItem.country_code"
+                        label="País"
+                        :items="itemsCountryCode"
+                        item-title="codeTitle"
+                        item-value="codeValue"
+                        :rules="[
+                          () =>
+                            !!editedItem.country_code || 'País é requerido!',
+                        ]"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn
                   color="blue-darken-1"
                   variant="plain"
-                  @click="
-                    dialog = false;
-                    initialize();
-                  "
+                  @click="dialog = false; initialize();"
                 >
                   Cancelar
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="formSubmit">
-                  Salvar
-                </v-btn>                              
+                <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -109,25 +102,27 @@
             <v-card class="rounded-lg">
               <v-card-title class="bg-primary">
                 Confirmar exclusão
-              </v-card-title>              
-              <v-card-text class="text-body-1 text-md-center pa-4 ma-4"
-                ><v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
-                excluir esse item?</v-card-text
-              >              
+              </v-card-title>
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
+                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
+                excluir esse item?
+              </v-card-text>
               <v-divider></v-divider>
-              <v-card-actions class="bg-secondary d-flex justify-center">                
+              <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn
                   color="blue-darken-1"
                   variant="plain"
                   @click="dialogDelete = false"
-                  >Cancelar</v-btn
                 >
+                  Cancelar
+                </v-btn>
                 <v-btn
                   color="primary"
                   variant="tonal"
                   @click="deleteItemConfirm"
-                  >Excluir</v-btn
-                >                
+                >
+                  Excluir
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -143,10 +138,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-          mdi-pencil
-        </v-icon>
-        <v-icon size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
+        <v-icon size="small" class="me-2" @click="editItem(item.raw)">mdi-pencil</v-icon>
+        <v-icon size="small" @click="deleteItem(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -178,7 +171,7 @@ export default {
     ],
     items: [],
     editedIndex: -1,
-    editedItem: [],
+    editedItem: {},
     defaultItem: {
       id_: null,
       name: null,
@@ -190,14 +183,13 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.editedItem._id ? "Nova Instituição" : "Editar Instituição";
+      return !this.editedItem.id_ ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
   created() {
     this.initialize();
   },
-
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
@@ -305,6 +297,6 @@ export default {
       return typeItem ? typeItem.codeTitle : "";
     },
   },
-};
+}
 </script>
 <style></style>
