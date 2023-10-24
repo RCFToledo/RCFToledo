@@ -8,12 +8,14 @@ import store from './store';
 import axios from './plugins/axios'; // Importe o seu plugin Axios
 import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-bootstrap.css';
+//import 'vue-toast-notification/dist/theme-bootstrap.css'; 
+//o import está dando erro
+import VueMask from '@devindex/vue-mask';
 
 loadFonts();
 
 const app = createApp(App);
-app.use(router).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000, dismissible:true});
+app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000, dismissible:true});
 
 // Use o plugin Axios com o objeto Keycloak
 app.use(axios, { keycloak });
