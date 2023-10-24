@@ -97,12 +97,7 @@ export default {
     return {
       rail: true,
       drawer: true,
-      items: [
-        {
-          title: "BAPEX",
-          icon: "mdi-database",
-          to: "/loadTeaching",
-        },
+      items: [        
         {
           title: "Instituições",
           icon: "mdi-school",
