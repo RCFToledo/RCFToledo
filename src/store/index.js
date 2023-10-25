@@ -4,6 +4,7 @@ export default createStore({
   state: {
     username: null,
     token: null,
+    unicamp_id: '653964ad00e637af8ca63548',
   },
   mutations: {
     setUsername(state, newUsername) {
@@ -22,6 +23,7 @@ export default createStore({
     },
   },
   getters: {
+    getUnicamp_id: state => state.unicamp_id,
     getUsername: state => state.username,
     getToken: state => state.token,
   },

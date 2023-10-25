@@ -116,7 +116,7 @@ export default {
         {
           title: "Pessoas",
           icon: "mdi-account-multiple",
-          to: "/peoples",
+          to: "/people",
         },
       ],
     };
