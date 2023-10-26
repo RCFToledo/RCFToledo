@@ -5,8 +5,16 @@ export default createStore({
     username: null,
     token: null,
     unicamp_id: '653964ad00e637af8ca63548',
+    userData: null,
+    isAuthenticated: null,
   },
   mutations: {
+    setIsAuthenticated(state, newAuthenticated) {
+      state.isAuthenticated = newAuthenticated;
+    },
+    setUserData(state, newUserData) {
+      state.userData = newUserData;
+    },
     setUsername(state, newUsername) {
       state.username = newUsername;
     },
@@ -26,5 +34,7 @@ export default createStore({
     getUnicamp_id: state => state.unicamp_id,
     getUsername: state => state.username,
     getToken: state => state.token,
+    getUserData: state => state.userData,
+    getIsAuthenticated: state => state.isAuthenticated,
   },
 });

@@ -34,16 +34,7 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     
-                    <v-col cols="12" md="6"
-                      ><!--<v-radio-group v-model="people.academic_profile" inline>                 
-                        <v-radio label="Estudante" value="student"></v-radio>
-                        <v-radio label="Funcionário" value="staff"></v-radio>
-                        <v-radio label="Professor" value="professor"></v-radio>
-                        <v-radio
-                          label="Outros"
-                          value="other"
-                        ></v-radio> </v-radio-group
-                    >-->
+                    <v-col cols="12" md="6">
                     <v-select
                         v-model="people.academic_profile"
                         label="Perfil"
@@ -223,7 +214,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
-        {{ getInstitutionsName(item.raw.institution_id) }}
+        {{ getInstitutionsName(item.raw.institution_id, item.raw.department_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.department_id="{ item }">
@@ -255,7 +246,6 @@ export default {
         key: "full_name",
       },
       { title: "Instituição", key: "institution_id" },
-      { title: "Departamento", key: "department_id" },
       { title: "Matrícula", key: "employee_id" },
       { title: "RA", key: "student_id" },
       { title: "E-mail", key: "default_email" },
