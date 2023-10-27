@@ -34,16 +34,21 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     
-                    <v-col cols="12" md="6"
-                      ><v-radio-group v-model="people.academic_profile" inline>                 
-                        <v-radio label="Estudante" value="student"></v-radio>
-                        <v-radio label="Funcionário" value="staff"></v-radio>
-                        <v-radio label="Professor" value="professor"></v-radio>
-                        <v-radio
-                          label="Outros"
-                          value="other"
-                        ></v-radio> </v-radio-group
-                    ></v-col>
+                    <v-col cols="12" md="6">
+                    <v-select
+                        v-model="people.academic_profile"
+                        label="Perfil"
+                        item-title="title"
+                        item-value="value"
+                        :items="profile"
+                        :rules="[
+                          () =>
+                            !!people.academic_profile ||
+                            'Perfil é requerido!',
+                        ]"
+                      ></v-select>
+
+                  </v-col>
                     <v-col
                       cols="12"
                       md="6"
@@ -136,19 +141,19 @@
                   <v-row dense>
                     <v-col cols="12" md="6">
                       <v-select
-                        v-model="people.instituition_id"
+                        v-model="people.institution_id"
                         label="Instituição"
                         :items="itemsInstitutions"
                         item-title="name"
                         item-value="_id"
                         :rules="[
                           () =>
-                            !!people.instituition_id ||
+                            !!people.institution_id ||
                             'Instituição é requerida!',
                         ]"
                       ></v-select>
                     </v-col>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="6" v-if="people.institution_id === $store.getters.getUnicamp_id">
                       <v-select
                         v-model="people.department_id"
                         label="Departamento"
@@ -199,7 +204,7 @@
                 <v-btn
                   color="primary"
                   variant="tonal"
-                  @click="deleteItemConfirm"
+                  @click="deletePeopleConfirm"
                   >Excluir</v-btn
                 >
               </v-card-actions>
@@ -208,12 +213,12 @@
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.raw.type) }}
+      <template v-slot:item.institution_id="{ item }">
+        {{ getInstitutionsName(item.raw.institution_id, item.raw.department_id) }}
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.country_code="{ item }">
-        {{ getCountryCountryTitle(item.raw.country_code) }}
+      <template v-slot:item.department_id="{ item }">
+        {{ getDepartmentsName(item.raw.department_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -232,7 +237,6 @@
 export default {
   data: () => ({
     valid: false,
-    search: "",
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -241,12 +245,29 @@ export default {
         align: "start",
         key: "full_name",
       },
-      { title: "Instituição", key: "instituition_id" },
-      { title: "Departamento", key: "department_id" },
+      { title: "Instituição", key: "institution_id" },
       { title: "Matrícula", key: "employee_id" },
       { title: "RA", key: "student_id" },
       { title: "E-mail", key: "default_email" },
       { title: "Ações", key: "actions", sortable: false },
+    ],
+    profile: [
+      {
+        value: "student",
+        title: "Estudante",
+      },
+      {
+        value: "staff",
+        title: "Funcionário",
+      },
+      {
+        value: "professor",
+        title: "Professor",
+      },
+      {
+        value: "other",
+        title: "Outros",
+      },
     ],
     items: [],
     itemsDepartments: [],
@@ -261,6 +282,20 @@ export default {
       country_code: null,
     },
   }),
+
+  watch: {
+    'people.academic_profile'(newValue, oldValue) {
+      if ((newValue !== oldValue) && (oldValue !== undefined)) {
+        this.people.student_id = '';
+        this.people.employee_id = '';
+      }
+    },
+    'people.institution_id'(newValue, oldValue) {
+      if ((newValue !== oldValue) && (oldValue !== undefined)) {
+        this.people.department_id = '';
+      }
+    }
+  },
 
   computed: {
     formTitle() {
@@ -325,7 +360,7 @@ export default {
       this.dialogDelete = true;
     },
 
-    deleteItemConfirm() {
+    deletePeopleConfirm() {
       this.$axios
         .delete("people/" + this.people._id)
         .then((response) => {
@@ -381,6 +416,20 @@ export default {
           });
       }
     },
+   
+    getInstitutionsName(institutionId) {
+      const institution = this.itemsInstitutions.find(
+        (item) => item._id === institutionId
+      );
+      return institution ? institution.name : "";
+    },
+
+    getDepartmentsName(departmentId) {
+      const department = this.itemsDepartments.find(
+        (item) => item._id === departmentId
+      );
+      return department ? department.name : "";
+    },    
   },
 };
 </script>
