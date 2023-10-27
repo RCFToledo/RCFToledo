@@ -10,7 +10,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="800px">
+          <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn
                 color="secondary"
@@ -183,7 +183,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.institution.id_ ? "Nova Instituição" : "Editar Instituição";
+      return !this.institution._id ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
