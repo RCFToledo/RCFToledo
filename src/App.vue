@@ -88,6 +88,11 @@ export default {
           to: "/departments",
         },
         {
+          title: "Setores",
+          icon: "mdi-view-list",
+          to: "/sectors",
+        },
+        {
           title: "Pessoas",
           icon: "mdi-account-multiple",
           to: "/people",
