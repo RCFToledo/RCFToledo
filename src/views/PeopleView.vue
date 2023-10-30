@@ -1,27 +1,14 @@
 <template>
   <div>
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-      class="elevation-1"
-    >
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
             <template v-slot:activator="{ props }">
-              <v-btn
-                color="secondary"
-                size="x-large"
-                density="compact"
-                icon="mdi-plus"
-                v-bind="props"
-                variant="tonal"
-                dark
-                @click="people = { ...defaultPeople }"
-              ></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="people = { ...defaultPeople }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -33,148 +20,79 @@
               <v-card-text>
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
-                    
+
                     <v-col cols="12" md="6">
-                    <v-select
-                        v-model="people.academic_profile"
-                        label="Perfil"
-                        item-title="title"
-                        item-value="value"
-                        :items="profile"
-                        :rules="[
+                      <v-select v-model="people.academic_profile" label="Perfil" item-title="title" item-value="value"
+                        :items="profile" :rules="[
                           () =>
                             !!people.academic_profile ||
                             'Perfil é requerido!',
-                        ]"
-                      ></v-select>
+                        ]"></v-select>
 
-                  </v-col>
-                    <v-col
-                      cols="12"
-                      md="6"
-                      v-if="
-                        people.academic_profile == 'staff' ||
-                        people.academic_profile == 'professor'
-                      "
-                    >
-                      <v-text-field
-                        v-model="people.employee_id"
-                        :rules="[
-                          () =>
-                            !!people.employee_id || 'Matrícula é requerida!',
-                        ]"
-                        label="Matrícula"
-                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
+                      people.academic_profile == 'professor'
+                      ">
+                      <v-text-field v-model="people.employee_id" :rules="[
+                        () =>
+                          !!people.employee_id || 'Matrícula é requerida!',
+                      ]" label="Matrícula"></v-text-field>
                     </v-col>
 
-                    <v-col
-                      cols="12"
-                      md="6"
-                      v-if="people.academic_profile == 'student'"
-                    >
-                      <v-text-field
-                        v-model="people.student_id"
-                        :rules="[
-                          () => !!people.student_id || 'RA é requerido!',
-                        ]"
-                        label="RA"
-                      ></v-text-field>
+                    <v-col cols="12" md="6" v-if="people.academic_profile == 'student'">
+                      <v-text-field v-model="people.student_id" :rules="[
+                        () => !!people.student_id || 'RA é requerido!',
+                      ]" label="RA"></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="8">
-                      <v-text-field
-                        v-model="people.full_name"
-                        :rules="[
-                          () =>
-                            !!people.full_name || 'Nome Completo é requerido!',
-                          () =>
-                            !(people.full_name.length > 60) ||
-                            'Nome Completo maior que 60 caracteres',
-                        ]"
-                        label="Nome"
-                        :counter="60"
-                        required
-                      ></v-text-field>
+                      <v-text-field v-model="people.full_name" :rules="[
+                        () =>
+                          !!people.full_name || 'Nome Completo é requerido!',
+                        () =>
+                          !(people.full_name.length > 60) ||
+                          'Nome Completo maior que 60 caracteres',
+                      ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
-                      <v-text-field
-                        v-model="people.name_treatment"
-                        :rules="[
-                          () =>
-                            !!people.name_treatment ||
-                            'Tratamento é requerido!',
-                          () =>
-                            !(people.name_treatment.length > 40) ||
-                            'Tratamento maior que o suportado',
-                        ]"
-                        label="Tratamento"
-                        :counter="40"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="2">
-                      <v-text-field
-                        v-model="people.cpf"
-                        label="CPF"
-                        v-mask-cpf
-                      ></v-text-field>
+                      <v-text-field v-model="people.cpf" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="people.default_email"
-                        :rules="[
-                          () => !!people.default_email || 'E-mail é requerido!',
-                          (v) => /.+@.+\..+/.test(v) || 'E-mail inválido',
-                        ]"
-                        label="E-mail"
-                      ></v-text-field>
+                      <v-text-field v-model="people.default_email" :rules="[
+                        () => !!people.default_email || 'E-mail é requerido!',
+                        (v) => /.+@.+\..+/.test(v) || 'E-mail inválido',
+                      ]" label="E-mail"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="people.alternative_email"
-                        label="E-mail alternativo"
-                      ></v-text-field>
+                      <v-text-field v-model="people.alternative_email" label="E-mail alternativo"></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-select
-                        v-model="people.institution_id"
-                        label="Instituição"
-                        :items="itemsInstitutions"
-                        item-title="name"
-                        item-value="_id"
-                        :rules="[
+                      <v-select v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
+                        item-title="name" item-value="_id" :rules="[
                           () =>
                             !!people.institution_id ||
                             'Instituição é requerida!',
-                        ]"
-                      ></v-select>
+                        ]"></v-select>
                     </v-col>
-                    <v-col cols="12" md="6" v-if="people.institution_id === $store.getters.getUnicamp_id">
-                      <v-select
-                        v-model="people.department_id"
-                        label="Departamento"
-                        :items="itemsDepartments"
-                        item-title="name"
-                        item-value="_id"
-                      ></v-select>
+                    <v-col cols="12" md="6"
+                      v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile !== 'student'">
+                      <v-select v-model="people.department_id" label="Departamento" :items="itemsDepartments"
+                        item-title="name" item-value="_id"></v-select>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="
-                    dialog = false;
-                    initialize();
-                  "
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="
+                  dialog = false;
+                initialize();
+                ">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">
@@ -189,24 +107,13 @@
               <v-card-title class="bg-primary">
                 Confirmar exclusão
               </v-card-title>
-              <v-card-text class="text-body-1 text-md-center pa-4 ma-4"
-                ><v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que
-                deseja excluir esse item?</v-card-text
-              >
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4"><v-icon icon="mdi-alert" size="large"></v-icon>
+                Tem certeza que
+                deseja excluir esse item?</v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="dialogDelete = false"
-                  >Cancelar</v-btn
-                >
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deletePeopleConfirm"
-                  >Excluir</v-btn
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogDelete = false">Cancelar</v-btn>
+                <v-btn color="primary" variant="tonal" @click="deletePeopleConfirm">Excluir</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -220,6 +127,15 @@
       <template v-slot:item.department_id="{ item }">
         {{ getDepartmentsName(item.raw.department_id) }}
       </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.register="{ item }">
+        {{ getRegister(item.raw.student_id, item.raw.employee_id, item.raw.academic_profile) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.academic_profile="{ item }">
+        {{ getRProfile(item.raw.academic_profile) }}
+      </template>
+      
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon size="small" class="me-2" @click="editItem(item.raw)">
@@ -239,6 +155,7 @@ export default {
     valid: false,
     dialog: false,
     dialogDelete: false,
+    register: null,
     headers: [
       {
         title: "Nome Completo",
@@ -246,8 +163,8 @@ export default {
         key: "full_name",
       },
       { title: "Instituição", key: "institution_id" },
-      { title: "Matrícula", key: "employee_id" },
-      { title: "RA", key: "student_id" },
+      { title: "Perfil", key: "academic_profile" },
+      { title: "Registro", key: "register" },
       { title: "E-mail", key: "default_email" },
       { title: "Ações", key: "actions", sortable: false },
     ],
@@ -279,7 +196,8 @@ export default {
       name: null,
       abbr_name: null,
       type: null,
-      country_code: null,
+      student_id: null,
+      employee_id: null,
     },
   }),
 
@@ -287,7 +205,10 @@ export default {
     'people.academic_profile'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
         this.people.student_id = '';
-        this.people.employee_id = '';
+        this.people.employee_id = ''
+        if (this.people.academic_profile === 'student') {
+          this.people.department_id = ''
+        }
       }
     },
     'people.institution_id'(newValue, oldValue) {
@@ -398,6 +319,7 @@ export default {
             console.error(error);
           });
       } else {
+        delete this.people.register
         this.$axios
           .post("people/", this.people)
           .then((response) => {
@@ -416,7 +338,7 @@ export default {
           });
       }
     },
-   
+
     getInstitutionsName(institutionId) {
       const institution = this.itemsInstitutions.find(
         (item) => item._id === institutionId
@@ -429,7 +351,16 @@ export default {
         (item) => item._id === departmentId
       );
       return department ? department.name : "";
-    },    
+    },
+    getRegister(studentId, employeeId, profile) {
+      if (profile === 'student') {
+        this.register = studentId
+      }
+      else {
+        this.register = employeeId
+      }
+      return this.register
+    }
   },
 };
 </script>

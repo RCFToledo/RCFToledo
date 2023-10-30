@@ -154,6 +154,7 @@ export default {
     institutionsType: [
       { typeTitle: "Educação", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
+      { typeTitle: "Outros", typeValue: "other" },
     ],
     institutionsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
     dialog: false,
