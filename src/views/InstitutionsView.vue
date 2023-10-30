@@ -35,7 +35,6 @@
                     <v-col cols="12">
                       <v-text-field
                         v-model="institution.name"
-
                         :rules="[
                           () => !!institution.name || 'Nome é requerido!',
                           () => !(institution.name.length > 60) || 'Nome maior que o suportado',
