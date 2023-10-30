@@ -56,16 +56,6 @@
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
-                      <v-text-field v-model="people.name_treatment" :rules="[
-                        () =>
-                          !!people.name_treatment ||
-                          'Tratamento é requerido!',
-                        () =>
-                          !(people.name_treatment.length > 40) ||
-                          'Tratamento maior que o suportado',
-                      ]" label="Tratamento" :counter="40"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="2">
                       <v-text-field v-model="people.cpf" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                   </v-row>
@@ -141,6 +131,10 @@
       <template v-slot:item.register="{ item }">
         {{ getRegister(item.raw.student_id, item.raw.employee_id, item.raw.academic_profile) }}
       </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.academic_profile="{ item }">
+        {{ getRProfile(item.raw.academic_profile) }}
+      </template>
       
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -204,7 +198,6 @@ export default {
       type: null,
       student_id: null,
       employee_id: null,
-      register: null,
     },
   }),
 
@@ -326,6 +319,7 @@ export default {
             console.error(error);
           });
       } else {
+        delete this.people.register
         this.$axios
           .post("people/", this.people)
           .then((response) => {
@@ -359,14 +353,13 @@ export default {
       return department ? department.name : "";
     },
     getRegister(studentId, employeeId, profile) {
-      let register
       if (profile === 'student') {
-        register = studentId
+        this.register = studentId
       }
       else {
-        register = employeeId
+        this.register = employeeId
       }
-      return register
+      return this.register
     }
   },
 };
