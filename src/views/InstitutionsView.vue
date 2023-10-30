@@ -10,6 +10,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
+          <ExportData :data="items"/>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn
@@ -148,7 +149,11 @@
 
 
 <script>
+import ExportData from '../components/ExportData.vue';
 export default {
+  components: {
+    ExportData
+  },
   data: () => ({
     valid: false,
     institutionsType: [
