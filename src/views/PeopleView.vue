@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ people }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -133,7 +134,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.academic_profile="{ item }">
-        {{ getRProfile(item.raw.academic_profile) }}
+        {{ getProfile(item.raw.academic_profile) }}
       </template>
       
       <!-- eslint-disable-next-line -->
@@ -204,12 +205,13 @@ export default {
   watch: {
     'people.academic_profile'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
-        this.people.student_id = '';
-        this.people.employee_id = ''
-        if (this.people.academic_profile === 'student') {
+        this.people.student_id = null;
+        this.people.employee_id = null
+        
+      }
+      if (this.people.academic_profile === 'student') {
           this.people.department_id = ''
         }
-      }
     },
     'people.institution_id'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
@@ -319,7 +321,6 @@ export default {
             console.error(error);
           });
       } else {
-        delete this.people.register
         this.$axios
           .post("people/", this.people)
           .then((response) => {
@@ -360,6 +361,13 @@ export default {
         this.register = employeeId
       }
       return this.register
+    },
+    getProfile(profileId) {
+      for(let gridProfile of this.profile) {
+        if(gridProfile.value === profileId) {
+          return gridProfile.title
+        }
+      }
     }
   },
 };
