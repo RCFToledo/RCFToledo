@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="exportBtn">
         <v-btn @click="exportToCSV" color="secondary">Export to CSV</v-btn>
     </div>
 </template>
@@ -43,3 +43,8 @@ export default {
 }
 
 </script>
+<style>
+#exportBtn {
+    margin-right: 10px;
+}
+</style>

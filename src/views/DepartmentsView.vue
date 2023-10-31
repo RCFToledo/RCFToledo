@@ -5,6 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
           <v-spacer></v-spacer>
+          <export-data :data="items"/>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
