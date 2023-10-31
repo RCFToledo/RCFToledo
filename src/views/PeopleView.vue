@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ people }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -57,7 +56,9 @@
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
-                      <v-text-field v-model="people.cpf" label="CPF" v-mask-cpf></v-text-field>
+                      <v-text-field v-model="people.cpf" :rules="[
+                        () => !((people.academic_profile !== 'other') && !people.cpf) || 'CPF é requirido',
+                          ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -81,8 +82,13 @@
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12" md="6"
-                      v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile !== 'student'">
+                      v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
                       <v-select v-model="people.department_id" label="Departamento" :items="itemsDepartments"
+                        item-title="name" item-value="_id"></v-select>
+                    </v-col>
+                    <v-col cols="12" md="6"
+                      v-else-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'staff'">
+                      <v-select v-model="people.sector_id" label="Setor" :items="itemsSectors"
                         item-title="name" item-value="_id"></v-select>
                     </v-col>
                   </v-row>
@@ -190,6 +196,7 @@ export default {
     items: [],
     itemsDepartments: [],
     itemsInstitutions: [],
+    itemsSectors: [],
     peopleIndex: -1,
     people: [],
     defaultPeople: {
@@ -199,14 +206,15 @@ export default {
       type: null,
       student_id: null,
       employee_id: null,
+      sector_id: null,
     },
   }),
 
   watch: {
     'people.academic_profile'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
-        this.people.student_id = null;
-        this.people.employee_id = null
+        this.people.student_id = "";
+        this.people.employee_id = "";
         
       }
       if (this.people.academic_profile === 'student') {
@@ -230,6 +238,7 @@ export default {
     this.initialize();
     this.initializeDepartments();
     this.initializeInstitutions();
+    this.initializeSectors();
   },
 
   methods: {
@@ -256,6 +265,17 @@ export default {
         .get("departments/")
         .then((response) => {
           this.itemsDepartments = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeSectors() {
+      this.$axios
+        .get("sectors/")
+        .then((response) => {
+          this.itemsSectors = response.data;
         })
         .catch((error) => {
           console.error(error);

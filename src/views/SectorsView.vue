@@ -3,14 +3,14 @@
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
-          <v-toolbar-title>Departamentos</v-toolbar-title>
+          <v-toolbar-title>Setores</v-toolbar-title>
           <v-spacer></v-spacer>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
               <v-card-title class="bg-primary">
                 <v-spacer></v-spacer>
-                <span class="text-h5">{{ `Membros - ${sectors.name}`  }}</span>
+                <span class="text-h5">{{ `Membros - ${sectors.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
                 <v-list lines="one" :items="sectors.members" item-title="name"
@@ -36,7 +36,7 @@
                 v-bind="props"
                 variant="tonal"
                 dark
-                @click="sectors = { ...defaultDepartment }"
+                @click="sectors = { ...defaultSector }"
               ></v-btn>
             </template>
             <v-card>
@@ -203,7 +203,7 @@ export default {
     items: [],
     editedIndex: -1,
     sectors: [],
-    defaultDepartment: {
+    defaultSector: {
       id_: null,
       name: null,
       abbr_name: null,
@@ -218,7 +218,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.sectors._id ? "Novo Departamento " : "Editar Departamento";
+      return !this.sectors._id ? "Novo Setor" : "Editar Setor";
     },
   },
   methods: {
@@ -265,7 +265,7 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      this.sectors = this.defaultDepartment;
+      this.sectors = this.defaultSector;
     },
 
     save() {
@@ -276,7 +276,7 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.sectors = this.defaultDepartment;
+              this.sectors = this.defaultSector;
               this.$toast.success(response.statusText);
               this.dialogEdit = false;
             } else {
@@ -293,7 +293,7 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.sectors = this.defaultDepartment;
+              this.sectors = this.defaultSector;
               this.$toast.success(response.statusText);
               this.dialogEdit = false;
             } else {
