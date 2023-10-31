@@ -52,8 +52,7 @@
     <v-main class="custom-main">
       <v-container fluid>
         <router-view />
-      </v-container>
-      <Toast :baseZIndex="9999" />
+      </v-container>      
     </v-main>
   </v-app>
 </template>

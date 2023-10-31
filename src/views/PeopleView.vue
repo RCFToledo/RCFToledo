@@ -55,7 +55,7 @@
                           'Nome Completo maior que 60 caracteres',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="2">
+                    <v-col cols="12" md="4">
                       <v-text-field v-model="people.cpf" :rules="[
                         () => !((people.academic_profile !== 'other') && !people.cpf) || 'CPF é requirido',
                           ]" label="CPF" v-mask-cpf></v-text-field>
