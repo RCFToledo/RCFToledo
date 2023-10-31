@@ -139,8 +139,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
-        <v-icon size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
+        <v-icon title="Editar" size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

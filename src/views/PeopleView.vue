@@ -146,10 +146,10 @@
       
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+        <v-icon title="Editar" size="small" class="me-2" @click="editItem(item.raw)">
           mdi-pencil
         </v-icon>
-        <v-icon size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -218,9 +218,16 @@ export default {
         this.people.employee_id = "";
         
       }
-      if (this.people.academic_profile === 'student') {
+     if (this.people.academic_profile === 'staff') {
+        this.people.department_id = ''
+      }
+      else if (this.people.academic_profile === 'professor') {
+          this.people.sector_id = ''
+      } 
+      else {
           this.people.department_id = ''
-        }
+          this.people.sector_id = ''
+      }
     },
     'people.institution_id'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {

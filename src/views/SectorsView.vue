@@ -150,14 +150,14 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.membersView="{ item }">
-        <v-icon size="large" class="me-2" @click="visualizeMembers(item.raw)">
+        <v-icon title="Visualizar" size="large" class="me-2" @click="visualizeMembers(item.raw)">
           mdi-eye
         </v-icon>
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editSectors(item.raw)">mdi-pencil</v-icon>
-        <v-icon size="small" @click="deleteSectors(item.raw)">mdi-delete</v-icon>
+        <v-icon title="Editar" size="small" class="me-2" @click="editSectors(item.raw)">mdi-pencil</v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteSectors(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
