@@ -5,22 +5,23 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <export-data :data="items"/>
+          <download-csv :data="items" style="margin-right: 10px" name="departamentos.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
               <v-card-title class="bg-primary">
                 <v-spacer></v-spacer>
-                <span class="text-h5">{{ `Membros - ${departments.name}`  }}</span>
+                <span class="text-h5">{{ `Membros - ${departments.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-                <v-list lines="one" :items="departments.members" item-title="name"
-      item-value="id"></v-list>
+              <v-list lines="one" :items="departments.members" item-title="name" item-value="id"></v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
-                ">
+                  ">
                   Sair
                 </v-btn>
               </v-card-actions>
@@ -29,16 +30,8 @@
           <!--dialog 2 -->
           <v-dialog persistent v-model="dialogEdit" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn
-                color="secondary"
-                size="x-large"
-                density="compact"
-                icon="mdi-plus"
-                v-bind="props"
-                variant="tonal"
-                dark
-                @click="departments = { ...defaultDepartment }"
-              ></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="departments = { ...defaultDepartment }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -53,7 +46,7 @@
                       <v-col cols="12">
                         <v-text-field v-model="departments.name" :rules="[
                           () => !!departments.name || 'Nome é requerido!',
-                        ] " label="Nome" :counter="120" required></v-text-field>
+                        ]" label="Nome" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
@@ -97,11 +90,7 @@
               </v-card-actions> -->
 
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="dialogEdit = false; initialize();"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -120,18 +109,10 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="departmentsDelete = false"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="departmentsDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deleteDepartmentsConfirm"
-                >
+                <v-btn color="primary" variant="tonal" @click="deleteDepartmentsConfirm">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -173,23 +154,23 @@ export default {
     dialogView: false,
     departmentsDelete: false,
     tic: [
-        {
-          name: "Matheus Barbosa",
-          id: 1,
-        },
-        {
-          name: "Renato Tartori",
-          id: 2,
-        },
-        {
-          name: "Rafael Bellagama",
-          id: 3,
-        },
-        {
-          name: "Daniel",
-          id: 4,
-        },
-      ],
+      {
+        name: "Matheus Barbosa",
+        id: 1,
+      },
+      {
+        name: "Renato Tartori",
+        id: 2,
+      },
+      {
+        name: "Rafael Bellagama",
+        id: 3,
+      },
+      {
+        name: "Daniel",
+        id: 4,
+      },
+    ],
     headers: [
       {
         title: "Nome",
@@ -316,6 +297,4 @@ export default {
 };
 </script>
 
-<style>
-
-</style>
+<style></style>

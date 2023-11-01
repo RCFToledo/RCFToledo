@@ -5,7 +5,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Setores</v-toolbar-title>
           <v-spacer></v-spacer>
-          <export-data :data="items"/>
+          <download-csv :data="items" style="margin-right: 10px" name="setores.csv" :delimiter="';'">
+              <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
@@ -311,7 +313,6 @@ export default {
       this.dialogView = true;
       this.sectors.members = this.tic
     },
-
   },
 };
 </script>
