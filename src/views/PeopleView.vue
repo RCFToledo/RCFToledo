@@ -377,11 +377,11 @@ export default {
       return department ? department.name : "";
     },
 
-    getRegisterNumber(studentId, employeeId) {
-      if (studentId !='') {
+    getRegisterNumber(studentId, employeeId) {      
+      if (studentId !=null) {
         return studentId;
       }
-      else if (employeeId != ''){
+      else if (employeeId != null){
         return employeeId;  
       }      
     },    
