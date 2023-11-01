@@ -1,11 +1,13 @@
 <template>
-  <div>    
+  <div>
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <export-data :data="items"/>
+          <download-csv :data="items" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -59,7 +61,7 @@
                     <v-col cols="12" md="4">
                       <v-text-field v-model="people.cpf" :rules="[
                         () => !((people.academic_profile !== 'other') && !people.cpf) || 'CPF é requirido',
-                          ]" label="CPF" v-mask-cpf></v-text-field>
+                      ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -89,8 +91,8 @@
                     </v-col>
                     <v-col cols="12" md="6"
                       v-else-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'staff'">
-                      <v-select v-model="people.sector_id" label="Setor" :items="itemsSectors"
-                        item-title="name" item-value="_id"></v-select>
+                      <v-select v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
+                        item-value="_id"></v-select>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -143,7 +145,7 @@
       <template v-slot:item.academic_profile="{ item }">
         {{ getProfile(item.raw.academic_profile) }}
       </template>
-      
+
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon title="Editar" size="small" class="me-2" @click="editItem(item.raw)">
@@ -210,22 +212,22 @@ export default {
       sector_id: null,
     },
   }),
-  watch: {    
+  watch: {
     'people.academic_profile'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
         this.people.student_id = null;
         this.people.employee_id = null;
-        
+
       }
-     if (this.people.academic_profile === 'staff') {
+      if (this.people.academic_profile === 'staff') {
         this.people.department_id = null
       }
       else if (this.people.academic_profile === 'professor') {
-          this.people.sector_id = null
-      } 
+        this.people.sector_id = null
+      }
       else {
-          this.people.department_id = null
-          this.people.sector_id = null
+        this.people.department_id = null
+        this.people.sector_id = null
       }
     },
     'people.institution_id'(newValue, oldValue) {
@@ -312,7 +314,7 @@ export default {
     deletePeopleConfirm() {
       this.$axios
         .delete("people/" + this.people._id)
-        .then((response) => {          
+        .then((response) => {
           if (response.status == 200) {
             this.initialize();
             this.dialogDelete = false;
@@ -331,7 +333,7 @@ export default {
       if (this.people._id) {
         this.$axios
           .put("people/" + this.people._id, this.people)
-          .then((response) => {            
+          .then((response) => {
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
@@ -347,7 +349,7 @@ export default {
       } else {
         this.$axios
           .post("people/", this.people)
-          .then((response) => {            
+          .then((response) => {
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
@@ -377,21 +379,28 @@ export default {
       return department ? department.name : "";
     },
 
-    getRegisterNumber(studentId, employeeId) {      
-      if (studentId !=null) {
+    getSectorsName(sectorId) {
+      const sector = this.itemsSectors.find(
+        (item) => item._id === sectorId
+      );
+      return sector ? sector.name : "";
+    },
+
+    getRegisterNumber(studentId, employeeId) {
+      if (studentId != null) {
         return studentId;
       }
-      else if (employeeId != null){
-        return employeeId;  
-      }      
-    },    
+      else if (employeeId != null) {
+        return employeeId;
+      }
+    },
     getProfile(profileId) {
-      for(let gridProfile of this.profile) {
-        if(gridProfile.value === profileId) {
-          return gridProfile.title
+      for (let gridProfile of this.profile) {
+        if (gridProfile.value === profileId) {
+          return gridProfile.title;
         }
       }
-    }
+    },
   },
 };
 </script>
