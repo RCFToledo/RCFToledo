@@ -1,11 +1,6 @@
 <template>
-  <div>    
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-      class="elevation-1"
-    >
+  <div>
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>

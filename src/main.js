@@ -14,6 +14,7 @@ import ExportData from './components/ExportData.vue'
 //o import está dando erro
 import VueMask from '@devindex/vue-mask';
 
+
 loadFonts();
 
 const app = createApp(App);
