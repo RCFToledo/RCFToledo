@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div>    
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -137,7 +137,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.register="{ item }">
-        {{ getRegister(item.raw.student_id, item.raw.employee_id, item.raw.academic_profile) }}
+        {{ getRegisterNumber(item.raw.student_id, item.raw.employee_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.academic_profile="{ item }">
@@ -210,32 +210,30 @@ export default {
       sector_id: null,
     },
   }),
-
-  watch: {
+  watch: {    
     'people.academic_profile'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
-        this.people.student_id = "";
-        this.people.employee_id = "";
+        this.people.student_id = null;
+        this.people.employee_id = null;
         
       }
      if (this.people.academic_profile === 'staff') {
-        this.people.department_id = ''
+        this.people.department_id = null
       }
       else if (this.people.academic_profile === 'professor') {
-          this.people.sector_id = ''
+          this.people.sector_id = null
       } 
       else {
-          this.people.department_id = ''
-          this.people.sector_id = ''
+          this.people.department_id = null
+          this.people.sector_id = null
       }
     },
     'people.institution_id'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
-        this.people.department_id = '';
+        this.people.department_id = null;
       }
     }
   },
-
   computed: {
     formTitle() {
       return !this.people._id ? "Nova Pessoa" : "Editar Informações";
@@ -314,8 +312,7 @@ export default {
     deletePeopleConfirm() {
       this.$axios
         .delete("people/" + this.people._id)
-        .then((response) => {
-          console.log(response);
+        .then((response) => {          
           if (response.status == 200) {
             this.initialize();
             this.dialogDelete = false;
@@ -334,8 +331,7 @@ export default {
       if (this.people._id) {
         this.$axios
           .put("people/" + this.people._id, this.people)
-          .then((response) => {
-            console.log(response);
+          .then((response) => {            
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
@@ -351,8 +347,7 @@ export default {
       } else {
         this.$axios
           .post("people/", this.people)
-          .then((response) => {
-            console.log(response);
+          .then((response) => {            
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
@@ -381,15 +376,15 @@ export default {
       );
       return department ? department.name : "";
     },
-    getRegister(studentId, employeeId, profile) {
-      if (profile === 'student') {
-        this.register = studentId
+
+    getRegisterNumber(studentId, employeeId) {
+      if (studentId !='') {
+        return studentId;
       }
-      else {
-        this.register = employeeId
-      }
-      return this.register
-    },
+      else if (employeeId != ''){
+        return employeeId;  
+      }      
+    },    
     getProfile(profileId) {
       for(let gridProfile of this.profile) {
         if(gridProfile.value === profileId) {
