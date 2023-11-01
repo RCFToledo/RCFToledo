@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!isAuthenticated">
+    <div v-if="$store.getters.getIsAuthenticad">
       <h1>Sistema BAPEX</h1>
       <p>Você não está autenticado!</p>
       <button @click="login">Entrar</button>
@@ -11,13 +11,13 @@
       <button @click="confirmLogout">Sair</button>
       <div>
         <h2>Dados do Usuário</h2>
-        <p>Nome: {{ userData.given_name + ' ' + userData.family_name }}</p>
-        <p>Email: {{ userData.email }}</p>
+        <p>Nome: {{ $store.getters.getUserData.given_name + ' ' + $store.getters.getUserData.family_name }}</p>
+        <p>Email: {{ $store.getters.getUserData.email }}</p>
         <!-- Adicione outros campos conforme necessário -->
       </div>
       <div>
         <h2>Token de Acesso</h2>
-        <pre>{{ accessToken }}</pre>
+        <pre>{{ $store.getters.getToken}}</pre>
       </div>
     </div>
   </div>
@@ -27,25 +27,18 @@
 import keycloak from '../plugins/keycloak';
 export default {
   name: "HomeView",
-  data() {
-    return {
-      isAuthenticated: false,
-      userData: {},
-      accessToken: "", // Adicione esta variável para armazenar o token de acesso
-    };
-  },
   methods: {
     login() {
       keycloak
         .init({ onLoad: "login-required" })
         .then((authenticated) => {
           if (authenticated) {
-            this.isAuthenticated = true;
+            this.$store.commit('setIsAuthenticated', true);
             console.log("Autenticado com sucesso!");
             // Acesse os dados do usuário
-            this.userData = keycloak.idTokenParsed;
+            this.$store.commit('setUserData', keycloak.idTokenParsed);
             // Acesse o token de acesso
-            this.accessToken = keycloak.token;
+            this.$store.commit('setToken', keycloak.token);
           } else {
             console.error("Falha na autenticação.");
           }
@@ -62,18 +55,19 @@ export default {
     },
     logout() {
       keycloak.logout();
-      this.isAuthenticated = false;
+      this.$store.commit('setIsAuthenticated', false);
       // Limpe os dados do usuário e o token ao fazer logout
-      this.userData = {};
-      this.accessToken = "";
+      this.$store.commit('setUserData', {});
+      this.$store.commit('setToken', "");
       console.log("Logout realizado.");
     },
   },
   created() {
+    console.log(keycloak)
     if (keycloak.authenticated) {
-      this.isAuthenticated = true;
-      this.userData = keycloak.idTokenParsed;
-      this.accessToken = keycloak.token;
+      this.$store.commit('setIsAuthenticated', true);
+      this.$store.commit('setUserData', keycloak.idTokenParsed);
+      this.$store.commit('setToken', keycloak.token);
     } else {
       this.login();
     }

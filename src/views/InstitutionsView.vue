@@ -5,10 +5,19 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="800px" :persistent="true">
+          <export-data :data="items"/>
+          <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="editedItem = { ...defaultItem }"></v-btn>
+              <v-btn
+                color="secondary"
+                size="x-large"
+                density="compact"
+                icon="mdi-plus"
+                v-bind="props"
+                variant="tonal"
+                dark
+                @click="institution = { ...defaultInstitution }"
+              ></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -16,66 +25,100 @@
                 <span class="text-h5">{{ formTitle }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-
               <v-card-text>
-
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field v-model="editedItem.name" :rules="[
-                        () => !!editedItem.name || 'Nome é requerido!',
-                      ]" label="Nome" @update:model-value="amountChar=120" :counter="amountChar" required></v-text-field>
+                      <v-text-field
+                        v-model="institution.name"
+                        :rules="[
+                          () => !!institution.name || 'Nome é requerido!',
+                          () => !(institution.name.length > 60) || 'Nome maior que o suportado',
+                        ]"
+                        label="Nome"
+                        :counter="60"
+                        required
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field v-model="editedItem.abbr_name" label="Nome Abreviado" :rules="[
-                        () =>
-                          !!editedItem.abbr_name ||
-                          'Nome Abreviado é requerido!',
-                      ]" @update:model-value="amountChar=20" :counter="amountChar"></v-text-field>
+                      <v-text-field
+                        v-model="institution.abbr_name"
+                        label="Nome Abreviado"
+                        :rules="[
+                          () => !!institution.abbr_name  || 'Nome Abreviado é requerido!',
+                          () => !(institution.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
+                        ]"
+                        :counter="20"
+                      ></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="editedItem.type" multiple label="Tipo" :items="itemsType" item-title="typeTitle"
-                        item-value="typeValue" :rules="[
-                          () => !!editedItem.type || 'Tipo é requerido!',
-                        ]"></v-select>
+                      <v-select
+                        v-model="institution.type"
+                        multiple
+                        label="Tipo"
+                        :items="institutionsType"
+                        item-title="typeTitle"
+                        item-value="typeValue"
+                        :rules="[
+                          () => !!institution.type || 'Tipo é requerido!',
+                        ]"
+                      ></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="editedItem.country_code" label="País" :items="itemsCountryCode"
-                        item-title="codeTitle" item-value="codeValue" :rules="[
+                      <v-select
+                        v-model="institution.country_code"
+                        label="País"
+                        :items="institutionsCountryCode"
+                        item-title="countryTitle"
+                        item-value="countryValue"
+                        :rules="[
                           () =>
-                            !!editedItem.country_code || 'País é requerido!',
-                        ]"></v-select>
+                            !!institution.country_code || 'País é requerido!',
+                        ]"
+                      ></v-select>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="
-                  dialog = false;
-                initialize();
-                ">
+                <v-btn
+                  color="blue-darken-1"
+                  variant="plain"
+                  @click="dialog = false; initialize();"
+                >
                   Cancelar
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="formSubmit">
-                  Salvar
-                </v-btn>
+                <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
           <!-- Confirm delete -->
-          <v-dialog v-model="dialogDelete" max-width="420px">
+          <v-dialog v-model="institutionsDelete" max-width="420px">
             <v-card class="rounded-lg">
               <v-card-title class="bg-primary">
                 Confirmar exclusão
               </v-card-title>
-              <v-card-text class="text-body-1 text-md-center pa-4 ma-4"><v-icon icon="mdi-alert" size="large"></v-icon>
-                Tem certeza que deseja
-                excluir esse item?</v-card-text>
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
+                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
+                excluir esse item?
+              </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogDelete = false">Cancelar</v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteItemConfirm">Excluir</v-btn>
+                <v-btn
+                  color="blue-darken-1"
+                  variant="plain"
+                  @click="institutionsDelete = false"
+                >
+                  Cancelar
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  variant="tonal"
+                  @click="deleteInstitutionsConfirm"
+                >
+                  Excluir
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -87,16 +130,14 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
-        {{ getCountryCodeTitle(item.raw.country_code) }}
+        {{ getCountryCountryTitle(item.raw.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
-          mdi-pencil
-        </v-icon>
-        <v-icon size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
+        <v-icon title="Editar" size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
       </template>
-      <template v-slot:no-data> Não há dados para exibir! </template>
+      <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
 </template>
@@ -106,15 +147,14 @@
 export default {
   data: () => ({
     valid: false,
-    search: '',
-    amountChar: null,
-    itemsType: [
+    institutionsType: [
       { typeTitle: "Educação", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
+      { typeTitle: "Outros", typeValue: "other" },
     ],
-    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
+    institutionsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
     dialog: false,
-    dialogDelete: false,
+    institutionsDelete: false,
     headers: [
       {
         title: "Nome",
@@ -128,8 +168,8 @@ export default {
     ],
     items: [],
     editedIndex: -1,
-    editedItem: [],
-    defaultItem: {
+    institution: {},
+    defaultInstitution: {
       id_: null,
       name: null,
       abbr_name: null,
@@ -140,14 +180,13 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.editedItem._id ? "Nova Instituição" : "Editar Instituição";
+      return !this.institution._id ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
   created() {
     this.initialize();
   },
-
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
@@ -167,24 +206,24 @@ export default {
         });
     },
 
-    editItem(item) {
-      this.editedItem = item;
+    editInstitutions(item) {
+      this.institution = item;
       this.dialog = true;
     },
 
-    deleteItem(item) {
-      this.editedItem = item;
-      this.dialogDelete = true;
+    deleteInstitutions(item) {
+      this.institution = item;
+      this.institutionsDelete = true;
     },
 
-    deleteItemConfirm() {
+    deleteInstitutionsConfirm() {
       this.$axios
-        .delete("institutions/" + this.editedItem._id)
+        .delete("institutions/" + this.institution._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
-            this.dialogDelete = false;
+            this.institutionsDelete = false;
             this.$toast.success(response.statusText);
           } else {
             this.$toast.error(response.statusText);
@@ -193,18 +232,18 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      this.editedItem = this.defaultItem;
+      this.institution = this.defaultInstitution;
     },
 
     save() {
-      if (this.editedItem._id) {
+      if (this.institution._id) {
         this.$axios
-          .put("institutions/" + this.editedItem._id, this.editedItem)
+          .put("institutions/" + this.institution._id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.editedItem = this.defaultItem;
+              this.institution = this.defaultInstitution;
               this.$toast.success(response.statusText);
               this.dialog = false;
             } else {
@@ -216,12 +255,12 @@ export default {
           });
       } else {
         this.$axios
-          .post("institutions/", this.editedItem)
+          .post("institutions/", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.editedItem = this.defaultItem;
+              this.institution = this.defaultInstitution;
               this.$toast.success(response.statusText);
               this.dialog = false;
             } else {
@@ -237,24 +276,24 @@ export default {
       const selectedTypes = [];
       if (Array.isArray(type)) {
         type.forEach((value) => {
-          const typeItem = this.itemsType.find(
+          const typeInstitutions = this.institutionsType.find(
             (item) => item.typeValue === value
           );
-          if (typeItem) {
-            selectedTypes.push(typeItem.typeTitle);
+          if (typeInstitutions) {
+            selectedTypes.push(typeInstitutions.typeTitle);
           }
         });
       }
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCodeTitle(type) {
-      const typeItem = this.itemsCountryCode.find(
-        (item) => item.codeValue === type
+    getCountryCountryTitle(type) {
+      const typeInstitutions = this.institutionsCountryCode.find(
+        (item) => item.countryValue === type
       );
-      return typeItem ? typeItem.codeTitle : "";
+      return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
   },
-};
+}
 </script>
 <style></style>

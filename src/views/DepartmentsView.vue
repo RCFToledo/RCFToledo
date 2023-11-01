@@ -5,79 +5,139 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="800px">
+          <export-data :data="items"/>
+          <!--dialog 1-->
+          <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
               <v-card-title class="bg-primary">
                 <v-spacer></v-spacer>
-                <span class="text-h5">{{ `Membros (${departments.name})`  }}</span>
+                <span class="text-h5">{{ `Membros - ${departments.name}`  }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-form ref="form" lazy-validation>
-                    <v-row dense>
-                      <v-col cols="12">
-                        <v-text-field readonly v-model="departments.name" :rules="[
-                          () => !!departments.name || 'Nome é requerido!',
-                        ] " label="Nome" :counter="120" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field readonly v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
-                          () =>
-                            !!departments.abbr_name ||
-                            'Nome Abreviado é requerido!',
-                        ]" :counter="20"></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select readonly v-model="departments.type" multiple label="Tipo" :items="itemsType"
-                          item-title="typeTitle" item-value="typeValue" :rules="[
-                            () => !!departments.type || 'Tipo é requerido!',
-                          ]"></v-select>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-select readonly v-model="departments.country_code" label="País" :items="itemsCountryCode"
-                          item-title="codeTitle" item-value="codeValue" :rules="[
-                            () =>
-                              !!departments.country_code || 'País é requerido!',
-                          ]"></v-select>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
+                <v-list lines="one" :items="departments.members" item-title="name"
+      item-value="id"></v-list>
+              <v-divider></v-divider>
+              <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
-                  dialog = false;
-                initialize();
+                  dialogView = false
                 ">
                   Sair
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <!--dialog 2 -->
+          <v-dialog persistent v-model="dialogEdit" max-width="800px">
+            <template v-slot:activator="{ props }">
+              <v-btn
+                color="secondary"
+                size="x-large"
+                density="compact"
+                icon="mdi-plus"
+                v-bind="props"
+                variant="tonal"
+                dark
+                @click="departments = { ...defaultDepartment }"
+              ></v-btn>
+            </template>
+            <v-card>
+              <v-card-title class="bg-primary">
+                <v-spacer></v-spacer>
+                <span class="text-h5">{{ formTitle }}</span>
+                <v-spacer></v-spacer>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-form ref="form" lazy-validation>
+                    <v-row dense>
+                      <v-col cols="12">
+                        <v-text-field v-model="departments.name" :rules="[
+                          () => !!departments.name || 'Nome é requerido!',
+                        ] " label="Nome" :counter="120" required></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
+                          () =>
+                            !!departments.abbr_name ||
+                            'Nome Abreviado é requerido!',
+                        ]" :counter="20"></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                        <v-text-field v-model="departments.code" label="Código da DGA" :rules="[
+                          () =>
+                            !!departments.code ||
+                            'Código da DGA é requerido!',
+                        ]" :counter="20"></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12">
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-container>
+              </v-card-text>
+
+              <v-divider></v-divider>
+              <!--<v-card-actions class="bg-secondary d-flex justify-center">
+                <v-btn
+                  color="blue-darken-1"
+                  variant="plain"
+                  @click="institutionsDelete = false"
+                >
+                  Cancelar
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  variant="tonal"
+                  @click="deleteInstitutionsConfirm"
+                >
+                  Excluir
+                </v-btn>
+              </v-card-actions> -->
+
+              <v-card-actions class="d-flex justify-center bg-secondary">
+                <v-btn
+                  color="blue-darken-1"
+                  variant="plain"
+                  @click="dialogEdit = false; initialize();"
+                >
+                  Cancelar
+                </v-btn>
+                <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
           <!-- Confirm delete -->
-          <v-dialog v-model="dialogDelete" max-width="420px">
+          <v-dialog v-model="departmentsDelete" max-width="420px">
             <v-card class="rounded-lg">
               <v-card-title class="bg-primary">
                 Confirmar exclusão
               </v-card-title>
-              <v-spacer></v-spacer>
-              <v-card-text class="text-body-1 text-md-center"><v-icon icon="mdi-alert"></v-icon> Tem certeza que deseja
-                excluir esse item?</v-card-text>
-              <v-spacer></v-spacer>
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
+                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
+                excluir esse item?
+              </v-card-text>
               <v-divider></v-divider>
-              <v-card-actions class="bg-grey-lighten-3">
-
-                <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogDelete = false">Cancelar</v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteItemConfirm">Excluir</v-btn>
-                <v-spacer></v-spacer>
+              <v-card-actions class="bg-secondary d-flex justify-center">
+                <v-btn
+                  color="blue-darken-1"
+                  variant="plain"
+                  @click="departmentsDelete = false"
+                >
+                  Cancelar
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  variant="tonal"
+                  @click="deleteDepartmentsConfirm"
+                >
+                  Excluir
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <!-- Confirm delete -->
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
@@ -89,10 +149,15 @@
         {{ getCountryCodeTitle(item.raw.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.actions="{ item }">
-        <v-icon size="large" class="me-2" @click="visualizeMembers(item.raw)">
+      <template v-slot:item.membersView="{ item }">
+        <v-icon title="Visualizar" size="large" class="me-2" @click="visualizeMembers(item.raw)">
           mdi-eye
         </v-icon>
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.actions="{ item }">
+        <v-icon title="Editar" size="small" class="me-2" @click="editDepartments(item.raw)">mdi-pencil</v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteDepartments(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -103,15 +168,28 @@
 <script>
 export default {
   data: () => ({
-    charAmount: null,
     valid: false,
-    itemsType: [
-      { typeTitle: "Educação", typeValue: "education" },
-      { typeTitle: "Pesquisa", typeValue: "research" },
-    ],
-    itemsCountryCode: [{ codeTitle: "Brasil", codeValue: "BR" }],
-    dialog: false,
-    dialogDelete: false,
+    dialogEdit: false,
+    dialogView: false,
+    departmentsDelete: false,
+    tic: [
+        {
+          name: "Matheus Barbosa",
+          id: 1,
+        },
+        {
+          name: "Renato Tartori",
+          id: 2,
+        },
+        {
+          name: "Rafael Bellagama",
+          id: 3,
+        },
+        {
+          name: "Daniel",
+          id: 4,
+        },
+      ],
     headers: [
       {
         title: "Nome",
@@ -119,17 +197,19 @@ export default {
         key: "name",
       },
       { title: "Nome Abreviado", key: "abbr_name" },
-      { title: "Código da DGA", key: "DGA_code" },
-      { title: "Membros (Visualização)", key: "actions" },
+      { title: "Código da DGA", key: "code" },
+      { title: "Membros (Visualização)", key: "membersView" },
+      { title: "Ações", key: "actions" },
     ],
     items: [],
     editedIndex: -1,
     departments: [],
-    defaultItem: {
+    defaultDepartment: {
       id_: null,
       name: null,
       abbr_name: null,
-      DGA_code: null,
+      code: null,
+      members: null,
     },
   }),
 
@@ -137,6 +217,11 @@ export default {
     this.initialize();
   },
 
+  computed: {
+    formTitle() {
+      return !this.departments._id ? "Novo Departamento " : "Editar Departamento";
+    },
+  },
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
@@ -155,34 +240,82 @@ export default {
           console.error(error);
         });
     },
+    editDepartments(item) {
+      this.departments = item;
+      this.dialogEdit = true;
+    },
 
+    deleteDepartments(item) {
+      this.departments = item;
+      this.departmentsDelete = true;
+    },
+
+    deleteDepartmentsConfirm() {
+      this.$axios
+        .delete("departments/" + this.departments._id)
+        .then((response) => {
+          console.log(response);
+          if (response.status == 200) {
+            this.initialize();
+            this.departmentsDelete = false;
+            this.$toast.success(response.statusText);
+          } else {
+            this.$toast.error(response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      this.departments = this.defaultDepartment;
+    },
+
+    save() {
+      if (this.departments._id) {
+        this.$axios
+          .put("departments/" + this.departments._id, this.departments)
+          .then((response) => {
+            console.log(response);
+            if (response.status == 200) {
+              this.initialize();
+              this.departments = this.defaultDepartment;
+              this.$toast.success(response.statusText);
+              this.dialogEdit = false;
+            } else {
+              this.$toast.error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        this.$axios
+          .post("departments/", this.departments)
+          .then((response) => {
+            console.log(response);
+            if (response.status == 200) {
+              this.initialize();
+              this.departments = this.defaultDepartment;
+              this.$toast.success(response.statusText);
+              this.dialogEdit = false;
+            } else {
+              this.$toast.error(response.statusText);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    },
     visualizeMembers(item) {
       this.departments = item;
-      this.dialog = true;
+      this.dialogView = true;
+      this.departments.members = this.tic
     },
 
-    getTypeTitle(type) {
-      const selectedTypes = [];
-      if (Array.isArray(type)) {
-        type.forEach((value) => {
-          const typeItem = this.itemsType.find(
-            (item) => item.typeValue === value
-          );
-          if (typeItem) {
-            selectedTypes.push(typeItem.typeTitle);
-          }
-        });
-      }
-      return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
-    },
-
-    getCountryCodeTitle(type) {
-      const typeItem = this.itemsCountryCode.find(
-        (item) => item.codeValue === type
-      );
-      return typeItem ? typeItem.codeTitle : "";
-    },
   },
 };
 </script>
-<style></style>
+
+<style>
+
+</style>

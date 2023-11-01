@@ -15,7 +15,6 @@ export default createVuetify({
           successColor: '#628b48',  
           warningColor: '#FFC43D',  
           errorColor: '#d74d45',  
-
         }
       },
     },
