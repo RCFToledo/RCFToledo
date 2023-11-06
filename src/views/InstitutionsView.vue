@@ -1,16 +1,13 @@
 <template>
-  <div>    
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-      class="elevation-1"
-    >
+  <div>
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <export-data :data="items"/>
+          <download-csv :data="items" style="margin-right: 10px" name="instituições.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn
