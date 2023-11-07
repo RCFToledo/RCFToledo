@@ -91,6 +91,11 @@ export default {
           icon: "mdi-account-multiple",
           to: "/people",
         },
+        {
+          title: "Grupos de Pesquisa",
+          icon: "mdi-account-group",
+          to: "/research-groups",
+        },
       ],
     };
   },

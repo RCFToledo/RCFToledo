@@ -31,7 +31,6 @@
                             !!people.academic_profile ||
                             'Perfil é requerido!',
                         ]"></v-select>
-
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
                       people.academic_profile == 'professor'
