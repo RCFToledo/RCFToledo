@@ -5,7 +5,7 @@
           <v-toolbar flat color="primary">
             <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
             <v-spacer></v-spacer>
-            <download-csv :data="items" style="margin-right: 10px" name="instituições.csv" :delimiter="';'">
+            <download-csv :data="items" style="margin-right: 10px" name="grupo_de_pesquisa.csv" :delimiter="';'">
               <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
             </download-csv>
             <v-dialog persistent v-model="dialog" max-width="800px">

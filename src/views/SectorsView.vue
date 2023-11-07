@@ -206,17 +206,20 @@ export default {
     items: [],
     editedIndex: -1,
     sectors: [],
+    itemsPeople: [],
     defaultSector: {
       id_: null,
       name: null,
       abbr_name: null,
       code: null,
       members: null,
+      people_id: null,
     },
   }),
 
   created() {
     this.initialize();
+    this.initializePeople()
   },
 
   computed: {
@@ -239,6 +242,13 @@ export default {
           this.items = response.data;
         })
         .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializePeople() {
+      this.$axios.get("people/").then((response) => {
+        this.itemsPeople = response.data
+      }).catch((error) => {
           console.error(error);
         });
     },

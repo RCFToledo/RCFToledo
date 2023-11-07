@@ -5,7 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+          <download-csv :data="getPeople(items, itemsInstitutions, itemsDepartments, itemsSectors)" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
@@ -89,7 +89,7 @@
                         item-title="name" item-value="_id"></v-select>
                     </v-col>
                     <v-col cols="12" md="6"
-                      v-else-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'staff'">
+                      v-else-if="people.academic_profile === 'staff'">
                       <v-select v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
                         item-value="_id"></v-select>
                     </v-col>
@@ -127,14 +127,6 @@
             </v-card>
           </v-dialog>
         </v-toolbar>
-      </template>
-      <!-- eslint-disable-next-line -->
-      <template v-slot:item.institution_id="{ item }">
-        {{ getInstitutionsName(item.raw.institution_id, item.raw.department_id) }}
-      </template>
-      <!-- eslint-disable-next-line -->
-      <template v-slot:item.department_id="{ item }">
-        {{ getDepartmentsName(item.raw.department_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.register="{ item }">
@@ -363,28 +355,6 @@ export default {
           });
       }
     },
-
-    getInstitutionsName(institutionId) {
-      const institution = this.itemsInstitutions.find(
-        (item) => item._id === institutionId
-      );
-      return institution ? institution.name : "";
-    },
-
-    getDepartmentsName(departmentId) {
-      const department = this.itemsDepartments.find(
-        (item) => item._id === departmentId
-      );
-      return department ? department.name : "";
-    },
-
-    getSectorsName(sectorId) {
-      const sector = this.itemsSectors.find(
-        (item) => item._id === sectorId
-      );
-      return sector ? sector.name : "";
-    },
-
     getRegisterNumber(studentId, employeeId) {
       if (studentId != null) {
         return studentId;
@@ -400,6 +370,28 @@ export default {
         }
       }
     },
+    getPeople(people, institutions, departments, sectors) {
+      people.forEach((person) => {
+        institutions.forEach((data) => {
+          if (person.institution_id === data._id) {
+            person.institution_id = data.name;
+          }
+        });
+
+        departments.forEach((data) => {
+          if (person.departments_id === data._id) {
+            person.departments_id = data.name;
+          }
+        });
+
+        sectors.forEach((data) => {
+          if (person.sectors_id === data._id) {
+            person.sectors_id = data.name;
+          }
+        });
+      });
+      return people;
+    }
   },
 };
 </script>
