@@ -10,7 +10,6 @@ import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bapex.css';
 import JsonCSV from 'vue-json-csv';
-//import moment from 'moment';
 
 //o import está dando erro
 import VueMask from '@devindex/vue-mask';
@@ -24,7 +23,6 @@ app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position:
 
 app.component('download-csv', JsonCSV)
 
-// Use o plugin Axios com o objeto Keycloak
 app.use(axios, { keycloak });
 app.component('v-data-table', VDataTable);
 app.mount('#app');

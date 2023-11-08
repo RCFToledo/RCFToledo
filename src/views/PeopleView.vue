@@ -5,7 +5,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="getPeople(items, itemsInstitutions, itemsDepartments, itemsSectors)" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+          <download-csv :data="getPeople(items, itemsInstitutions, itemsDepartments, itemsSectors)"
+            style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
@@ -76,22 +77,21 @@
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-select v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
+                      <v-autocomplete v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
                         item-title="name" item-value="_id" :rules="[
                           () =>
                             !!people.institution_id ||
                             'Instituição é requerida!',
-                        ]"></v-select>
+                        ]"></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6"
                       v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
-                      <v-select v-model="people.department_id" label="Departamento" :items="itemsDepartments"
-                        item-title="name" item-value="_id"></v-select>
+                      <v-autocomplete v-model="people.department_id" label="Departamento" :items="itemsDepartments"
+                        item-title="name" item-value="_id"></v-autocomplete>
                     </v-col>
-                    <v-col cols="12" md="6"
-                      v-else-if="people.academic_profile === 'staff'">
-                      <v-select v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
-                        item-value="_id"></v-select>
+                    <v-col cols="12" md="6" v-else-if="people.academic_profile === 'staff'">
+                      <v-autocomplete v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
+                        item-value="_id"></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
