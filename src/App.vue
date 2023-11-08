@@ -96,6 +96,12 @@ export default {
           icon: "mdi-account-group",
           to: "/research-groups",
         },
+        {
+          title: "Grupos de Pesquisa (Membros)",
+          icon: "mdi-account-group",
+          to: "/research-groups-members",
+        },
+        
       ],
     };
   },

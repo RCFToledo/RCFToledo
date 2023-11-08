@@ -10,10 +10,11 @@ import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-bapex.css';
 import JsonCSV from 'vue-json-csv';
-
+//import moment from 'moment';
 
 //o import está dando erro
 import VueMask from '@devindex/vue-mask';
+//import VueMoment from 'vue-moment';
 
 
 loadFonts();

@@ -185,6 +185,7 @@ export default {
     items: [],
     editedIndex: -1,
     departments: [],
+    itemsPeople: [],
     defaultDepartment: {
       id_: null,
       name: null,
@@ -196,6 +197,7 @@ export default {
 
   created() {
     this.initialize();
+    this.initializePeople()
   },
 
   computed: {
@@ -220,6 +222,11 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    initializePeople() {
+      this.$axios.get("people/").then((response) => {
+        this.itemsPeople = response.data
+      })
     },
     editDepartments(item) {
       this.departments = item;

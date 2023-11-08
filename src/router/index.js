@@ -4,8 +4,8 @@ import InstitutionsView from '../views/InstitutionsView.vue'
 import DepartmentsView from '../views/DepartmentsView.vue'
 import SectorsView from '../views/SectorsView.vue'
 import PeopleView from '../views/PeopleView.vue'
-import ResearchGroups from '../views/ResearchGroups.vue'
-
+import ResearchGroupsView from '../views/ResearchGroupsView.vue'
+import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
 const routes = [
   {
     path: '/',
@@ -35,7 +35,12 @@ const routes = [
   {
     path: '/research-groups',
     name: 'ResearchGroups',
-    component: ResearchGroups
+    component: ResearchGroupsView
+  },
+  {
+    path: '/research-groups-members',
+    name: 'ResearchGroupsMembers',
+    component: ResearchGroupsMembersView
   },
 ]
 
