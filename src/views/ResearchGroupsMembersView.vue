@@ -38,13 +38,12 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
-                        () => !!groupMember.stay_start || 'Data inicial é requerida',
-                        () => !(groupMember.stay_start < groupMember.stay_end) || 'Data inicial maior que data final',
+                        () => !!groupMember.stay_start || 'Ínicio de permanência é requirido',
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="groupMember.stay_end" label="Término da permanência" :rules="[
-                        
+                        () => compareDates(groupMember.stay_start, groupMember.stay_end) || 'Deu certo'
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
                   </v-row>
@@ -83,12 +82,12 @@
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.stay_start="{ item }">
-        {{ getDate(item.raw.stay_start) }}
-      </template>
-      <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
         {{ getPersonName(item.raw.person_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.role="{ item }">
+        {{ getRole(item.raw.role) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -152,11 +151,11 @@ export default {
       return !this.groupMember._id ? "Novo membro" : "Editar membro";
     },
   },
-
   created() {
     this.initialize();
     this.initializePeople();
   },
+
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
@@ -170,6 +169,14 @@ export default {
         .get("research-groups-members/")
         .then((response) => {
           this.items = response.data;
+          this.items.forEach((memberGroup) => {
+            if (!this.items.stay_start) {
+              memberGroup.stay_start = this.getDate(memberGroup.stay_start);
+            }
+            if (!this.items.stay_end) {
+              memberGroup.stay_end = this.getDate(memberGroup.stay_end);
+            }
+          })
         })
         .catch((error) => {
           console.error(error);
@@ -217,6 +224,10 @@ export default {
     },
 
     save() {
+      this.groupMember.stay_start = this.setDate(this.groupMember.stay_start)
+      if (this.groupMember.stay_end) {
+        this.groupMember.stay_end = this.setDate(this.groupMember.stay_end)
+      }
       if (this.groupMember._id) {
         this.$axios
           .put("research-groups-members/" + this.groupMember._id, this.groupMember)
@@ -225,6 +236,10 @@ export default {
             if (response.status == 200) {
               this.initialize();
               this.groupMember = this.defaultGroupMember;
+              this.items.forEach((memberGroup) => {
+                memberGroup.stay_start = this.getDate(memberGroup.stay_start);
+                memberGroup.stay_end = this.getDate(memberGroup.stay_end);
+              })
               this.$toast.success(response.statusText);
               this.dialog = false;
             } else {
@@ -259,16 +274,38 @@ export default {
       );
       return person ? person.full_name : "";
     },
+    getRole(roleId) {
+      for (let gridRole of this.itemsRole) {
+        if (gridRole.value === roleId) {
+          return gridRole.title;
+        }
+      }
+    },
     getDate(date) {
-      let momentDate = moment.utc(date, "YYYY-MM-DD");
-      let formatDate = momentDate.format('DD/MM/YYYY');
-      return formatDate;
+        let momentDate = moment.utc(date, "YYYY-MM-DD");
+        let formatDate = momentDate.format('DD/MM/YYYY');
+        if(momentDate.isValid()) {
+          return formatDate;
+        } else {
+          return null;
+        }
+        
     },
     setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
-      return formatDate;
+        let momentDate = moment.utc(date, "DD/MM/YYYY");
+        let formatDate = momentDate.format('YYYY-MM-DD');
+        if(momentDate.isValid()) {
+          return formatDate;
+        } else {
+          return null;
+        }
     },
+    compareDates(start, end) {
+      const dateInit = new Date(start);
+      const dateFinal = new Date(end);
+    
+      return dateInit < dateFinal ? true : false;
+    }
   },
 }
 </script>

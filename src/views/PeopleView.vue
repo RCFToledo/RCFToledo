@@ -321,6 +321,7 @@ export default {
     },
 
     save() {
+      this.setPeople(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people._id) {
         this.$axios
           .put("people/" + this.people._id, this.people)
@@ -377,20 +378,41 @@ export default {
             person.institution_id = data.name;
           }
         });
-
+ 
         departments.forEach((data) => {
-          if (person.departments_id === data._id) {
-            person.departments_id = data.name;
+          if (person.department_id === data._id) {
+            person.department_id = data.name;
           }
         });
 
         sectors.forEach((data) => {
-          if (person.sectors_id === data._id) {
-            person.sectors_id = data.name;
+          if (person.sector_id === data._id) {
+            person.sector_id = data.name;
           }
         });
       });
       return people;
+    },
+    setPeople(people, institutions, departments, sectors) {
+      people.forEach((person) => {
+        institutions.forEach((data) => {
+          if (person.institution_id === data.name) {
+            person.institution_id = data._id;
+          }
+        });
+ 
+        departments.forEach((data) => {
+          if (person.department_id === data.name) {
+            person.department_id = data._id;
+          }
+        });
+
+        sectors.forEach((data) => {
+          if (person.sector_id === data.name) {
+            person.sector_id = data._id;
+          }
+        });
+      });
     }
   },
 };
