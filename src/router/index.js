@@ -6,6 +6,8 @@ import SectorsView from '../views/SectorsView.vue'
 import PeopleView from '../views/PeopleView.vue'
 import ResearchGroupsView from '../views/ResearchGroupsView.vue'
 import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
+import InstitutionsFinancialView from '../views/InstitutionsFinancialView.vue'
+
 const routes = [
   {
     path: '/',
@@ -41,6 +43,11 @@ const routes = [
     path: '/research-groups-members',
     name: 'ResearchGroupsMembers',
     component: ResearchGroupsMembersView
+  },
+  {
+    path: '/institutions-financial',
+    name: 'InstitutionsFinancial',
+    component: InstitutionsFinancialView
   },
 ]
 

@@ -39,11 +39,12 @@
                     <v-col cols="12" md="6">
                       <v-text-field v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
                         () => !!groupMember.stay_start || 'Ínicio de permanência é requirido',
+                        () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Ínicio de permanência é maior que termino'
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="groupMember.stay_end" label="Término da permanência" :rules="[
-                        () => compareDates(groupMember.stay_start, groupMember.stay_end) || 'Deu certo'
+                        () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Término de permanência menor que inicial',
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
                   </v-row>
@@ -301,11 +302,17 @@ export default {
         }
     },
     compareDates(start, end) {
-      const dateInit = new Date(start);
-      const dateFinal = new Date(end);
+      let momentInit = moment.utc(start, "DD/MM/YYYY");
+      let momentFinal = moment.utc(end, "DD/MM/YYYY");
+      let dateInit = momentInit.format('YYYY-MM-DD');
+      let dateFinal = momentFinal.format('YYYY-MM-DD');
     
-      return dateInit < dateFinal ? true : false;
-    }
+      if(end !== null) {
+        return dateInit > dateFinal ? true : false;
+      }
+      
+    },
+
   },
 }
 </script>
