@@ -106,6 +106,11 @@ export default {
           icon: "mdi-bank",
           to: "/institutions-financial",
         },
+        {
+          title: "Ações",
+          icon: "mdi-account-cog",
+          to: "/actions",
+        },
         
       ],
     };

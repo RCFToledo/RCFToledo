@@ -7,6 +7,7 @@ import PeopleView from '../views/PeopleView.vue'
 import ResearchGroupsView from '../views/ResearchGroupsView.vue'
 import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
 import InstitutionsFinancialView from '../views/InstitutionsFinancialView.vue'
+import ActionsView from '../views/ActionsView.vue'
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/institutions-financial',
     name: 'InstitutionsFinancial',
     component: InstitutionsFinancialView
+  },
+  {
+    path: '/actions',
+    name: 'actions',
+    component: ActionsView
   },
 ]
 
