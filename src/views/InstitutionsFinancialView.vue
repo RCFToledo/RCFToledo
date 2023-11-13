@@ -37,13 +37,13 @@
                     <v-col cols="12">
                       <v-select v-model="institution.legal_category_id" label="Categoria jurídica"
                         :items="itemsFinancial" item-title="category" item-value="_id" :rules="[
-                          () => !!legal_category_id || 'Categoria jurídica é requerido!',
+                          
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-select v-model="institution.legal_nature_id" label="Natureza jurídica"
                         :items="financialNature" item-title="nature" item-value="_id" :rules="[
-                          () => !!legal_nature_id || 'Natureza jurídica é requerido!',
+                          
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12">
@@ -89,8 +89,12 @@
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.raw.type) }}
+      <template v-slot:item.legal_category_id="{ item }">
+        {{ getCategory(item.raw.legal_category_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.legal_nature_id="{ item }">
+        {{ getNature(item.raw.legal_nature_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
@@ -185,8 +189,8 @@ export default {
   },
 
   watch: {
-    'institution.legal_category_id'(newValue){
-      this.getNaturePerCategory(this.itemsFinancial, newValue);
+    'institution.legal_category_id'(newValue, oldValue){
+      this.getNaturePerCategory(this.itemsFinancial, newValue, oldValue);
     }
   },
 
@@ -203,7 +207,7 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("financing-institutions/")
+        .get("institutionsF/")
         .then((response) => {
           this.items = response.data;
         })
@@ -224,7 +228,7 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("financing-institutions/" + this.institution._id)
+        .delete("institutionsF/" + this.institution._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -244,7 +248,7 @@ export default {
     save() {
       if (this.institution._id) {
         this.$axios
-          .put("financing-institutions/" + this.institution._id, this.institution)
+          .put("institutionsF/" + this.institution._id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -261,7 +265,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("financing-institutions/", this.institution)
+          .post("institutionsF/", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -299,15 +303,32 @@ export default {
       );
       return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
-    getNaturePerCategory(items, id) {
-      this.institution.legal_nature_id = null;
+    getNaturePerCategory(items, id, oldId) {
+      if(id !== oldId && oldId !== undefined) {
+        this.institution.legal_nature_id = null;
+      }
       this.financialNature = [];
       items.forEach((category) => {
         if(category._id === id) {
           this.financialNature.push(...category.natures);
         }
       }) 
-    }
+    },
+    getCategory(categoryId) {
+      const institutionsCategory = this.itemsFinancial.find(
+        (item) => item._id === categoryId
+      );
+      return institutionsCategory ? institutionsCategory.category : "";
+    },
+  getNature(natureId) {
+    const institutionsNature = this.itemsFinancial.find(
+      (itemCategory) => itemCategory.natures.find(
+        (itemNature)  => itemNature._id === natureId
+        )
+      );
+    console.log(institutionsNature.natures)
+    return institutionsNature ? institutionsNature.natures : "";
+  },
   },
 }
 </script>
