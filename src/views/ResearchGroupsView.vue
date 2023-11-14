@@ -54,7 +54,7 @@
                         ></v-text-field>
                       </v-col>
                       <v-col cols="12" md="2">
-                        <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto?"></v-switch>
+                        <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto"></v-switch>
                       </v-col>
                       <v-col cols="12" md="10">
                         <v-text-field
