@@ -92,14 +92,24 @@ export default {
           to: "/people",
         },
         {
-          title: "Grupos de Pesquisa",
+          title: "Grupos de Pesquisas",
           icon: "mdi-account-group",
           to: "/research-groups",
         },
         {
-          title: "Grupos de Pesquisa (Membros)",
-          icon: "mdi-account-group",
+          title: "Grupos de Pesquisas (Membros)",
+          icon: "mdi-account-group-outline",
           to: "/research-groups-members",
+        },
+        {
+          title: "Instiuições Financeiras",
+          icon: "mdi-bank",
+          to: "/institutions-financial",
+        },
+        {
+          title: "Ações",
+          icon: "mdi-account-cog",
+          to: "/actions",
         },
         
       ],
