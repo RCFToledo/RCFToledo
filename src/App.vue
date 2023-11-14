@@ -111,6 +111,11 @@ export default {
           icon: "mdi-account-cog",
           to: "/actions",
         },
+        {
+          title: "Ações (Temas Relacionados)",
+          icon: "mdi-account-cog",
+          to: "/actions-subjects",
+        },
         
       ],
     };

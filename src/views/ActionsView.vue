@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ relatedSubjectsItems }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -66,7 +67,7 @@
                       ]" v-mask-date.br :disabled="disabled"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="action.related_subjects" label="Temas relacionados" required></v-text-field>
+                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="3">
                       <v-switch color="primary" v-model="action.international" inset label="Internacional"></v-switch>
@@ -171,6 +172,7 @@ export default {
     ],
     items: [],
     editedIndex: -1,
+    relatedSubjectsItems: [],
     action: {},
     disabled: null,
     defaultAction: {
@@ -223,6 +225,7 @@ export default {
 
   created() {
     this.initialize();
+    this.getActionSubjects();
   },
   methods: {
     formSubmit() {
@@ -270,6 +273,12 @@ export default {
           console.error(error);
         });
       this.action = this.defaultAction;
+    },
+
+    getActionSubjects() {
+      this.$axios.get("/action-subjects").then((response) => {
+        this.relatedSubjectsItems = response.data;
+      })
     },
 
     save() {

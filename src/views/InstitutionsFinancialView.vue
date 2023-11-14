@@ -388,7 +388,7 @@ export default {
       return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
     getNaturePerCategory(items, id, oldId) {
-      if (id !== oldId && oldId !== undefined) {
+      if (!id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
       }
       this.financialNature = [];
