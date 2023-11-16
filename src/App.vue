@@ -121,6 +121,11 @@ export default {
           icon: "mdi-account-box-multiple",
           to: "/actions-members",
         },
+        {
+          title: "Ações (Financiamento)",
+          icon: "mdi-cash-multiple",
+          to: "/actions-financial",
+        },
         
       ],
     };

@@ -256,6 +256,7 @@ export default {
     ],
     editedIndex: -1,
     institution: {},
+    
     defaultInstitution: {
       id_: null,
       name: null,
@@ -299,6 +300,7 @@ export default {
           console.error(error);
         });
     },
+    
 
     editInstitutions(item) {
       this.institution = item;
