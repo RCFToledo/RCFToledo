@@ -113,7 +113,7 @@ export default {
         },
         {
           title: "Ações (Temas Relacionados)",
-          icon: "mdi-account-cog",
+          icon: "mdi-table",
           to: "/actions-subjects",
         },
         

@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ relatedSubjectsItems }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
