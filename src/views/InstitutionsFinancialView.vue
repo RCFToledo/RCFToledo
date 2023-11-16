@@ -10,18 +10,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Financiamentos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv
-            :data="items"
-            style="margin-right: 10px"
-            name="instituições.csv"
-            :delimiter="';'"
-          >
-            <v-btn
-              icon="mdi-microsoft-excel"
-              title="Exportar CSV"
-              class="rounded-circle"
-              variant="tonal"
-            ></v-btn>
+          <download-csv :data="items" style="margin-right: 10px" name="instituições_financiamento.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -398,7 +388,7 @@ export default {
       return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
     getNaturePerCategory(items, id, oldId) {
-      if (id !== oldId && oldId !== undefined) {
+      if (!id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
       }
       this.financialNature = [];
