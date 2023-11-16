@@ -116,6 +116,11 @@ export default {
           icon: "mdi-table",
           to: "/actions-subjects",
         },
+        {
+          title: "Ações (Membros)",
+          icon: "mdi-account-box-multiple",
+          to: "/actions-members",
+        },
         
       ],
     };
