@@ -117,7 +117,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.responsible_id="{ item }">
-        {{ getResponsibleName(item.raw.responsible_id) }}
+        {{ getResponsibleNameById(item.raw.responsible_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.international="{ item }">
@@ -129,7 +129,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.status="{ item }">
-        {{ getStatus(item.raw.status) }}
+        {{ getStatusTitle(item.raw.status) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -385,7 +385,7 @@ export default {
           return null;
         }
     },
-    getResponsibleName(responsibleId) {
+    getResponsibleNameById(responsibleId) {
       const responsible = this.itemsPeople.find(
         (item) => item._id === responsibleId
       );
@@ -394,7 +394,7 @@ export default {
     getBooleanType(isTrue) {
         return isTrue ? 'Sim' : 'Não';
       },
-    getStatus(statusId) {
+    getStatusTitle(statusId) {
       for (let gridStatus of this.status) {
         if (gridStatus.value === statusId) {
           return gridStatus.title;

@@ -84,7 +84,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
-        {{  getInstitutionsFinacialName(item.raw.institution_id) }}
+        {{  getInstitutionsFinacialNameById(item.raw.institution_id) }}
       </template>
      
       <!-- eslint-disable-next-line -->
@@ -300,7 +300,7 @@ export default {
       });
       return amountBR;
     },
-    getInstitutionsFinacialName(institutionId) {
+    getInstitutionsFinacialNameById(institutionId) {
       const institution = this.itemsInstitutionsFinancial.find(
         (item) => item._id === institutionId
       );

@@ -28,7 +28,7 @@
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-select v-model="actionMembers.degree"
-                        label="Nível no programa" v-if="getAcademicProfileByPeople(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value" required></v-select>
+                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="actionMembers.stay_start" label="Data de início" :rules="[
@@ -78,7 +78,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
-        {{ getPersonName(item.raw.person_id) }}
+        {{ getPersonNameById(item.raw.person_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -290,13 +290,13 @@ export default {
         return null;
       }
     },
-    getAcademicProfileByPeople(people, personId) {
+    getAcademicProfileByPeopleById(people, personId) {
       const profile = people.find((profile) => {
         return profile._id === personId;
       })
       return profile ? profile.academic_profile : null;
     },
-    getPersonName(personId) {
+    getPersonNameById(personId) {
       const person = this.itemsPeople.find(
         (item) => item._id === personId
       );

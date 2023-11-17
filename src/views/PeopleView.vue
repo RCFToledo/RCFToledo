@@ -5,7 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="getPeople(items, itemsInstitutions, itemsDepartments, itemsSectors)"
+          <download-csv :data="getPeopleDataByIds(items, itemsInstitutions, itemsDepartments, itemsSectors)"
             style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
@@ -130,11 +130,11 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.register="{ item }">
-        {{ getRegisterNumber(item.raw.student_id, item.raw.employee_id) }}
+        {{ getRegisterNumberByIds(item.raw.student_id, item.raw.employee_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.academic_profile="{ item }">
-        {{ getProfile(item.raw.academic_profile) }}
+        {{ getProfileTitle(item.raw.academic_profile) }}
       </template>
 
       <!-- eslint-disable-next-line -->
@@ -321,7 +321,7 @@ export default {
     },
 
     save() {
-      this.setPeople(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
+      this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people._id) {
         this.$axios
           .put("people/" + this.people._id, this.people)
@@ -356,7 +356,7 @@ export default {
           });
       }
     },
-    getRegisterNumber(studentId, employeeId) {
+    getRegisterNumberByIds(studentId, employeeId) {
       if (studentId != null) {
         return studentId;
       }
@@ -364,14 +364,14 @@ export default {
         return employeeId;
       }
     },
-    getProfile(profileId) {
+    getProfileTitle(profileId) {
       for (let gridProfile of this.profile) {
         if (gridProfile.value === profileId) {
           return gridProfile.title;
         }
       }
     },
-    getPeople(people, institutions, departments, sectors) {
+    getPeopleDataByIds(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {
           if (person.institution_id === data._id) {
@@ -393,7 +393,7 @@ export default {
       });
       return people;
     },
-    setPeople(people, institutions, departments, sectors) {
+    setPeopleDataByName(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {
           if (person.institution_id === data.name) {

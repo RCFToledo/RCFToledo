@@ -84,11 +84,11 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
-        {{ getPersonName(item.raw.person_id) }}
+        {{ getPersonNameById(item.raw.person_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.role="{ item }">
-        {{ getRole(item.raw.role) }}
+        {{ getRoleById(item.raw.role) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -269,13 +269,13 @@ export default {
           });
       }
     },
-    getPersonName(personId) {
+    getPersonNameById(personId) {
       const person = this.itemsPeople.find(
         (item) => item._id === personId
       );
       return person ? person.full_name : "";
     },
-    getRole(roleId) {
+    getRoleById(roleId) {
       for (let gridRole of this.itemsRole) {
         if (gridRole.value === roleId) {
           return gridRole.title;

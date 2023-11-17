@@ -151,11 +151,11 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.legal_category_id="{ item }">
-        {{ getCategory(item.raw.legal_category_id) }}
+        {{ getCategoryById(item.raw.legal_category_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.legal_nature_id="{ item }">
-        {{ getNaturePerCategoryIdNatureId(item.raw.legal_category_id, item.raw.legal_nature_id) }}
+        {{ getNatureByCategoryIdNatureId(item.raw.legal_category_id, item.raw.legal_nature_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
@@ -389,7 +389,7 @@ export default {
       );
       return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
-    getNaturePerCategory(items, id, oldId) {
+    getNatureByCategory(items, id, oldId) {
       if (!id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
       }
@@ -400,13 +400,13 @@ export default {
         }
       });
     },
-    getCategory(categoryId) {
+    getCategoryById(categoryId) {
       const institutionsCategory = this.itemsFinancial.find(
         (item) => item._id === categoryId
       );
       return institutionsCategory ? institutionsCategory.category : "";
     },
-    getNaturePerCategoryIdNatureId(categoryId, natureId) {
+    getNatureByCategoryIdNatureId(categoryId, natureId) {
       const categoryObj = this.itemsFinancial.find(
         (category) => category._id === categoryId
       );
