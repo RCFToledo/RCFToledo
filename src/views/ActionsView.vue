@@ -34,40 +34,36 @@
                           () => !!action.type || 'Tipo é requerido!',
                         ]"></v-select>
                     </v-col>
-                    <v-col cols="12" md="6" >
-                      <v-select v-model="action.country_code" label="País" :items="itemsCountryCode"
-                        item-title="countryTitle" item-value="countryValue" :rules="[
-                          () =>
-                            !!action.country_code || 'País é requerido!',
-                        ]"></v-select>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field v-model="action.keywords" label="Palavras-chave" required></v-text-field>
-                    </v-col>
-
                     <v-col cols="12" md="8">
-                      <v-text-field v-model="action.responsible_id" label="Responsável" :counter="60" required></v-text-field>
+                    <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
+                        item-value="_id" :rules="[
+                          () => !!action.responsible_id || 'Responsável é requerido!',
+                          () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
+                        ]" label="Responsável" :counter="60" required>
+                      </v-autocomplete>
                     </v-col>
-
                     <v-col cols="12" md="4">
                       <v-select v-model="action.status" :items="status" item-value="value" item-title="title" label="Situação"
                         required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
+                      <v-text-field v-model="action.keywords" label="Palavras-chave" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12" md="3">
                       <v-text-field v-model="action.started_at" label="Data de início" :rules="[
                         () => !!action.started_at || 'Data de ínicio é requirido',
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
                       ]" required v-mask-date.br></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="3">
                       <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
-                        () => !!action.ended_at || 'Data de término é requirido',
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
                       ]" v-mask-date.br :disabled="disabled"></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="6">
-                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
-                    </v-col>
+                    
                     <v-col cols="12" md="3">
                       <v-switch color="primary" v-model="action.international" inset label="Internacional"></v-switch>
                     </v-col>
@@ -120,8 +116,20 @@
         {{ getTypeTitle(item.raw.type) }}
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.country_code="{ item }">
-        {{ getCountryCountryTitle(item.raw.country_code) }}
+      <template v-slot:item.responsible_id="{ item }">
+        {{ getResponsibleName(item.raw.responsible_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.international="{ item }">
+        {{ getBooleanType(item.raw.international) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.free="{ item }">
+        {{ getBooleanType(item.raw.free) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.status="{ item }">
+        {{ getStatus(item.raw.status) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -148,7 +156,6 @@ export default {
       { typeTitle: "Convênio", typeValue: "agreement" },
       { typeTitle: "Prestação de serviço", typeValue: "service_provision" },
     ],
-    itemsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
     dialog: false,
     itemsDelete: false,
     headers: [
@@ -158,10 +165,8 @@ export default {
         key: "title",
       },
       { title: "Tipo", key: "type" },
-      { title: "Palavras-chave", key: "keywords" },
       { title: "Responsável", key: "responsible_id" },
       { title: "Situação", key: "status" },
-      { title: "Temas relacionados", key: "related_subjects" },
       { title: "Internacional", key: "international" },
       { title: "Data de inicio", key: "started_at" },
       { title: "Data de termino", key: "ended_at" },
@@ -171,12 +176,12 @@ export default {
     items: [],
     editedIndex: -1,
     relatedSubjectsItems: [],
+    itemsPeople: [],
     action: {},
     disabled: null,
     defaultAction: {
       id_: null,
       type: null,
-      country_code: null,
       description: null,
       keywords: null,
       responsible_id: null,
@@ -225,6 +230,7 @@ export default {
   created() {
     this.initialize();
     this.getActionSubjects();
+    this.initializePeople()
   },
   methods: {
     formSubmit() {
@@ -239,6 +245,24 @@ export default {
         .get("actions/")
         .then((response) => {
           this.items = response.data;
+          this.items.forEach((memberGroup) => {
+            if (!this.items.started_at) {
+              memberGroup.started_at = this.getDate(memberGroup.started_at);
+            }
+            if (!this.items.ended_at) {
+              memberGroup.ended_at = this.getDate(memberGroup.ended_at);
+            }
+          })
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializePeople() {
+      this.$axios
+        .get("people/")
+        .then((response) => {
+          this.itemsPeople = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -326,25 +350,10 @@ export default {
       }
     },
     getTypeTitle(type) {
-      const selectedTypes = [];
-      if (Array.isArray(type)) {
-        type.forEach((value) => {
           const typeItems = this.itemsType.find(
-            (item) => item.typeValue === value
+            (item) => item.typeValue === type
           );
-          if (typeItems) {
-            selectedTypes.push(typeItems.typeTitle);
-          }
-        });
-      }
-      return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
-    },
-
-    getCountryCountryTitle(type) {
-      const typeItems = this.itemsCountryCode.find(
-        (item) => item.countryValue === type
-      );
-      return typeItems ? typeItems.countryTitle : "";
+      return typeItems.typeTitle;
     },
     compareDates(start, end) {
       let momentInit = moment.utc(start, "DD/MM/YYYY");
@@ -376,6 +385,22 @@ export default {
           return null;
         }
     },
+    getResponsibleName(responsibleId) {
+      const responsible = this.itemsPeople.find(
+        (item) => item._id === responsibleId
+      );
+      return responsible ? responsible.full_name : "";
+    },
+    getBooleanType(isTrue) {
+        return isTrue ? 'Sim' : 'Não';
+      },
+    getStatus(statusId) {
+      for (let gridStatus of this.status) {
+        if (gridStatus.value === statusId) {
+          return gridStatus.title;
+        }
+      }
+    }
   },
 }
 </script>

@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ convertByBrazilDefault("485,435.50") }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -79,6 +78,15 @@
           </v-dialog>
         </v-toolbar>
       </template>
+       <!-- eslint-disable-next-line -->
+       <template v-slot:item.amount="{ item }">
+        {{ convertByBrazilDefault(item.raw.amount) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.institution_id="{ item }">
+        {{  getInstitutionsFinacialName(item.raw.institution_id) }}
+      </template>
+     
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon title="Editar" size="small" class="me-2" @click="editAction(item.raw)">mdi-pencil</v-icon>
@@ -96,7 +104,6 @@ import moment from 'moment'
 export default {
   data: () => ({
     valid: false,
-    itemsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
     dialog: false,
     itemsDelete: false,
     headers: [
@@ -145,9 +152,20 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("actions/")
+        .get("financing/")
         .then((response) => {
           this.items = response.data;
+          this.items.forEach((action) => {
+            if (!this.items.started_at) {
+              action.started_at = this.getDate(action.started_at);
+            }
+            if (!this.items.ended_at) {
+              action.ended_at = this.getDate(action.ended_at);
+            }
+            if(!this.items.amount) {
+              action.amount = action.amount.toFixed(2).toString()
+            }
+          })
         })
         .catch((error) => {
           console.error(error);
@@ -177,7 +195,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("actions/" + this.action._id)
+        .delete("financing/" + this.action._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -195,14 +213,14 @@ export default {
     },
 
     save() {
-      this.action.amount = this.convertByUnitedStatesDefault(this.action.amount);
+      this.action.amount = this.convertByUnitedStatesDefault(this.action.amount)
       this.action.started_at = this.setDate(this.action.started_at)
       if (this.action.ended_at) {
         this.action.ended_at = this.setDate(this.action.ended_at)
       }
       if (this.action._id) {
         this.$axios
-          .put("actions/" + this.action._id, this.action)
+          .put("financing/" + this.action._id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -223,7 +241,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("actions/", this.action)
+          .post("financing", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -239,12 +257,6 @@ export default {
             console.error(error);
           });
       }
-    },
-    getCountryCountryTitle(type) {
-      const typeItems = this.itemsCountryCode.find(
-        (item) => item.countryValue === type
-      );
-      return typeItems ? typeItems.countryTitle : "";
     },
     compareDates(start, end) {
       let momentInit = moment.utc(start, "DD/MM/YYYY");
@@ -278,12 +290,21 @@ export default {
       let amountUS = amount.replace(/[,.]/g, function (match) {
         return match === ',' ? '.' : '';
       });
-      return amountUS;
+      let amountFloat = parseFloat(amountUS);
+      return amountFloat.toFixed(2);
     },
     convertByBrazilDefault(amount) {
-      return amount.replace(/[,.]/g, function (match) {
+      let amountString = parseFloat(amount).toFixed(2).toString()
+      let amountBR = amountString.replace(/[,.]/g, function (match) {
         return match === '.' ? ',' : '';
       });
+      return amountBR;
+    },
+    getInstitutionsFinacialName(institutionId) {
+      const institution = this.itemsInstitutionsFinancial.find(
+        (item) => item._id === institutionId
+      );
+      return institution ? institution.name : "";
     }
   },
 }
