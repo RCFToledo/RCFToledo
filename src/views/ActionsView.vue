@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ relatedSubjectsItems }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -159,7 +158,6 @@ export default {
         key: "title",
       },
       { title: "Tipo", key: "type" },
-      { title: "Descrição", key: "description" },
       { title: "Palavras-chave", key: "keywords" },
       { title: "Responsável", key: "responsible_id" },
       { title: "Situação", key: "status" },
@@ -186,6 +184,7 @@ export default {
       related_subjects: null,
       international: null,
       started_at: null,
+      ended_at: null,
       free: null,
     },
     status: [

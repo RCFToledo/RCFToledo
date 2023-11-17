@@ -113,8 +113,18 @@ export default {
         },
         {
           title: "Ações (Temas Relacionados)",
-          icon: "mdi-account-cog",
+          icon: "mdi-table",
           to: "/actions-subjects",
+        },
+        {
+          title: "Ações (Membros)",
+          icon: "mdi-account-box-multiple",
+          to: "/actions-members",
+        },
+        {
+          title: "Ações (Financiamento)",
+          icon: "mdi-cash-multiple",
+          to: "/actions-financial",
         },
         
       ],

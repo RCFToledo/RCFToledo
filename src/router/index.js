@@ -9,6 +9,8 @@ import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
 import InstitutionsFinancialView from '../views/InstitutionsFinancialView.vue'
 import ActionsView from '../views/ActionsView.vue'
 import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
+import ActionsMembersView from '../views/ActionsMembersView.vue'
+import ActionsFinancialView from '../views/ActionsFinancialView.vue'
 
 const routes = [
   {
@@ -60,6 +62,16 @@ const routes = [
     path: '/actions-subjects',
     name: 'ActionsSubjects',
     component: ActionsSubjectsView
+  },
+  {
+    path: '/actions-members',
+    name: 'ActionsMembers',
+    component: ActionsMembersView,
+  },
+  {
+    path: '/actions-financial',
+    name: 'ActionsFinancial',
+    component: ActionsFinancialView,
   },
 ]
 
