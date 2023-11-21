@@ -195,8 +195,7 @@ export default {
     people: [],
     defaultPeople: {
       id_: null,
-      name: null,
-      abbr_name: null,
+      full_name: null,
       type: null,
       student_id: null,
       employee_id: null,
