@@ -28,7 +28,7 @@
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-select v-model="actionMembers.degree"
-                        label="Nível no programa" v-if="getAcademicProfileByPeople(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value" required></v-select>
+                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="actionMembers.stay_start" label="Data de início" :rules="[
@@ -77,6 +77,10 @@
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
+      <template v-slot:item.person_id="{ item }">
+        {{ getPersonNameById(item.raw.person_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon title="Editar" size="small" class="me-2" @click="editActionMembers(item.raw)">mdi-pencil</v-icon>
         <v-icon title="Excluir" size="small" @click="deleteActionMembers(item.raw)">mdi-delete</v-icon>
@@ -101,7 +105,6 @@ export default {
         align: "start",
         key: "person_id",
       },
-      { title: "Nível no programa", key: "degree" },
       { title: "Data de inicio", key: "stay_start" },
       { title: "Data de termino", key: "stay_end" },
       { title: "Ações", key: "actions", sortable: false },
@@ -154,9 +157,17 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("action-members/")
+        .get("members/")
         .then((response) => {
           this.items = response.data;
+          this.items.forEach((memberGroup) => {
+            if (!this.items.stay_start) {
+              memberGroup.stay_start = this.getDate(memberGroup.stay_start);
+            }
+            if (!this.items.stay_end) {
+              memberGroup.stay_end = this.getDate(memberGroup.stay_end);
+            }
+          })
         })
         .catch((error) => {
           console.error(error);
@@ -186,7 +197,7 @@ export default {
 
     deleteActionMembersConfirm() {
       this.$axios
-        .delete("action-members/" + this.actionMembers._id)
+        .delete("members/" + this.actionMembers._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -210,7 +221,7 @@ export default {
       }
       if (this.actionMembers._id) {
         this.$axios
-          .put("action-members/" + this.actionMembers._id, this.actionMembers)
+          .put("members/" + this.actionMembers._id, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -231,7 +242,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("action-members/", this.actionMembers)
+          .post("members/", this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -279,11 +290,17 @@ export default {
         return null;
       }
     },
-    getAcademicProfileByPeople(people, personId) {
+    getAcademicProfileByPeopleById(people, personId) {
       const profile = people.find((profile) => {
         return profile._id === personId;
       })
       return profile ? profile.academic_profile : null;
+    },
+    getPersonNameById(personId) {
+      const person = this.itemsPeople.find(
+        (item) => item._id === personId
+      );
+      return person ? person.full_name : "";
     },
   },
 }
