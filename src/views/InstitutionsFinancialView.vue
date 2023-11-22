@@ -5,6 +5,10 @@
       :items="items"
       :sort-by="[{ key: 'name', order: 'asc' }]"
       class="elevation-1"
+      :items-per-page="pagination.per_page"
+      :page="pagination.current_page"
+      items-per-page-text="Itens por página"
+      :server-items-length="pagination.total"
     >
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -42,7 +46,7 @@
                           () => !!institution.name || 'Nome é requerido!',
                           () =>
                             !(institution.name.length > 60) ||
-                            'Nome maior que o suportado',
+                            'Nome maior que o suportado'
                         ]"
                         label="Nome"
                         :counter="60"
@@ -55,11 +59,8 @@
                         label="Nome Abreviado"
                         :rules="[
                           () =>
-                            !!institution.abbr_name ||
-                            'Nome Abreviado é requerido!',
-                          () =>
-                            !(institution.abbr_name.length > 20) ||
-                            'Nome Abreviado maior que o suportado',
+                            !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
+                            'Nome Abreviado maior que o suportado'
                         ]"
                         :counter="20"
                       ></v-text-field>
@@ -70,8 +71,7 @@
                         label="Categoria jurídica"
                         :items="itemsFinancial"
                         item-title="category"
-                        item-value="_id"
-                        :rules="[]"
+                        item-value="id"
                       ></v-select>
                     </v-col>
                     <v-col cols="12">
@@ -80,8 +80,7 @@
                         label="Natureza jurídica"
                         :items="financialNature"
                         item-title="nature"
-                        item-value="_id"
-                        :rules="[]"
+                        item-value="id"
                       ></v-select>
                     </v-col>
                     <v-col cols="12">
@@ -95,6 +94,7 @@
                           () =>
                             !!institution.country_code || 'País é requerido!',
                         ]"
+                        required
                       ></v-select>
                     </v-col>
                   </v-row>
@@ -192,7 +192,7 @@ export default {
       { typeTitle: "Pesquisa", typeValue: "research" },
       { typeTitle: "Outros", typeValue: "other" },
     ],
-    institutionsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
+    institutionsCountryCode: [],
     dialog: false,
     institutionsDelete: false,
     headers: [
@@ -210,25 +210,26 @@ export default {
     items: [],
     financialNature: [
       {
-        _id: null,
+        id: null,
         nature: null,
       },
     ],
+
     itemsFinancial: [
       {
-        _id: "654919a065a62c74a7887696",
+        id: 1,
         category: "Cat1",
         natures: [
           {
-            _id: "654919a065a62c74a7887696",
+            id: 1,
             nature: "Nat1",
           },
           {
-            _id: "654919a065a62c74a7887697",
+            id: 2,
             nature: "Nat2",
           },
           {
-            _id: "654919a065a62c74a7887690",
+            id: 3,
             nature: "Nat3",
           },
         ],
@@ -237,15 +238,15 @@ export default {
         __v: 0,
       },
       {
-        _id: "654919a065a62c74a7887698",
+        id: 2,
         category: "Cat2",
         natures: [
           {
-            _id: "654919a065a62c74a7887699",
+            id: 4,
             nature: "Nat4",
           },
           {
-            _id: "654919a065a62c74a7887690",
+            id: 5,
             nature: "Nat5",
           },
         ],
@@ -256,9 +257,9 @@ export default {
     ],
     editedIndex: -1,
     institution: {},
-    
+    pagination: {},
     defaultInstitution: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       legal_category_id: null,
@@ -269,18 +270,19 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.institution._id ? "Nova Instituição" : "Editar Instituição";
+      return !this.institution.id ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
   watch: {
     "institution.legal_category_id"(newValue, oldValue) {
-      this.getNaturePerCategory(this.itemsFinancial, newValue, oldValue);
+      this.getNatureByCategory(this.itemsFinancial, newValue, oldValue);
     },
   },
 
   created() {
     this.initialize();
+    /*this.initializeCountries();*/
   },
   methods: {
     formSubmit() {
@@ -292,15 +294,27 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("institutionsF/")
+        .get("https://test-bapex.fe.unicamp.br/api/financing-institutions")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.pagination = response.data;
         })
         .catch((error) => {
           console.error(error);
         });
     },
     
+    /*initializeCountries() {
+      this.$axios
+        .get("https://test-bapex.fe.unicamp.br/api/countries")
+        .then((response) => {
+          this.institutionsCountryCode = response.data;
+          console.log(this.institutionsCountryCode);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },*/
 
     editInstitutions(item) {
       this.institution = item;
@@ -314,15 +328,15 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("institutionsF/" + this.institution._id)
+        .delete("https://test-bapex.fe.unicamp.br/api/financing-institutions/" + this.institution.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.institutionsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -332,18 +346,18 @@ export default {
     },
 
     save() {
-      if (this.institution._id) {
+      if (this.institution.id) {
         this.$axios
-          .put("institutionsF/" + this.institution._id, this.institution)
+          .put("https://test-bapex.fe.unicamp.br/api/financing-institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.institution = this.defaultInstitution;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -351,16 +365,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("institutionsF/", this.institution)
+          .post("https://test-bapex.fe.unicamp.br/api/financing-institutions", this.institution)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.institution = this.defaultInstitution;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -385,7 +399,7 @@ export default {
 
     getCountryCountryTitle(type) {
       const typeInstitutions = this.institutionsCountryCode.find(
-        (item) => item.countryValue === type
+        (item) => item === type
       );
       return typeInstitutions ? typeInstitutions.countryTitle : "";
     },
@@ -395,30 +409,26 @@ export default {
       }
       this.financialNature = [];
       items.forEach((category) => {
-        if (category._id === id) {
+        if (category.id === id) {
           this.financialNature.push(...category.natures);
         }
       });
     },
     getCategoryById(categoryId) {
       const institutionsCategory = this.itemsFinancial.find(
-        (item) => item._id === categoryId
+        (item) => item.id === categoryId
       );
       return institutionsCategory ? institutionsCategory.category : "";
     },
     getNatureByCategoryIdNatureId(categoryId, natureId) {
       const categoryObj = this.itemsFinancial.find(
-        (category) => category._id === categoryId
+        (category) => category.id === categoryId
       );
       if (categoryObj) {
-        // Encontrar o objeto no array natures desse objeto com o _id correspondente a natureId
         const natureObj = categoryObj.natures.find(
-          (nature) => nature._id === natureId
+          (nature) => nature.id === natureId
         );
-
-        // Verificar se o objeto nature foi encontrado
         if (natureObj) {
-          // Obter o valor de "nature"
           const natureValue = natureObj.nature;
           return natureValue;
         }
