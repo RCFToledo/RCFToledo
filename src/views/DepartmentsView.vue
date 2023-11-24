@@ -53,6 +53,7 @@
                           () =>
                             !!departments.abbr_name ||
                             'Nome Abreviado é requerido!',
+                            () => !((departments.abbr_name !== null) && (departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -70,25 +71,7 @@
                   </v-form>
                 </v-container>
               </v-card-text>
-
               <v-divider></v-divider>
-              <!--<v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="institutionsDelete = false"
-                >
-                  Cancelar
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deleteInstitutionsConfirm"
-                >
-                  Excluir
-                </v-btn>
-              </v-card-actions> -->
-
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
                   Cancelar

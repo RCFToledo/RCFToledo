@@ -47,11 +47,11 @@
                         item-title="nature" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.country_code" label="País" :items="institutionsCountryCode"
-                        item-title="countryTitle" item-value="countryValue" :rules="[
+                      <v-autocomplete v-model="institution.country_code" label="País" item-title="" item-value="countryValue"
+                        :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',
-                        ]" required></v-select>
+                        ]" required></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -113,7 +113,7 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-            <p>Total por páginas: <strong>{{ itemsPerPage }}</strong></p>
+          <p>Itens por páginas: <strong>{{ itemsPerPage }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="lastPage" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(lastPage)">
@@ -227,8 +227,7 @@ export default {
 
   created() {
     this.initialize(1);
-
-    /*this.initializeCountries();*/
+    this.initializeCountries();
   },
   methods: {
     formSubmit() {
@@ -244,6 +243,7 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.lastPage = response.data.last_page;
+          this.totalItems = response.data.to
           this.itemsPerPage = response.data.per_page;
 
         })
@@ -252,17 +252,16 @@ export default {
         });
     },
 
-    /*initializeCountries() {
+    initializeCountries() {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
           this.institutionsCountryCode = response.data;
-          console.log(this.institutionsCountryCode);
         })
         .catch((error) => {
           console.error(error);
         });
-    },*/
+    },
 
     editInstitutions(item) {
       this.institution = item;
@@ -345,11 +344,9 @@ export default {
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCountryTitle(type) {
-      const typeInstitutions = this.institutionsCountryCode.find(
-        (item) => item === type
-      );
-      return typeInstitutions ? typeInstitutions.countryTitle : "";
+    getCountryCountryTitle(abbrCountry) {
+      const fouldCountry = this.institutionsCountryCode[abbrCountry] == abbrCountry ? this.institutionsCountryCode[abbrCountry] : null;
+      return fouldCountry;
     },
     getNatureByCategory(items, id, oldId) {
       if (!id && oldId !== undefined) {

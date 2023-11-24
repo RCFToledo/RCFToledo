@@ -42,6 +42,14 @@
                   item.title
                 }}</v-tooltip></v-list-item>
           </div>
+          <v-list-group value="others">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Outros"></v-list-item>
+            </template>
+            <div v-for="items in others" :key="items.title">
+            <v-list-item :title="items.title" :prepend-icon="items.icon"
+              :value="items.title" :to="items.to"></v-list-item></div>
+          </v-list-group>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
@@ -52,7 +60,7 @@
     <v-main class="custom-main">
       <v-container fluid>
         <router-view />
-      </v-container>      
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -70,7 +78,7 @@ export default {
     return {
       rail: true,
       drawer: true,
-      items: [        
+      items: [
         {
           title: "Instituições",
           icon: "mdi-school",
@@ -91,6 +99,8 @@ export default {
           icon: "mdi-account-multiple",
           to: "/people",
         },
+      ],
+      others: [
         {
           title: "Grupos de Pesquisas",
           icon: "mdi-account-group",
@@ -126,8 +136,7 @@ export default {
           icon: "mdi-cash-multiple",
           to: "/actions-financial",
         },
-        
-      ],
+      ]
     };
   },
 };
