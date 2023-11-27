@@ -28,27 +28,47 @@
     </v-footer>
     <!--NAVIGATION DRAWER-->
 
-    <v-navigation-drawer v-model="drawer" :rail="rail" rail-width="90" color="secondary"
+    <v-navigation-drawer v-model="drawer" color="secondary"
       :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
-          <v-list-item :prepend-icon="rail ? 'mdi-chevron-right-box' : 'mdi-chevron-left-box'
-            " @click.stop="rail = !rail" title="Recuar Menu"><v-tooltip v-if="rail" activator="parent">Expandir
-              Menu</v-tooltip></v-list-item>
+          <v-list-item title="Explorar Tabelas" prepend-icon="mdi-search-web"></v-list-item>
           <v-divider></v-divider>
-          <div v-for="item in items" :key="item.title">
-            <v-list-item :prepend-icon="item.icon" :title="item.title" :to="item.to"><v-tooltip v-if="rail"
-                activator="parent">{{
-                  item.title
-                }}</v-tooltip></v-list-item>
-          </div>
-          <v-list-group value="others">
+          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Outros"></v-list-item>
+              <v-list-item v-bind="props" title="Pessoas e Grupos"></v-list-item>
             </template>
-            <div v-for="items in others" :key="items.title">
-            <v-list-item :title="items.title" :prepend-icon="items.icon"
-              :value="items.title" :to="items.to"></v-list-item></div>
+            <div v-for="items in peopleGroups" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Entidades Organizacionais"></v-list-item>
+            </template>
+            <div v-for="items in organizationalEntities" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="financialEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Entidades Financeiras"></v-list-item>
+            </template>
+            <div v-for="items in financialEntities" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Ações e Temas"></v-list-item>
+            </template>
+            <div v-for="items in actionsThemes" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
           </v-list-group>
           <v-divider></v-divider>
         </v-list>
@@ -78,7 +98,42 @@ export default {
     return {
       rail: true,
       drawer: true,
-      items: [
+      model:true,
+      peopleGroups: [
+        {
+          title: "Pessoas",
+          icon: "mdi-account-multiple",
+          to: "/people",
+        },
+        {
+          title: "Grupos de Pesquisas",
+          icon: "mdi-account-group",
+          to: "/research-groups",
+        },
+        {
+          title: "Grupos de Pesquisas (Membros)",
+          icon: "mdi-account-group-outline",
+          to: "/research-groups-members",
+        },
+      ],
+      actionsThemes: [
+        {
+          title: "Ações",
+          icon: "mdi-account-cog",
+          to: "/actions",
+        },
+        {
+          title: "Ações (Temas Relacionados)",
+          icon: "mdi-table",
+          to: "/actions-subjects",
+        },
+        {
+          title: "Ações (Membros)",
+          icon: "mdi-account-box-multiple",
+          to: "/actions-members",
+        },
+      ],
+      organizationalEntities: [
         {
           title: "Instituições",
           icon: "mdi-school",
@@ -94,42 +149,12 @@ export default {
           icon: "mdi-view-list",
           to: "/sectors",
         },
-        {
-          title: "Pessoas",
-          icon: "mdi-account-multiple",
-          to: "/people",
-        },
       ],
-      others: [
-        {
-          title: "Grupos de Pesquisas",
-          icon: "mdi-account-group",
-          to: "/research-groups",
-        },
-        {
-          title: "Grupos de Pesquisas (Membros)",
-          icon: "mdi-account-group-outline",
-          to: "/research-groups-members",
-        },
+      financialEntities: [
         {
           title: "Instiuições Financeiras",
           icon: "mdi-bank",
           to: "/institutions-financial",
-        },
-        {
-          title: "Ações",
-          icon: "mdi-account-cog",
-          to: "/actions",
-        },
-        {
-          title: "Ações (Temas Relacionados)",
-          icon: "mdi-table",
-          to: "/actions-subjects",
-        },
-        {
-          title: "Ações (Membros)",
-          icon: "mdi-account-box-multiple",
-          to: "/actions-members",
         },
         {
           title: "Ações (Financiamento)",

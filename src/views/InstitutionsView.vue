@@ -48,7 +48,7 @@
                         label="Nome Abreviado"
                         :rules="[
                           () => !!institution.abbr_name  || 'Nome Abreviado é requerido!',
-                          () => !(institution.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
+                          () => !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]"
                         :counter="20"
                       ></v-text-field>
