@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div> 
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -47,7 +47,7 @@
                         required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="action.keywords" label="Palavras-chave" required></v-text-field>
+                      <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords" label="Palavras-chave" required></v-combobox>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
@@ -224,7 +224,7 @@ export default {
       } else {
         this.disabled = null;
       }
-    }
+    },
   },
 
   created() {
@@ -305,9 +305,9 @@ export default {
     },
 
     save() {
-      this.action.started_at = this.setDate(this.action.started_at)
+      this.action.started_at = this.setDate(this.action.started_at);
       if (this.action.ended_at) {
-        this.action.ended_at = this.setDate(this.action.ended_at)
+        this.action.ended_at = this.setDate(this.action.ended_at);
       }
       if (this.action._id) {
         this.$axios
@@ -400,7 +400,7 @@ export default {
           return gridStatus.title;
         }
       }
-    }
+    },
   },
 }
 </script>

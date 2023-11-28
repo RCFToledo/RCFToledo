@@ -39,7 +39,7 @@
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.legal_category_id" label="Categoria jurídica" :items="itemsFinancial"
+                      <v-select v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
@@ -157,46 +157,7 @@ export default {
       },
     ],
 
-    itemsFinancial: [
-      {
-        id: 1,
-        category: "Cat1",
-        natures: [
-          {
-            id: 1,
-            nature: "Nat1",
-          },
-          {
-            id: 2,
-            nature: "Nat2",
-          },
-          {
-            id: 3,
-            nature: "Nat3",
-          },
-        ],
-        createdAt: "2023-11-06T16:51:44.981Z",
-        updatedAt: "2023-11-06T19:15:42.335Z",
-        __v: 0,
-      },
-      {
-        id: 2,
-        category: "Cat2",
-        natures: [
-          {
-            id: 4,
-            nature: "Nat4",
-          },
-          {
-            id: 5,
-            nature: "Nat5",
-          },
-        ],
-        createdAt: "2023-11-06T16:51:44.981Z",
-        updatedAt: "2023-11-06T19:15:42.335Z",
-        __v: 0,
-      },
-    ],
+    institutionsLegalCategories: [],
     editedIndex: -1,
     institution: {},
     currentPage: 1,
@@ -221,13 +182,14 @@ export default {
 
   watch: {
     "institution.legal_category_id"(newValue, oldValue) {
-      this.getNatureByCategory(this.itemsFinancial, newValue, oldValue);
+      this.getNatureByCategory(this.institutionsLegalCategories, newValue, oldValue);
     },
   },
 
   created() {
     this.initialize(1);
     this.initializeCountries();
+    this.initializeLegalCategories()
   },
   methods: {
     formSubmit() {
@@ -256,7 +218,20 @@ export default {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
-          this.institutionsCountryCode = response.data
+          this.institutionsCountryCode = response.data;
+          
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeLegalCategories() {
+      this.$axios
+        .get("https://test-bapex.fe.unicamp.br/api/legal-categories")
+        .then((response) => {
+          this.institutionsLegalCategories = response.data;
+          console.log(response);
         })
         .catch((error) => {
           console.error(error);
@@ -361,13 +336,13 @@ export default {
       });
     },
     getCategoryById(categoryId) {
-      const institutionsCategory = this.itemsFinancial.find(
+      const institutionsCategory = this.institutionsLegalCategories.find(
         (item) => item.id === categoryId
       );
       return institutionsCategory ? institutionsCategory.category : "";
     },
     getNatureByCategoryIdNatureId(categoryId, natureId) {
-      const categoryObj = this.itemsFinancial.find(
+      const categoryObj = this.institutionsLegalCategories.find(
         (category) => category.id === categoryId
       );
       if (categoryObj) {
