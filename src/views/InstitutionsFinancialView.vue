@@ -47,7 +47,7 @@
                         item-title="nature" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-autocomplete v-model="institution.country_code" label="País" item-title="" item-value="countryValue"
+                      <v-autocomplete v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
                         :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',
@@ -256,7 +256,7 @@ export default {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
-          this.institutionsCountryCode = response.data;
+          this.institutionsCountryCode = response.data
         })
         .catch((error) => {
           console.error(error);
@@ -344,10 +344,11 @@ export default {
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCountryTitle(abbrCountry) {
-      const fouldCountry = this.institutionsCountryCode[abbrCountry] == abbrCountry ? this.institutionsCountryCode[abbrCountry] : null;
-      return fouldCountry;
+    getCountryCountryTitle(countryId) {
+      const foundCountry = this.institutionsCountryCode.find((item) => item.code === countryId)
+      return foundCountry ? foundCountry.name : "";
     },
+  
     getNatureByCategory(items, id, oldId) {
       if (!id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
