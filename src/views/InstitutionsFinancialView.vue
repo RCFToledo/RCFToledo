@@ -218,7 +218,7 @@ export default {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
-          this.institutionsCountryCode = response.data;
+          this.institutionsCountryCode = response.data.data;
           
         })
         .catch((error) => {
@@ -230,7 +230,7 @@ export default {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/legal-categories")
         .then((response) => {
-          this.institutionsLegalCategories = response.data;
+          this.institutionsLegalCategories = response.data.data;
           console.log(response);
         })
         .catch((error) => {
@@ -325,7 +325,7 @@ export default {
     },
   
     getNatureByCategory(items, id, oldId) {
-      if (!id && oldId !== undefined) {
+      if (id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
       }
       this.financialNature = [];

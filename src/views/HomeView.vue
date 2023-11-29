@@ -71,7 +71,6 @@ export default {
     } else {
       this.login();
     }
-
     keycloak.onAuthLogout = () => {
       console.log("Evento de logout do Keycloak acionado.");
     };
