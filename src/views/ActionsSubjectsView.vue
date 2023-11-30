@@ -1,6 +1,8 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações (Temas Relacionados)</v-toolbar-title>
@@ -69,6 +71,16 @@
         <v-icon title="Excluir" size="small" @click="deleteActionSubject(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -90,12 +102,14 @@ export default {
     ],
     items: [],
     editedIndex: -1,
+    currentPage: 1,
     actionSubject: {},
     relatedSubjectsItems: [],
     defaultActionSubject: {
       id_: null,
       subject: null,
     },
+    configPagination: []
   }),
 
 
@@ -105,7 +119,7 @@ export default {
     },
   },
   created() {
-    this.initialize();
+    this.initialize(1);
   },
   methods: {
     formSubmit() {
@@ -115,11 +129,12 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("https://test-bapex.fe.unicamp.br/api/action-subjects")
+        .get(`https://test-bapex.fe.unicamp.br/api/action-subjects?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);
