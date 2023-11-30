@@ -55,7 +55,7 @@
                 <v-btn color="blue-darken-1" variant="plain" @click="itemsDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteActionConfirm">
+                <v-btn color="primary" variant="tonal" @click="deleteActionSubjectConfirm">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -101,7 +101,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.actionSubject._id ? "Novo Tema" : "Editar Tema";
+      return !this.actionSubject.id ? "Novo Tema" : "Editar Tema";
     },
   },
   created() {
@@ -117,9 +117,9 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("action-subjects/")
+        .get("https://test-bapex.fe.unicamp.br/api/action-subjects")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -138,15 +138,15 @@ export default {
 
     deleteActionSubjectConfirm() {
       this.$axios
-        .delete("action-subjects/" + this.actionSubject._id)
+        .delete("https://test-bapex.fe.unicamp.br/api/action-subjects/" + this.actionSubject.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.itemsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -156,18 +156,18 @@ export default {
     },
 
     save() {
-      if (this.actionSubject._id) {
+      if (this.actionSubject.id) {
         this.$axios
-          .put("action-subjects/" + this.actionSubject._id, this.actionSubject)
+          .put("https://test-bapex.fe.unicamp.br/api/action-subjects/" + this.actionSubject.id, this.actionSubject)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.actionSubject = this.defaultActionSubject;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -175,16 +175,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("action-subjects/", this.actionSubject)
+          .post("https://test-bapex.fe.unicamp.br/api/action-subjects", this.actionSubject)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.actionSubject = this.defaultActionSubject;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
