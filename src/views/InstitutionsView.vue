@@ -48,7 +48,7 @@
                         label="Nome Abreviado"
                         :rules="[
                           () => !!institution.abbr_name  || 'Nome Abreviado é requerido!',
-                          () => !(institution.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
+                          () => !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]"
                         :counter="20"
                       ></v-text-field>
@@ -67,17 +67,17 @@
                       ></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
+                      <v-autocomplete
                         v-model="institution.country_code"
                         label="País"
                         :items="institutionsCountryCode"
-                        item-title="countryTitle"
-                        item-value="countryValue"
+                        item-title="name"
+                        item-value="code"
                         :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',
                         ]"
-                      ></v-select>
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -188,6 +188,7 @@ export default {
 
   created() {
     this.initialize();
+    this.initializeCountries();
   },
   methods: {
     formSubmit() {
@@ -202,6 +203,16 @@ export default {
         .get("institutions/")
         .then((response) => {
           this.items = response.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializeCountries() {
+      this.$axios
+        .get("https://test-bapex.fe.unicamp.br/api/countries")
+        .then((response) => {
+          this.institutionsCountryCode = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -289,11 +300,9 @@ export default {
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCountryTitle(type) {
-      const typeInstitutions = this.institutionsCountryCode.find(
-        (item) => item.countryValue === type
-      );
-      return typeInstitutions ? typeInstitutions.countryTitle : "";
+    getCountryCountryTitle(countryId) {
+      const foundCountry = this.institutionsCountryCode.find((item) => item.code === countryId)
+      return foundCountry ? foundCountry.name : "";
     },
   },
 }

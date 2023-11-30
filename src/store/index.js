@@ -7,6 +7,7 @@ export default createStore({
     unicamp_id: '653964ad00e637af8ca63548',
     userData: null,
     isAuthenticated: null,
+    logout: null,
   },
   mutations: {
     setIsAuthenticated(state, newAuthenticated) {
@@ -21,8 +22,18 @@ export default createStore({
     setToken(state, newToken) {
       state.token = newToken;
     },
+    setLogout(state, logoutFunction) {
+      state.logout = logoutFunction;
+    },
   },
   actions: {
+    logout({ commit, state }) {
+      console.log(state)
+      if (typeof state.logout === 'function') { 
+        state.logout();
+      }
+      commit('setIsAuthenticated', false);
+    },
     updateUsername({ commit }, newUsername) {
       commit('setUsername', newUsername);
     },

@@ -15,9 +15,10 @@
           style="height: 50px; margin-top: 15px" />
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn variant="plain" @click="logout()">Sair</v-btn>
       <!--<Logout />
       <AuthenticateBtn v-if="$store.state.token == null" :showCard="false" />
-      <LogoutBtn v-else /> -->
+       -->
     </v-app-bar>
     <!--FOOTER-->
     <v-footer dense color="primary" app>
@@ -28,20 +29,48 @@
     </v-footer>
     <!--NAVIGATION DRAWER-->
 
-    <v-navigation-drawer v-model="drawer" :rail="rail" rail-width="90" color="secondary"
+    <v-navigation-drawer v-model="drawer" color="secondary"
       :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
-          <v-list-item :prepend-icon="rail ? 'mdi-chevron-right-box' : 'mdi-chevron-left-box'
-            " @click.stop="rail = !rail" title="Recuar Menu"><v-tooltip v-if="rail" activator="parent">Expandir
-              Menu</v-tooltip></v-list-item>
+          <v-list-item title="Explorar Tabelas" prepend-icon="mdi-search-web"></v-list-item>
           <v-divider></v-divider>
-          <div v-for="item in items" :key="item.title">
-            <v-list-item :prepend-icon="item.icon" :title="item.title" :to="item.to"><v-tooltip v-if="rail"
-                activator="parent">{{
-                  item.title
-                }}</v-tooltip></v-list-item>
-          </div>
+          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Pessoas e Grupos"></v-list-item>
+            </template>
+            <div v-for="items in peopleGroups" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Entidades Organizacionais"></v-list-item>
+            </template>
+            <div v-for="items in organizationalEntities" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="financialEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Entidades Financeiras"></v-list-item>
+            </template>
+            <div v-for="items in financialEntities" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
+          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" title="Ações e Temas"></v-list-item>
+            </template>
+            <div v-for="items in actionsThemes" :key="items.title">
+              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
+                :to="items.to"></v-list-item>
+            </div>
+          </v-list-group>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
@@ -52,7 +81,7 @@
     <v-main class="custom-main">
       <v-container fluid>
         <router-view />
-      </v-container>      
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -64,28 +93,14 @@ export default {
   name: "App",
   components: {
     //AuthenticateBtn,
-    //LogoutBtn,
+    //LogoutBtn
   },
   data() {
     return {
       rail: true,
       drawer: true,
-      items: [        
-        {
-          title: "Instituições",
-          icon: "mdi-school",
-          to: "/institutions",
-        },
-        {
-          title: "Departamentos",
-          icon: "mdi-briefcase",
-          to: "/departments",
-        },
-        {
-          title: "Setores",
-          icon: "mdi-view-list",
-          to: "/sectors",
-        },
+      model:true,
+      peopleGroups: [
         {
           title: "Pessoas",
           icon: "mdi-account-multiple",
@@ -101,11 +116,8 @@ export default {
           icon: "mdi-account-group-outline",
           to: "/research-groups-members",
         },
-        {
-          title: "Instiuições Financeiras",
-          icon: "mdi-bank",
-          to: "/institutions-financial",
-        },
+      ],
+      actionsThemes: [
         {
           title: "Ações",
           icon: "mdi-account-cog",
@@ -121,15 +133,43 @@ export default {
           icon: "mdi-account-box-multiple",
           to: "/actions-members",
         },
+      ],
+      organizationalEntities: [
+        {
+          title: "Instituições",
+          icon: "mdi-school",
+          to: "/institutions",
+        },
+        {
+          title: "Departamentos",
+          icon: "mdi-briefcase",
+          to: "/departments",
+        },
+        {
+          title: "Setores",
+          icon: "mdi-view-list",
+          to: "/sectors",
+        },
+      ],
+      financialEntities: [
+        {
+          title: "Instiuições Financeiras",
+          icon: "mdi-bank",
+          to: "/institutions-financial",
+        },
         {
           title: "Ações (Financiamento)",
           icon: "mdi-cash-multiple",
           to: "/actions-financial",
         },
-        
-      ],
+      ]
     };
   },
+  methods: {
+    logout() {
+      this.$store.dispatch('logout')
+    }
+  }
 };
 </script>
 <style>

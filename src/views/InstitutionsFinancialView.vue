@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-      class="elevation-1"
-      :items-per-page="pagination.per_page"
-      :page="pagination.current_page"
-      items-per-page-text="Itens por página"
-      :server-items-length="pagination.total"
-    >
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      :page="currentPage" :items-per-page="itemsPerPage" items-per-page-text="Itens por página">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Financiamentos</v-toolbar-title>
@@ -19,16 +11,8 @@
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn
-                color="secondary"
-                size="x-large"
-                density="compact"
-                icon="mdi-plus"
-                v-bind="props"
-                variant="tonal"
-                dark
-                @click="institution = { ...defaultInstitution }"
-              ></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="institution = { ...defaultInstitution }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -40,81 +24,47 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field
-                        v-model="institution.name"
-                        :rules="[
-                          () => !!institution.name || 'Nome é requerido!',
-                          () =>
-                            !(institution.name.length > 60) ||
-                            'Nome maior que o suportado'
-                        ]"
-                        label="Nome"
-                        :counter="60"
-                        required
-                      ></v-text-field>
+                      <v-text-field v-model="institution.name" :rules="[
+                        () => !!institution.name || 'Nome é requerido!',
+                        () =>
+                          !(institution.name.length > 60) ||
+                          'Nome maior que o suportado'
+                      ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field
-                        v-model="institution.abbr_name"
-                        label="Nome Abreviado"
-                        :rules="[
-                          () =>
-                            !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
-                            'Nome Abreviado maior que o suportado'
-                        ]"
-                        :counter="20"
-                      ></v-text-field>
+                      <v-text-field v-model="institution.abbr_name" label="Nome Abreviado" :rules="[
+                        () =>
+                          !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
+                          'Nome Abreviado maior que o suportado'
+                      ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
-                        v-model="institution.legal_category_id"
-                        label="Categoria jurídica"
-                        :items="itemsFinancial"
-                        item-title="category"
-                        item-value="id"
-                      ></v-select>
+                      <v-select v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
+                        item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
-                        v-model="institution.legal_nature_id"
-                        label="Natureza jurídica"
-                        :items="financialNature"
-                        item-title="nature"
-                        item-value="id"
-                      ></v-select>
+                      <v-select v-model="institution.legal_nature_id" label="Natureza jurídica" :items="financialNature"
+                        item-title="nature" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
-                        v-model="institution.country_code"
-                        label="País"
-                        :items="institutionsCountryCode"
-                        item-title="countryTitle"
-                        item-value="countryValue"
+                      <v-autocomplete v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
                         :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',
-                        ]"
-                        required
-                      ></v-select>
+                        ]" required></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="
-                    dialog = false;
-                    initialize();
-                  "
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="
+                  dialog = false;
+                initialize(currentPage);
+                ">
                   Cancelar
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="formSubmit"
-                  >Salvar</v-btn
-                >
+                <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -130,18 +80,10 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="institutionsDelete = false"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="institutionsDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deleteInstitutionsConfirm"
-                >
+                <v-btn color="primary" variant="tonal" @click="deleteInstitutionsConfirm">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -163,21 +105,21 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon
-          title="Editar"
-          size="small"
-          class="me-2"
-          @click="editInstitutions(item.raw)"
-          >mdi-pencil</v-icon
-        >
-        <v-icon
-          title="Excluir"
-          size="small"
-          @click="deleteInstitutions(item.raw)"
-          >mdi-delete</v-icon
-        >
+        <v-icon title="Editar" size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
+        <v-icon title="Excluir" size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
       </template>
+
       <template v-slot:no-data> Não há dados para exibir!</template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ itemsPerPage }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="lastPage" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(lastPage)">
+          </v-pagination>
+        </v-footer>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -215,49 +157,13 @@ export default {
       },
     ],
 
-    itemsFinancial: [
-      {
-        id: 1,
-        category: "Cat1",
-        natures: [
-          {
-            id: 1,
-            nature: "Nat1",
-          },
-          {
-            id: 2,
-            nature: "Nat2",
-          },
-          {
-            id: 3,
-            nature: "Nat3",
-          },
-        ],
-        createdAt: "2023-11-06T16:51:44.981Z",
-        updatedAt: "2023-11-06T19:15:42.335Z",
-        __v: 0,
-      },
-      {
-        id: 2,
-        category: "Cat2",
-        natures: [
-          {
-            id: 4,
-            nature: "Nat4",
-          },
-          {
-            id: 5,
-            nature: "Nat5",
-          },
-        ],
-        createdAt: "2023-11-06T16:51:44.981Z",
-        updatedAt: "2023-11-06T19:15:42.335Z",
-        __v: 0,
-      },
-    ],
+    institutionsLegalCategories: [],
     editedIndex: -1,
     institution: {},
-    pagination: {},
+    currentPage: 1,
+    lastPage: null,
+    itemsPerPage: null,
+    totalItems: null,
     defaultInstitution: {
       id: null,
       name: null,
@@ -276,13 +182,14 @@ export default {
 
   watch: {
     "institution.legal_category_id"(newValue, oldValue) {
-      this.getNatureByCategory(this.itemsFinancial, newValue, oldValue);
+      this.getNatureByCategory(this.institutionsLegalCategories, newValue, oldValue);
     },
   },
 
   created() {
-    this.initialize();
-    /*this.initializeCountries();*/
+    this.initialize(1);
+    this.initializeCountries();
+    this.initializeLegalCategories()
   },
   methods: {
     formSubmit() {
@@ -292,29 +199,44 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("https://test-bapex.fe.unicamp.br/api/financing-institutions")
+        .get(`https://test-bapex.fe.unicamp.br/api/financing-institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.pagination = response.data;
+          this.lastPage = response.data.last_page;
+          this.totalItems = response.data.to
+          this.itemsPerPage = response.data.per_page;
+
         })
         .catch((error) => {
           console.error(error);
         });
     },
-    
-    /*initializeCountries() {
+
+    initializeCountries() {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
-          this.institutionsCountryCode = response.data;
-          console.log(this.institutionsCountryCode);
+          this.institutionsCountryCode = response.data.data;
+          
         })
         .catch((error) => {
           console.error(error);
         });
-    },*/
+    },
+
+    initializeLegalCategories() {
+      this.$axios
+        .get("https://test-bapex.fe.unicamp.br/api/legal-categories")
+        .then((response) => {
+          this.institutionsLegalCategories = response.data.data;
+          console.log(response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
 
     editInstitutions(item) {
       this.institution = item;
@@ -332,7 +254,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.institutionsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -352,7 +274,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.institution = this.defaultInstitution;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -369,7 +291,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.institution = this.defaultInstitution;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -397,14 +319,13 @@ export default {
       return selectedTypes.join(", "); // Retorne os títulos separados por vírgula
     },
 
-    getCountryCountryTitle(type) {
-      const typeInstitutions = this.institutionsCountryCode.find(
-        (item) => item === type
-      );
-      return typeInstitutions ? typeInstitutions.countryTitle : "";
+    getCountryCountryTitle(countryId) {
+      const foundCountry = this.institutionsCountryCode.find((item) => item.code === countryId)
+      return foundCountry ? foundCountry.name : "";
     },
+  
     getNatureByCategory(items, id, oldId) {
-      if (!id && oldId !== undefined) {
+      if (id && oldId !== undefined) {
         this.institution.legal_nature_id = null;
       }
       this.financialNature = [];
@@ -415,13 +336,13 @@ export default {
       });
     },
     getCategoryById(categoryId) {
-      const institutionsCategory = this.itemsFinancial.find(
+      const institutionsCategory = this.institutionsLegalCategories.find(
         (item) => item.id === categoryId
       );
       return institutionsCategory ? institutionsCategory.category : "";
     },
     getNatureByCategoryIdNatureId(categoryId, natureId) {
-      const categoryObj = this.itemsFinancial.find(
+      const categoryObj = this.institutionsLegalCategories.find(
         (category) => category.id === categoryId
       );
       if (categoryObj) {
@@ -432,7 +353,7 @@ export default {
           const natureValue = natureObj.nature;
           return natureValue;
         }
-      } 
+      }
       return null;
     },
   },
