@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
-      :page="currentPage" :items-per-page="itemsPerPage" items-per-page-text="Itens por página">
+      :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Financiamentos</v-toolbar-title>
@@ -113,10 +113,10 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ itemsPerPage }}</strong></p>
-          <v-pagination rounded="circle" show-first-last-page :length="lastPage" :total-visible="1" v-model="currentPage"
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
-            @last="initialize(lastPage)">
+            @last="initialize(configPagination.last_page)">
           </v-pagination>
         </v-footer>
       </template>
@@ -147,7 +147,7 @@ export default {
       { title: "Categoria jurídica", key: "legal_category_id" },
       { title: "Natureza jurídica", key: "legal_nature_id" },
       { title: "Código do País", key: "country_code" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     financialNature: [
@@ -161,9 +161,7 @@ export default {
     editedIndex: -1,
     institution: {},
     currentPage: 1,
-    lastPage: null,
-    itemsPerPage: null,
-    totalItems: null,
+    configPagination: [],
     defaultInstitution: {
       id: null,
       name: null,
@@ -204,10 +202,7 @@ export default {
         .get(`https://test-bapex.fe.unicamp.br/api/financing-institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.lastPage = response.data.last_page;
-          this.totalItems = response.data.to
-          this.itemsPerPage = response.data.per_page;
-
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);

@@ -171,7 +171,7 @@ export default {
       { title: "Data de inicio", key: "started_at" },
       { title: "Data de termino", key: "ended_at" },
       { title: "Gratuito", key: "free" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,
@@ -205,7 +205,6 @@ export default {
         title: "Cancelada",
         value: "cancelled"
       }
-      
     ]
   }),
 

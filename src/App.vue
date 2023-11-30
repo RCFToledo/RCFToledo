@@ -15,7 +15,7 @@
           style="height: 50px; margin-top: 15px" />
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn variant="plain" @click="logout()">Sair</v-btn>
+      <!--<v-btn variant="plain" @click="logout()">Sair</v-btn> -->
       <!--<Logout />
       <AuthenticateBtn v-if="$store.state.token == null" :showCard="false" />
        -->
@@ -33,7 +33,7 @@
       :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
-          <v-list-item title="Explorar Tabelas" prepend-icon="mdi-search-web"></v-list-item>
+          <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
           <v-divider></v-divider>
           <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
@@ -53,18 +53,9 @@
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
-          <v-list-group value="financialEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
-            <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Entidades Financeiras"></v-list-item>
-            </template>
-            <div v-for="items in financialEntities" :key="items.title">
-              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
-                :to="items.to"></v-list-item>
-            </div>
-          </v-list-group>
           <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Ações e Temas"></v-list-item>
+              <v-list-item v-bind="props" title="Ações"></v-list-item>
             </template>
             <div v-for="items in actionsThemes" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
@@ -133,12 +124,22 @@ export default {
           icon: "mdi-account-box-multiple",
           to: "/actions-members",
         },
+        {
+          title: "Ações (Financiamento)",
+          icon: "mdi-cash-multiple",
+          to: "/actions-financial",
+        },
       ],
       organizationalEntities: [
         {
           title: "Instituições",
           icon: "mdi-school",
           to: "/institutions",
+        },
+        {
+          title: "Instiuições Financeiras",
+          icon: "mdi-bank",
+          to: "/institutions-financial",
         },
         {
           title: "Departamentos",
@@ -151,18 +152,6 @@ export default {
           to: "/sectors",
         },
       ],
-      financialEntities: [
-        {
-          title: "Instiuições Financeiras",
-          icon: "mdi-bank",
-          to: "/institutions-financial",
-        },
-        {
-          title: "Ações (Financiamento)",
-          icon: "mdi-cash-multiple",
-          to: "/actions-financial",
-        },
-      ]
     };
   },
   methods: {

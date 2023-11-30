@@ -98,7 +98,7 @@ export default {
         align: "start",
         key: "subject",
       },
-      { title: "Ações", align: "end", key: "actions", sortable: false }
+      { title: "Opções", align: "end", key: "actions", sortable: false }
     ],
     items: [],
     editedIndex: -1,

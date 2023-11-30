@@ -118,7 +118,7 @@ export default {
       { title: "Papel", key: "role" },
       { title: "Ínicio da permanência", key: "stay_start" },
       { title: "Término da permanência", key: "stay_end" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     itemsPeople: [],

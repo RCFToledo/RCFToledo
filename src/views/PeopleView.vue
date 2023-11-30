@@ -167,7 +167,7 @@ export default {
       { title: "Perfil", key: "academic_profile" },
       { title: "Registro", key: "register" },
       { title: "E-mail", key: "default_email" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     profile: [
       {
