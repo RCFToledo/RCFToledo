@@ -59,10 +59,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
-                          () =>
-                            !!sectors.abbr_name ||
-                            'Nome Abreviado é requerido!',
-                            () => !((departments.abbr_name !== null) && (departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
+                          () => !!sectors.abbr_name.length < 20 || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -184,9 +181,8 @@ export default {
         align: "start",
         key: "name",
       },
-      { title: "Nome Abreviado", key: "abbr_name" },
       { title: "Código da DGA", key: "code" },
-      { title: "Opções", key: "actions" },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,

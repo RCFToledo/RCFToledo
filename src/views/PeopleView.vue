@@ -49,7 +49,7 @@
                     </v-col>
                   </v-row>
                   <v-row dense>
-                    <v-col cols="12" md="8">
+                    <v-col cols="12" md="6">
                       <v-text-field v-model="people.full_name" :rules="[
                         () =>
                           !!people.full_name || 'Nome Completo é requerido!',
@@ -58,10 +58,18 @@
                           'Nome Completo maior que 60 caracteres',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="4">
+                    <v-col cols="12" md="3" v-if="((people.country_code === 'Brasil') && (people.academic_profile !== 'Outros'))">
                       <v-text-field v-model="people.cpf" :rules="[
                         () => !((people.academic_profile !== 'other') && !people.cpf) || 'CPF é requirido',
                       ]" label="CPF" v-mask-cpf></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="3" v-else>
+                      <v-text-field v-model="people.rne" :rules="[]" label="RNE" ></v-text-field>
+                      <v-text-field v-model="people.passport" :rules="[]" label="Passaporte" ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-autocomplete v-model="people.country_code" label="País de Origem" :items="institutionsCountryCode" item-title="name"
+                        item-value="code"></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -80,7 +88,7 @@
                       <v-autocomplete v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
                         item-title="name" item-value="_id" :rules="[
                           () =>
-                            !!people.institution_id ||
+                            !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',
                         ]"></v-autocomplete>
                     </v-col>
@@ -190,6 +198,7 @@ export default {
     items: [],
     itemsDepartments: [],
     itemsInstitutions: [],
+    institutionsCountryCode: [],  
     itemsSectors: [],
     peopleIndex: -1,
     people: [],
@@ -200,6 +209,7 @@ export default {
       student_id: null,
       employee_id: null,
       sector_id: null,
+      country_code: 'Brasil',
     },
   }),
   watch: {
@@ -237,6 +247,7 @@ export default {
     this.initializeDepartments();
     this.initializeInstitutions();
     this.initializeSectors();
+    this.initializeCountries();
   },
 
   methods: {
@@ -257,7 +268,17 @@ export default {
           console.error(error);
         });
     },
-
+    initializeCountries() {
+      this.$axios
+        .get("https://test-bapex.fe.unicamp.br/api/countries")
+        .then((response) => {
+          this.institutionsCountryCode = response.data.data;
+          
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     initializeDepartments() {
       this.$axios
         .get("departments/")

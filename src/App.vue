@@ -137,7 +137,7 @@ export default {
           to: "/institutions",
         },
         {
-          title: "Instiuições Financeiras",
+          title: "Instiuições Parceiras",
           icon: "mdi-bank",
           to: "/institutions-financial",
         },

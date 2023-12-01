@@ -65,10 +65,10 @@
                     </v-col>
                     
                     <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.international" inset label="Internacional"></v-switch>
+                      <v-switch color="primary" v-model="action.international" inset :label="action.international ? 'Internacional': 'Nacional'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.free" inset label="Gratuito"></v-switch>
+                      <v-switch color="primary" v-model="action.free" inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-textarea v-model="action.description" :rules="[
@@ -169,7 +169,6 @@ export default {
       { title: "Situação", key: "status" },
       { title: "Internacional", key: "international" },
       { title: "Data de inicio", key: "started_at" },
-      { title: "Data de termino", key: "ended_at" },
       { title: "Gratuito", key: "free" },
       { title: "Opções", key: "actions", sortable: false },
     ],

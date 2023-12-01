@@ -47,7 +47,6 @@
                         v-model="institution.abbr_name"
                         label="Nome Abreviado"
                         :rules="[
-                          () => !!institution.abbr_name  || 'Nome Abreviado é requerido!',
                           () => !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]"
                         :counter="20"
@@ -150,9 +149,9 @@ export default {
   data: () => ({
     valid: false,
     institutionsType: [
-      { typeTitle: "Educação", typeValue: "education" },
+      { typeTitle: "Ensino", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
-      { typeTitle: "Outros", typeValue: "other" },
+      { typeTitle: "Ambos", typeValue: "other" },
     ],
     institutionsCountryCode: [],
     dialog: false,
