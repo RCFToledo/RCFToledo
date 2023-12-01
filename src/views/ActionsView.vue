@@ -299,8 +299,8 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("/action-subjects").then((response) => {
-        this.relatedSubjectsItems = response.data;
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects").then((response) => {
+        this.relatedSubjectsItems = response.data.data;
       })
     },
 
