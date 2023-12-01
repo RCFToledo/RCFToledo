@@ -154,7 +154,7 @@ export default {
       { typeTitle: "Pesquisa", typeValue: "research" },
       { typeTitle: "Outros", typeValue: "other" },
     ],
-    institutionsCountryCode: [{ countryTitle: "Brasil", countryValue: "BR" }],
+    institutionsCountryCode: [],
     dialog: false,
     institutionsDelete: false,
     headers: [
@@ -166,7 +166,7 @@ export default {
       { title: "Nome Abreviado", key: "abbr_name" },
       { title: "Tipo", key: "type" },
       { title: "Código do País", key: "country_code" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,
@@ -212,7 +212,7 @@ export default {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
-          this.institutionsCountryCode = response.data;
+          this.institutionsCountryCode = response.data.data;
         })
         .catch((error) => {
           console.error(error);

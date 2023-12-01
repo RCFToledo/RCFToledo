@@ -122,7 +122,7 @@ export default {
       { title: "Lattes", key: "lattes_url" },
       { title: "E-mail", key: "email" },
       { title: "Website", key: "site_url" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,

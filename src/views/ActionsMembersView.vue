@@ -107,7 +107,7 @@ export default {
       },
       { title: "Data de inicio", key: "stay_start" },
       { title: "Data de termino", key: "stay_end" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,

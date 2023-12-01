@@ -115,7 +115,7 @@ export default {
       { title: "Valor recebido", key: "amount" },
       { title: "Data de inicio", key: "started_at" },
       { title: "Data de termino", key: "ended_at" },
-      { title: "Ações", key: "actions", sortable: false },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,

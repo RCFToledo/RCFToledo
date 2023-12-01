@@ -53,7 +53,7 @@
                           () =>
                             !!departments.abbr_name ||
                             'Nome Abreviado é requerido!',
-                            () => !((departments.abbr_name !== null) && (departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
+                          () => !((departments.abbr_name !== null) && (departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -113,15 +113,17 @@
         {{ getCountryCodeTitle(item.raw.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.membersView="{ item }">
-        <v-icon title="Visualizar" size="large" class="me-2" @click="visualizeMembers(item.raw)">
-          mdi-eye
-        </v-icon>
-      </template>
-      <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editDepartments(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteDepartments(item.raw)">mdi-delete</v-icon>
+          <v-btn variant="outlined" icon="mdi-dots-horizontal" flat color="primary">
+          <v-icon>mdi-dots-horizontal</v-icon>
+          <v-menu activator="parent" color="secondary">
+            <v-list>
+            <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small" @click="editDepartments(item.raw)"></v-list-item>
+            <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteDepartments(item.raw)"></v-list-item>
+            <v-list-item prepend-icon="mdi-eye" title="Visualizar membros" @click="visualizeMembers(item.raw)"></v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -162,8 +164,7 @@ export default {
       },
       { title: "Nome Abreviado", key: "abbr_name" },
       { title: "Código da DGA", key: "code" },
-      { title: "Membros (Visualização)", key: "membersView" },
-      { title: "Ações", key: "actions" },
+      { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
     editedIndex: -1,
