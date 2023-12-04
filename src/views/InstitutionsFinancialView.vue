@@ -4,7 +4,7 @@
       :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
-          <v-toolbar-title>Instituições Financiamentos</v-toolbar-title>
+          <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="items" style="margin-right: 10px" name="instituições_financiamento.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
@@ -143,7 +143,6 @@ export default {
         align: "start",
         key: "name",
       },
-      { title: "Nome Abreviado", key: "abbr_name" },
       { title: "Categoria jurídica", key: "legal_category_id" },
       { title: "Natureza jurídica", key: "legal_nature_id" },
       { title: "Código do País", key: "country_code" },
@@ -165,7 +164,7 @@ export default {
     defaultInstitution: {
       id: null,
       name: null,
-      abbr_name: null,
+      abbr_name: "",
       legal_category_id: null,
       legal_nature_id: null,
       country_code: null,
