@@ -6,7 +6,7 @@ import SectorsView from '../views/SectorsView.vue'
 import PeopleView from '../views/PeopleView.vue'
 import ResearchGroupsView from '../views/ResearchGroupsView.vue'
 import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
-import InstitutionsFinancialView from '../views/InstitutionsFinancialView.vue'
+import InstitutionsPartnersView from '../views/InstitutionsPartnersView.vue'
 import ActionsView from '../views/ActionsView.vue'
 import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
 import ActionsMembersView from '../views/ActionsMembersView.vue'
@@ -50,8 +50,8 @@ const routes = [
   },
   {
     path: '/institutions-financial',
-    name: 'InstitutionsFinancial',
-    component: InstitutionsFinancialView
+    name: 'InstitutionsPartners',
+    component: InstitutionsPartnersView
   },
   {
     path: '/actions',

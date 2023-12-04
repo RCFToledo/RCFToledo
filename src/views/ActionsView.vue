@@ -34,7 +34,7 @@
                           () => !!action.type || 'Tipo é requerido!',
                         ]"></v-select>
                     </v-col>
-                    <v-col cols="12" md="8">
+                    <v-col cols="12" md="6">
                     <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
                         item-value="_id" :rules="[
                           () => !!action.responsible_id || 'Responsável é requerido!',
@@ -42,15 +42,12 @@
                         ]" label="Responsável" :counter="60" required>
                       </v-autocomplete>
                     </v-col>
-                    <v-col cols="12" md="4">
-                      <v-select v-model="action.status" :items="status" item-value="value" item-title="title" label="Situação"
-                        required></v-select>
+                    
+                    <v-col cols="12" md="6">
+                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords" label="Palavras-chave" required></v-combobox>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="3">
                       <v-text-field v-model="action.started_at" label="Data de início" :rules="[
@@ -69,6 +66,9 @@
                     </v-col>
                     <v-col cols="12" md="3">
                       <v-switch color="primary" v-model="action.free" inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
+                    </v-col>
+                    <v-col cols="12" md="3">
+                      <v-switch color="primary" v-model="action.status" inset label="Cancelado"></v-switch>
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-textarea v-model="action.description" :rules="[
@@ -166,7 +166,6 @@ export default {
       },
       { title: "Tipo", key: "type" },
       { title: "Responsável", key: "responsible_id" },
-      { title: "Situação", key: "status" },
       { title: "Internacional", key: "international" },
       { title: "Data de inicio", key: "started_at" },
       { title: "Gratuito", key: "free" },
@@ -260,7 +259,12 @@ export default {
       this.$axios
         .get("people/")
         .then((response) => {
-          this.itemsPeople = response.data;
+          let people = response.data;
+          people.forEach((person) => {
+            if(person.institution_id === this.$store.getters.getUnicamp_id) {
+              this.itemsPeople.push(person);
+            }
+          });
         })
         .catch((error) => {
           console.error(error);

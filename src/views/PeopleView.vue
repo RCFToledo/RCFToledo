@@ -49,7 +49,7 @@
                     </v-col>
                   </v-row>
                   <v-row dense>
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" :md="people.country_code === 'BR' ? 6 : 8">
                       <v-text-field v-model="people.full_name" :rules="[
                         () =>
                           !!people.full_name || 'Nome Completo é requerido!',
@@ -58,16 +58,16 @@
                           'Nome Completo maior que 60 caracteres',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="3" v-if="((people.country_code === 'Brasil') && (people.academic_profile !== 'Outros'))">
+                    <v-col cols="12" :md="people.country_code === 'BR' ? 2 : 4">
                       <v-text-field v-model="people.cpf" :rules="[
-                        () => !((people.academic_profile !== 'other') && !people.cpf) || 'CPF é requirido',
+                        () => !(people.country_code === 'BR' && people.academic_profile !== 'other' && !people.cpf) || 'CPF é requirido',
                       ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="3" v-else>
-                      <v-text-field v-model="people.rne" :rules="[]" label="RNE" ></v-text-field>
-                      <v-text-field v-model="people.passport" :rules="[]" label="Passaporte" ></v-text-field>
+                    <v-col cols="12" md="6" v-if="people.country_code !== 'BR'" class="d-flex flex-row">
+                      <v-text-field class="mr-2" v-model="people.rne" label="RNE" ></v-text-field>
+                      <v-text-field v-model="people.passport" label="Passaporte" ></v-text-field>
                     </v-col>
-                    <v-col cols="12" md="3">
+                    <v-col cols="12" :md="people.country_code === 'BR' ? 4 : 6">
                       <v-autocomplete v-model="people.country_code" label="País de Origem" :items="institutionsCountryCode" item-title="name"
                         item-value="code"></v-autocomplete>
                     </v-col>
@@ -188,7 +188,11 @@ export default {
       },
       {
         value: "professor",
-        title: "Professor",
+        title: "Docente",
+      },
+      {
+        value: "researcher",
+        title: "Pesquisador",
       },
       {
         value: "other",
@@ -207,9 +211,10 @@ export default {
       full_name: null,
       type: null,
       student_id: null,
+      academic_profile: null,
       employee_id: null,
       sector_id: null,
-      country_code: 'Brasil',
+      country_code: 'BR',
     },
   }),
   watch: {
