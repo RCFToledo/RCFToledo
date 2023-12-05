@@ -70,9 +70,9 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
-                  Cancelar
-                </v-btn>
+                  <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
+                    Cancelar
+                  </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
@@ -111,7 +111,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-          <v-btn variant="outlined" icon="mdi-dots-horizontal" flat color="primary">
+          <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
           <v-icon>mdi-dots-horizontal</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>

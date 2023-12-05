@@ -49,7 +49,7 @@ const routes = [
     component: ResearchGroupsMembersView
   },
   {
-    path: '/institutions-financial',
+    path: '/institutions-partners',
     name: 'InstitutionsPartners',
     component: InstitutionsPartnersView
   },

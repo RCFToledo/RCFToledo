@@ -1,6 +1,5 @@
 <template>
   <div>
-  {{ people }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -35,7 +34,7 @@
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
-                      people.academic_profile == 'professor'
+                      people.academic_profile == 'professor' || people.academic_profile == 'researcher' 
                       ">
                       <v-text-field v-model="people.employee_id" :rules="[
                         () =>
@@ -219,21 +218,25 @@ export default {
     },
   }),
   watch: {
-    'people.academic_profile'(newValue, oldValue) {
-      if ((newValue !== oldValue) && (oldValue !== undefined) && (oldValue!=null)) {        
+    'people.academic_profile'(newValue) {
+      if (newValue === 'staff') {        
+        this.people.department_id = null
         this.people.student_id = null;
-        this.people.employee_id = null;
-
       }
-      if (this.people.academic_profile === 'staff') {        
-        this.people.department_id = null
-      }
-      else if ((this.people.academic_profile === 'professor') || (this.people.academic_profile === 'researcher')) {        
+      else if ((newValue === 'professor') || (newValue === 'researcher')) {        
         this.people.sector_id = null
+        this.people.student_id = null;
       }      
-      else {        
-        this.people.department_id = null
-        this.people.sector_id = null
+      else if(newValue === 'student') {
+        this.people.employee_id = null;        
+        this.people.department_id = null;
+        this.people.sector_id = null;
+      }
+      else {
+        this.people.employee_id = null;        
+        this.people.department_id = null;
+        this.people.sector_id = null;
+        this.people.student_id = null;
       }
     },
     'people.institution_id'(newValue, oldValue) {

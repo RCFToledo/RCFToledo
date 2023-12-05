@@ -1,5 +1,5 @@
 <template>
-  <div> 
+  <div>
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -34,20 +34,22 @@
                           () => !!action.type || 'Tipo é requerido!',
                         ]"></v-select>
                     </v-col>
-                    <v-col cols="12" md="6">
-                    <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
+                    <v-col cols="12" md="12">
+                      <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
                         item-value="_id" :rules="[
                           () => !!action.responsible_id || 'Responsável é requerido!',
                           () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
                         ]" label="Responsável" :counter="60" required>
                       </v-autocomplete>
                     </v-col>
-                    
-                    <v-col cols="12" md="6">
-                      <v-autocomplete :items="relatedSubjectsItems" item-title="subject" item-value="_id" v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+
+                    <v-col cols="12" md="12">
+                      <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="_id"
+                        v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords" label="Palavras-chave" required></v-combobox>
+                      <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords"
+                        label="Palavras-chave" required></v-combobox>
                     </v-col>
                     <v-col cols="12" md="3">
                       <v-text-field v-model="action.started_at" label="Data de início" :rules="[
@@ -60,12 +62,14 @@
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
                       ]" v-mask-date.br :disabled="disabled"></v-text-field>
                     </v-col>
-                    
+
                     <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.international" inset :label="action.international ? 'Internacional': 'Nacional'"></v-switch>
+                      <v-switch color="primary" v-model="action.international" inset
+                        :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.free" inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
+                      <v-switch color="primary" v-model="action.free" inset
+                        :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="3">
                       <v-switch color="primary" v-model="action.status" inset label="Cancelado"></v-switch>
@@ -109,6 +113,26 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="dialogMembers" width="auto" activator="parent">
+            <v-card>
+              <ActionsMembersView />
+              <v-card-actions class="d-flex justify-center bg-secondary">
+                <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
+                  Sair
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+          <v-dialog width="auto" v-model="dialogFinancing" activator="parent">
+            <v-card>
+              <ActionsFinancialView />
+              <v-card-actions class="d-flex justify-center bg-secondary">
+                <v-btn color="primary" variant="tonal" @click="dialogFinancing = false; initialize();">
+                  Sair
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
@@ -133,8 +157,21 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editAction(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteAction(item.raw)">mdi-delete</v-icon>
+        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
+          <v-icon>mdi-dots-horizontal</v-icon>
+          <v-menu activator="parent" color="secondary">
+            <v-list>
+              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+                @click="editAction(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteAction(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
+                @click="dialogMembers = true"></v-list-item>
+              <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
+                @click="dialogFinancing = true"></v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
@@ -144,8 +181,13 @@
 
 <script>
 import moment from 'moment'
-
+import ActionsMembersView from '../views/ActionsMembersView.vue'
+import ActionsFinancialView from '../views/ActionsFinancialView.vue'
 export default {
+  components: {
+    ActionsMembersView,
+    ActionsFinancialView
+  },
   data: () => ({
     valid: false,
     itemsType: [
@@ -158,6 +200,8 @@ export default {
     ],
     dialog: false,
     itemsDelete: false,
+    dialogMembers: false,
+    dialogFinancing: false,
     headers: [
       {
         title: "Título",
@@ -215,7 +259,7 @@ export default {
 
   watch: {
     'action.status'(newValue) {
-      if(newValue === 'in_progress') {
+      if (newValue === 'in_progress') {
         this.disabled = 'disabled';
         this.action.ended_at = null;
       } else {
@@ -261,7 +305,7 @@ export default {
         .then((response) => {
           let people = response.data;
           people.forEach((person) => {
-            if(person.institution_id === this.$store.getters.getUnicamp_id) {
+            if (person.institution_id === this.$store.getters.getUnicamp_id) {
               this.itemsPeople.push(person);
             }
           });
@@ -352,9 +396,9 @@ export default {
       }
     },
     getTypeTitle(type) {
-          const typeItems = this.itemsType.find(
-            (item) => item.typeValue === type
-          );
+      const typeItems = this.itemsType.find(
+        (item) => item.typeValue === type
+      );
       return typeItems.typeTitle;
     },
     compareDates(start, end) {
@@ -362,30 +406,30 @@ export default {
       let momentFinal = moment.utc(end, "DD/MM/YYYY");
       let dateInit = momentInit.format('YYYY-MM-DD');
       let dateFinal = momentFinal.format('YYYY-MM-DD');
-    
-      if(end !== null) {
+
+      if (end !== null) {
         return dateInit > dateFinal ? true : false;
       }
-      
+
     },
     getDate(date) {
-        let momentDate = moment.utc(date, "YYYY-MM-DD");
-        let formatDate = momentDate.format('DD/MM/YYYY');
-        if(momentDate.isValid()) {
-          return formatDate;
-        } else {
-          return null;
-        }
-        
+      let momentDate = moment.utc(date, "YYYY-MM-DD");
+      let formatDate = momentDate.format('DD/MM/YYYY');
+      if (momentDate.isValid()) {
+        return formatDate;
+      } else {
+        return null;
+      }
+
     },
     setDate(date) {
-        let momentDate = moment.utc(date, "DD/MM/YYYY");
-        let formatDate = momentDate.format('YYYY-MM-DD');
-        if(momentDate.isValid()) {
-          return formatDate;
-        } else {
-          return null;
-        }
+      let momentDate = moment.utc(date, "DD/MM/YYYY");
+      let formatDate = momentDate.format('YYYY-MM-DD');
+      if (momentDate.isValid()) {
+        return formatDate;
+      } else {
+        return null;
+      }
     },
     getResponsibleNameById(responsibleId) {
       const responsible = this.itemsPeople.find(
@@ -394,8 +438,8 @@ export default {
       return responsible ? responsible.full_name : "";
     },
     getBooleanType(isTrue) {
-        return isTrue ? 'Sim' : 'Não';
-      },
+      return isTrue ? 'Sim' : 'Não';
+    },
     getStatusTitle(statusId) {
       for (let gridStatus of this.status) {
         if (gridStatus.value === statusId) {

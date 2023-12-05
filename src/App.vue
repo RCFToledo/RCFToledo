@@ -119,16 +119,6 @@ export default {
           icon: "mdi-table",
           to: "/actions-subjects",
         },
-        {
-          title: "Ações (Membros)",
-          icon: "mdi-account-box-multiple",
-          to: "/actions-members",
-        },
-        {
-          title: "Ações (Financiamento)",
-          icon: "mdi-cash-multiple",
-          to: "/actions-financial",
-        },
       ],
       organizationalEntities: [
         {
@@ -139,7 +129,7 @@ export default {
         {
           title: "Instiuições Parceiras",
           icon: "mdi-bank",
-          to: "/institutions-financial",
+          to: "/institutions-partners",
         },
         {
           title: "Departamentos",
@@ -154,11 +144,6 @@ export default {
       ],
     };
   },
-  methods: {
-    logout() {
-      this.$store.dispatch('logout')
-    }
-  }
 };
 </script>
 <style>

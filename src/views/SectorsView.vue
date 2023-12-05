@@ -6,7 +6,7 @@
           <v-toolbar-title>Setores</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="items" style="margin-right: 10px" name="setores.csv" :delimiter="';'">
-              <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
@@ -16,13 +16,12 @@
                 <span class="text-h5">{{ `Membros - ${sectors.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-                <v-list lines="one" :items="sectors.members" item-title="name"
-      item-value="id"></v-list>
+              <v-list lines="one" :items="sectors.members" item-title="name" item-value="id"></v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
-                ">
+                  ">
                   Sair
                 </v-btn>
               </v-card-actions>
@@ -31,16 +30,8 @@
           <!--dialog 2 -->
           <v-dialog persistent v-model="dialogEdit" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn
-                color="secondary"
-                size="x-large"
-                density="compact"
-                icon="mdi-plus"
-                v-bind="props"
-                variant="tonal"
-                dark
-                @click="sectors = { ...defaultSector }"
-              ></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="sectors = { ...defaultSector }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -55,7 +46,7 @@
                       <v-col cols="12">
                         <v-text-field v-model="sectors.name" :rules="[
                           () => !!sectors.name || 'Nome é requerido!',
-                        ] " label="Nome" :counter="120" required></v-text-field>
+                        ]" label="Nome" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
@@ -80,11 +71,7 @@
 
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="dialogEdit = false; initialize();"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -103,18 +90,10 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="sectorsDelete = false"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="sectorsDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deleteSectorsConfirm"
-                >
+                <v-btn color="primary" variant="tonal" @click="deleteSectorsConfirm">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -133,13 +112,16 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-          <v-btn variant="outlined" icon="mdi-dots-horizontal" flat color="primary">
+        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
           <v-icon>mdi-dots-horizontal</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
-            <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small" @click="editSectors(item.raw)"></v-list-item>
-            <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteSectors(item.raw)"></v-list-item>
-            <v-list-item prepend-icon="mdi-eye" title="Visualizar membros" @click="visualizeMembers(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+                @click="editSectors(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteSectors(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
+                @click="visualizeMembers(item.raw)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -151,6 +133,7 @@
   
   
 <script>
+
 export default {
   data: () => ({
     valid: false,
@@ -158,23 +141,23 @@ export default {
     dialogView: false,
     sectorsDelete: false,
     tic: [
-        {
-          name: "Matheus Barbosa",
-          id: 1,
-        },
-        {
-          name: "Renato Tartori",
-          id: 2,
-        },
-        {
-          name: "Rafael Bellagama",
-          id: 3,
-        },
-        {
-          name: "Daniel",
-          id: 4,
-        },
-      ],
+      {
+        name: "Matheus Barbosa",
+        id: 1,
+      },
+      {
+        name: "Renato Tartori",
+        id: 2,
+      },
+      {
+        name: "Rafael Bellagama",
+        id: 3,
+      },
+      {
+        name: "Daniel",
+        id: 4,
+      },
+    ],
     headers: [
       {
         title: "Nome",
@@ -230,8 +213,8 @@ export default {
       this.$axios.get("people/").then((response) => {
         this.itemsPeople = response.data
       }).catch((error) => {
-          console.error(error);
-        });
+        console.error(error);
+      });
     },
     editSectors(item) {
       this.sectors = item;
@@ -308,6 +291,4 @@ export default {
 };
 </script>
 
-<style>
-
-</style>
+<style></style>
