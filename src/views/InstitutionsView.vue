@@ -151,7 +151,7 @@ export default {
     institutionsType: [
       { typeTitle: "Ensino", typeValue: "education" },
       { typeTitle: "Pesquisa", typeValue: "research" },
-      { typeTitle: "Ambos", typeValue: "other" },
+      { typeTitle: "Ambos", typeValue: "both" },
     ],
     institutionsCountryCode: [],
     dialog: false,
