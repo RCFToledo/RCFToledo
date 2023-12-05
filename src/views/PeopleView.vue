@@ -1,5 +1,6 @@
 <template>
   <div>
+  {{ people }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -219,18 +220,18 @@ export default {
   }),
   watch: {
     'people.academic_profile'(newValue, oldValue) {
-      if ((newValue !== oldValue) && (oldValue !== undefined)) {
+      if ((newValue !== oldValue) && (oldValue !== undefined) && (oldValue!=null)) {        
         this.people.student_id = null;
         this.people.employee_id = null;
 
       }
-      if (this.people.academic_profile === 'staff') {
+      if (this.people.academic_profile === 'staff') {        
         this.people.department_id = null
       }
-      else if (this.people.academic_profile === 'professor') {
+      else if ((this.people.academic_profile === 'professor') || (this.people.academic_profile === 'researcher')) {        
         this.people.sector_id = null
-      }
-      else {
+      }      
+      else {        
         this.people.department_id = null
         this.people.sector_id = null
       }
@@ -238,6 +239,12 @@ export default {
     'people.institution_id'(newValue, oldValue) {
       if ((newValue !== oldValue) && (oldValue !== undefined)) {
         this.people.department_id = null;
+      }
+    },
+    'people.country_code'(newValue, oldValue) {
+      if ((newValue !== oldValue) && (newValue == 'BR')) {
+        this.people.rne = null;
+        this.people.passport = null;
       }
     }
   },
@@ -267,6 +274,7 @@ export default {
       this.$axios
         .get("people/")
         .then((response) => {
+          console.log(response.data);
           this.items = response.data;
         })
         .catch((error) => {
