@@ -3,7 +3,7 @@
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
-          <v-toolbar-title>Ações (Financiamentos)</v-toolbar-title>
+          <v-toolbar-title>Financiamentos</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="items" style="margin-right: 10px" name="ações_financiamentos.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
@@ -29,7 +29,9 @@
                         ]" label="Instituição" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-text-field v-model="action.amount" label="R$" v-mask-decimal.br="2" required></v-text-field>
+                      <v-text-field v-model="action.amount" label="R$" v-mask-decimal.br="2" required :rules="[
+                        () => !!action.amount || 'Valor recebido é obrigatório'
+                      ]"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="action.started_at" label="Data de início" :rules="[
@@ -39,7 +41,6 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
-                        () => !!action.ended_at || 'Data de término é requirido',
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
@@ -89,8 +90,8 @@
      
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editAction(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteAction(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editAction(item.raw)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteAction(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

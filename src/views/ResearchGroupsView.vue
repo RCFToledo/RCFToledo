@@ -30,7 +30,6 @@
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-text-field v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[
-                        () => !!researchGroup.abbr_name || 'Nome Abreviado é requerido!',
                         () => !(researchGroup.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                       ]" :counter="20"></v-text-field>
                     </v-col>
@@ -40,20 +39,16 @@
                     <v-col cols="12" md="10">
                       <v-text-field v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"
                         :rules="[
-                          () => !!researchGroup.lattes_url || 'Página no Diretório da Plataforma Lattes é requerido!',
                           () => !(researchGroup.lattes_url.length > 20) || 'Página no Diretório da Plataforma Lattes maior que o suportado',
                         ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="researchGroup.email" label="E-mail" :rules="[
-                        () => !!researchGroup.email || 'E-mail é requerido!',
                         (v) => /.+@.+\..+/.test(v) || 'E-mail inválido',
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="researchGroup.site_url" label="Website" :rules="[
-                        () => !!researchGroup.site_url || 'Website é requerido!',
-                      ]" :counter="20"></v-text-field>
+                      <v-text-field v-model="researchGroup.site_url" label="Website" :counter="20"></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -88,6 +83,16 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="dialogMembers" width="auto" activator="parent">
+            <v-card>
+              <ResearchGroupsMembersView />
+              <v-card-actions class="d-flex justify-center bg-secondary">
+                <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
+                  Sair
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
@@ -96,8 +101,20 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editResearchGroup(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteGroup(item.raw)">mdi-delete</v-icon>
+        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
+          <v-icon>mdi-dots-horizontal</v-icon>
+          <v-menu activator="parent" color="secondary">
+            <v-list>
+              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+                @click="editResearchGroup(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteGroup(item.raw)"></v-list-item>
+              <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
+                @click="dialogMembers = true"></v-list-item>
+
+            </v-list>
+          </v-menu>
+        </v-btn>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
@@ -106,7 +123,11 @@
   
   
 <script>
+import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
 export default {
+  components: {
+    ResearchGroupsMembersView,
+  },
   data: () => ({
     valid: false,
     dialog: false,
@@ -124,6 +145,7 @@ export default {
     items: [],
     editedIndex: -1,
     researchGroup: {},
+    dialogMembers: false,
     defaultResearchGroup: {
       id_: null,
       name: null,
