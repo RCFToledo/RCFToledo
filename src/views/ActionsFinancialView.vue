@@ -135,7 +135,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.action._id ? "Nova Ação" : "Editar Informações";
+      return !this.action._id ? "Novo financiamento" : "Editar financiamento";
     },
   },
 
