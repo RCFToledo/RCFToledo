@@ -30,17 +30,14 @@
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-text-field v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[
-                        () => !(researchGroup.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
+                        () => !((researchGroup.abbr_name !== null) && (researchGroup.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
                       <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto"></v-switch>
                     </v-col>
                     <v-col cols="12" md="10">
-                      <v-text-field v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"
-                        :rules="[
-                          () => !(researchGroup.lattes_url.length > 20) || 'Página no Diretório da Plataforma Lattes maior que o suportado',
-                        ]" :counter="20"></v-text-field>
+                      <v-text-field v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="researchGroup.email" label="E-mail" :rules="[
@@ -83,12 +80,12 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogMembers" width="auto" activator="parent">
+          <v-dialog fullscreen v-model="dialogMembers" activator="parent">
             <v-card>
               <ResearchGroupsMembersView />
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
-                  Sair
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -101,8 +98,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
-          <v-icon>mdi-dots-horizontal</v-icon>
+        <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+          <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"

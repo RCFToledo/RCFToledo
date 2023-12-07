@@ -140,7 +140,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.actionMembers._id ? "Novo Membro" : "Editar Informações";
+      return !this.actionMembers._id ? "Novo Membro" : "Editar Membro";
     },
   },
 

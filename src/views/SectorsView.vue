@@ -22,7 +22,7 @@
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
                   ">
-                  Sair
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -112,8 +112,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
-          <v-icon>mdi-dots-horizontal</v-icon>
+        <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+          <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"

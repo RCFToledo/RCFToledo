@@ -22,7 +22,7 @@
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
                   ">
-                  Sair
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -51,7 +51,7 @@
                       <v-col cols="12">
                         <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
                           () => !!departments.abbr_name  || 'Nome Abreviado requerido',
-                          () => !((departments.abbr_name !== null) && (!departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
+                          () => !!((departments.abbr_name === null) && (departments.abbr_name.length < 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -112,8 +112,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-          <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
-          <v-icon>mdi-dots-horizontal</v-icon>
+          <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+          <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
             <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small" @click="editDepartments(item.raw)"></v-list-item>

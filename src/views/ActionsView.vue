@@ -29,8 +29,8 @@
                       ]" label="Título" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="typeTitle"
-                        item-value="typeValue" :rules="[
+                      <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="label" item-value="type"
+                        :rules="[
                           () => !!action.type || 'Tipo é requerido!',
                         ]"></v-select>
                     </v-col>
@@ -113,22 +113,22 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogMembers" width="auto" activator="parent">
+          <v-dialog fullscreen v-model="dialogMembers" activator="parent">
             <v-card>
               <ActionsMembersView />
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
-                  Sair
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog width="auto" v-model="dialogFinancing" activator="parent">
+          <v-dialog fullscreen v-model="dialogFinancing" activator="parent">
             <v-card>
               <ActionsFinancialView />
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="primary" variant="tonal" @click="dialogFinancing = false; initialize();">
-                  Sair
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -157,8 +157,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-btn variant="tonal" size="small" icon="mdi-dots-horizontal" flat color="primary">
-          <v-icon>mdi-dots-horizontal</v-icon>
+        <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+          <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
@@ -190,14 +190,6 @@ export default {
   },
   data: () => ({
     valid: false,
-    itemsType: [
-      { typeTitle: "Curso", typeValue: "course" },
-      { typeTitle: "Evento", typeValue: "event" },
-      { typeTitle: "Programa de extensão", typeValue: "extension_program" },
-      { typeTitle: "Projeto de extensão", typeValue: "extension_project" },
-      { typeTitle: "Convênio", typeValue: "agreement" },
-      { typeTitle: "Prestação de serviço", typeValue: "service_provision" },
-    ],
     dialog: false,
     itemsDelete: false,
     dialogMembers: false,
@@ -219,6 +211,7 @@ export default {
     editedIndex: -1,
     relatedSubjectsItems: [],
     itemsPeople: [],
+    itemsType: [],
     action: {},
     disabled: null,
     defaultAction: {
@@ -253,7 +246,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.action._id ? "Nova Ação" : "Editar Informações";
+      return !this.action._id ? "Nova ação" : "Editar ação";
     },
   },
 
@@ -271,7 +264,8 @@ export default {
   created() {
     this.initialize();
     this.getActionSubjects();
-    this.initializePeople()
+    this.initializePeople();
+    this.initializeActionTypes();
   },
   methods: {
     formSubmit() {
@@ -313,6 +307,13 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+    },
+    initializeActionTypes() {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-types").then((response) => {
+        this.itemsType = response.data.data;
+      }).catch((error) => {
+        console.log(error)
+      });
     },
 
     editAction(item) {
@@ -397,10 +398,11 @@ export default {
     },
     getTypeTitle(type) {
       const typeItems = this.itemsType.find(
-        (item) => item.typeValue === type
+        (item) => item.type === type
       );
-      return typeItems.typeTitle;
+      return typeItems ? typeItems.label : "";
     },
+    
     compareDates(start, end) {
       let momentInit = moment.utc(start, "DD/MM/YYYY");
       let momentFinal = moment.utc(end, "DD/MM/YYYY");
