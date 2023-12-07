@@ -3,7 +3,7 @@
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
-          <v-toolbar-title>Grupo de Pesquisa (Membros)</v-toolbar-title>
+          <v-toolbar-title>Membros</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="items" style="margin-right: 10px" name="membros_grupo_de_pesquisa.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
@@ -92,8 +92,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editGroupMember(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteGroupMember(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editGroupMember(item.raw)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteGroupMember(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

@@ -3,7 +3,7 @@
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
-          <v-toolbar-title>Ações (Membros)</v-toolbar-title>
+          <v-toolbar-title>Membros</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="items" style="margin-right: 10px" name="ações_membros.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
@@ -24,11 +24,13 @@
                   <v-row dense>
                     <v-col cols="12" md="12">
                       <v-autocomplete
-                        v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="_id" required></v-autocomplete>
+                        v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="_id" :rules="[ () => !!actionMembers.person_id || 'Membro é requerido' ]" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-select v-model="actionMembers.degree"
-                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value" required></v-select>
+                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
+                          () => !!actionMembers.degree || 'Nível no programa é requerido',
+                        ]" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field v-model="actionMembers.stay_start" label="Data de início" :rules="[
@@ -82,8 +84,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon title="Editar" size="small" class="me-2" @click="editActionMembers(item.raw)">mdi-pencil</v-icon>
-        <v-icon title="Excluir" size="small" @click="deleteActionMembers(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editActionMembers(item.raw)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteActionMembers(item.raw)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
@@ -93,7 +95,6 @@
 
 <script>
 import moment from 'moment'
-
 export default {
   data: () => ({
     valid: false,

@@ -5,12 +5,10 @@ import DepartmentsView from '../views/DepartmentsView.vue'
 import SectorsView from '../views/SectorsView.vue'
 import PeopleView from '../views/PeopleView.vue'
 import ResearchGroupsView from '../views/ResearchGroupsView.vue'
-import ResearchGroupsMembersView from '../views/ResearchGroupsMembersView.vue'
-import InstitutionsPartnersView from '../views/InstitutionsPartnersView.vue'
+import InstitutionsPartnerView from '../views/InstitutionsPartnerView.vue'
 import ActionsView from '../views/ActionsView.vue'
 import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
-import ActionsMembersView from '../views/ActionsMembersView.vue'
-import ActionsFinancialView from '../views/ActionsFinancialView.vue'
+
 
 const routes = [
   {
@@ -44,14 +42,9 @@ const routes = [
     component: ResearchGroupsView
   },
   {
-    path: '/research-groups-members',
-    name: 'ResearchGroupsMembers',
-    component: ResearchGroupsMembersView
-  },
-  {
     path: '/institutions-partners',
     name: 'InstitutionsPartners',
-    component: InstitutionsPartnersView
+    component: InstitutionsPartnerView
   },
   {
     path: '/actions',
@@ -62,16 +55,6 @@ const routes = [
     path: '/actions-subjects',
     name: 'ActionsSubjects',
     component: ActionsSubjectsView
-  },
-  {
-    path: '/actions-members',
-    name: 'ActionsMembers',
-    component: ActionsMembersView,
-  },
-  {
-    path: '/actions-financial',
-    name: 'ActionsFinancial',
-    component: ActionsFinancialView,
   },
 ]
 
