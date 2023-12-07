@@ -4,15 +4,15 @@
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>          
           <download-csv :data="items" style="margin-right: 10px" name="membros_grupo_de_pesquisa.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
-          </download-csv>
+          </download-csv>          
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+              <v-btn color="secondary" size="x-large" density="compact" title="Novo" icon="mdi-plus" v-bind="props" variant="tonal"
                 dark @click="groupMember = { ...defaultGroupMember }"></v-btn>
-            </template>
+            </template>                        
             <v-card>
               <v-card-title class="bg-primary">
                 <v-spacer></v-spacer>
@@ -58,7 +58,10 @@
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
-          </v-dialog>
+          </v-dialog>          
+          <v-btn icon title="Voltar" class="rounded-circle ml-2" variant="tonal" @click="$emit('closeModal', true)">           
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
           <!-- Confirm delete -->
           <v-dialog v-model="groupMemberDelete" max-width="420px">
             <v-card class="rounded-lg">

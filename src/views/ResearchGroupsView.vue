@@ -82,12 +82,7 @@
           </v-dialog>
           <v-dialog fullscreen v-model="dialogMembers" activator="parent">
             <v-card>
-              <ResearchGroupsMembersView />
-              <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
-                  Fechar
-                </v-btn>
-              </v-card-actions>
+              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" />             
             </v-card>
           </v-dialog>
         </v-toolbar>
