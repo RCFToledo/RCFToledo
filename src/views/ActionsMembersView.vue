@@ -55,6 +55,9 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-btn icon title="Voltar" class="rounded-circle ml-2" variant="tonal" @click="$emit('closeModal', true)">           
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
           <!-- Confirm delete -->
           <v-dialog v-model="itemsDelete" max-width="420px">
             <v-card class="rounded-lg">

@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/financing-institutions" name="financing_institutions" :lastPage="configPagination.last_page" />
+          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/financing-institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
