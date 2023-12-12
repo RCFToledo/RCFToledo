@@ -9,7 +9,6 @@ import InstitutionsPartnerView from '../views/InstitutionsPartnerView.vue'
 import ActionsView from '../views/ActionsView.vue'
 import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
 
-
 const routes = [
   {
     path: '/',
