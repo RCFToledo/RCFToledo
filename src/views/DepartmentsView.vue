@@ -22,7 +22,7 @@
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
                   ">
-                  Fechar
+                  FSechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -51,7 +51,7 @@
                       <v-col cols="12">
                         <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
                           () => !!departments.abbr_name  || 'Nome Abreviado requerido',
-                          () => !!((departments.abbr_name === null) && (departments.abbr_name.length < 20)) || 'Nome Abreviado maior que o suportado',
+                          () => !((departments.abbr_name !== null) && (!departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 

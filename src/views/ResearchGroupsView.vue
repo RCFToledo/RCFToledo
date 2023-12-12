@@ -80,9 +80,9 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog fullscreen v-model="dialogMembers" activator="parent">
+          <v-dialog fullscreen v-model="dialogMembers">
             <v-card>
-              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" />             
+              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" />
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -101,8 +101,7 @@
                 @click="editResearchGroup(item.raw)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteGroup(item.raw)"></v-list-item>
-              <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
-                @click="dialogMembers = true"></v-list-item>
+              <v-list-item @click="dialogMembers = true" prepend-icon="mdi-account-multiple" title="Membros"></v-list-item>
 
             </v-list>
           </v-menu>

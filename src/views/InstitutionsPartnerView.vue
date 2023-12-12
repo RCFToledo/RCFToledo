@@ -6,9 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="instituições_financiamento.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
-          </download-csv>
+          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/financing-institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -126,6 +124,8 @@
 
 
 <script>
+import ExportCSV from "../components/ExportCSV.vue"
+
 export default {
   data: () => ({
     valid: false,
@@ -168,6 +168,10 @@ export default {
       country_code: null,
     },
   }),
+
+  components: {
+    ExportCSV
+  },
 
   computed: {
     formTitle() {

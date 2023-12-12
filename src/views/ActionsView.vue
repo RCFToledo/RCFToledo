@@ -8,7 +8,7 @@
           <download-csv :data="items" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
-          <v-dialog persistent v-model="dialog" max-width="800px">
+          <v-dialog persistent v-model="dialog" max-width="800px" v-if="user === 'staff'">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
                 dark @click="action = { ...defaultAction }"></v-btn>
@@ -71,9 +71,11 @@
                       <v-switch color="primary" v-model="action.free" inset
                         :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                     </v-col>
-                    <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.status" inset label="Cancelado"></v-switch>
+                    <v-col cols="12" md="6">
+                      <v-select v-model="action.status" :items="status" item-value="value" item-title="title" label="Situação"
+                        required></v-select>
                     </v-col>
+
                     <v-col cols="12" md="12">
                       <v-textarea v-model="action.description" :rules="[
                         () => !!action.description || 'Descrição é requerida!',
@@ -113,24 +115,30 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog fullscreen v-model="dialogMembers" activator="parent">
+          <v-dialog persistent v-model="dialog" fullscreen v-if="user === 'professor'">
+            <template v-slot:activator="{ props }">
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="action = { ...defaultAction }"></v-btn>
+            </template>
             <v-card>
-              <ActionsMembersView />
-              <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="primary" variant="tonal" @click="dialogMembers = false; initialize();">
-                  Fechar
-                </v-btn>
-              </v-card-actions>
+              <v-tabs color="primary">
+                <v-tab>Titulo</v-tab>
+                <v-tab>Dados</v-tab>
+                <v-tab>Financiamentos</v-tab>
+                <v-tab>Membros</v-tab>
+                <v-tab>Enviar</v-tab>
+                <v-tab>Avaliar</v-tab>
+              </v-tabs>
             </v-card>
           </v-dialog>
-          <v-dialog fullscreen v-model="dialogFinancing" activator="parent">
+          <v-dialog fullscreen v-model="dialogMembers">
             <v-card>
-              <ActionsFinancialView />
-              <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="primary" variant="tonal" @click="dialogFinancing = false; initialize();">
-                  Fechar
-                </v-btn>
-              </v-card-actions>
+              <ActionsMembersView @closeModal="dialogMembers = false; initialize();" />
+            </v-card>
+          </v-dialog>
+          <v-dialog fullscreen v-model="dialogFinancing">
+            <v-card>
+              <ActionsFinancialView @closeModal="dialogFinancing = false; initialize();" />
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -193,6 +201,7 @@ export default {
     dialog: false,
     itemsDelete: false,
     dialogMembers: false,
+    user:  'professor',
     dialogFinancing: false,
     headers: [
       {
@@ -202,9 +211,9 @@ export default {
       },
       { title: "Tipo", key: "type" },
       { title: "Responsável", key: "responsible_id" },
-      { title: "Internacional", key: "international" },
+      { title: "Situação", key: "status" },
       { title: "Data de inicio", key: "started_at" },
-      { title: "Gratuito", key: "free" },
+      { title: "Data de termino", key: "ended_at" },
       { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
@@ -229,12 +238,16 @@ export default {
     },
     status: [
       {
-        title: "Em andamento",
+        title: "Em análise",
         value: "in_progress"
       },
       {
-        title: "Finalizada",
-        value: "fineshed"
+        title: "Aprovada",
+        value: "approved"
+      },
+      {
+        title: "Reprovada",
+        value: "repproved"
       },
       {
         title: "Cancelada",
