@@ -72,8 +72,8 @@
                         :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-select v-model="action.status" :items="status" item-value="value" item-title="title" label="Situação"
-                        required></v-select>
+                      <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
+                        label="Situação" required></v-select>
                     </v-col>
 
                     <v-col cols="12" md="12">
@@ -115,30 +115,101 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog persistent v-model="dialog" fullscreen v-if="user === 'professor'">
+          <v-dialog v-model="dialog" fullscreen v-if="user === 'professor'">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
                 dark @click="action = { ...defaultAction }"></v-btn>
             </template>
             <v-card>
-              <v-tabs color="primary">
-                <v-tab>Titulo</v-tab>
-                <v-tab>Dados</v-tab>
-                <v-tab>Financiamentos</v-tab>
-                <v-tab>Membros</v-tab>
-                <v-tab>Enviar</v-tab>
-                <v-tab>Avaliar</v-tab>
-              </v-tabs>
-            </v-card>
-          </v-dialog>
-          <v-dialog fullscreen v-model="dialogMembers">
-            <v-card>
-              <ActionsMembersView @closeModal="dialogMembers = false; initialize();" />
-            </v-card>
-          </v-dialog>
-          <v-dialog fullscreen v-model="dialogFinancing">
-            <v-card>
-              <ActionsFinancialView @closeModal="dialogFinancing = false; initialize();" />
+              <v-toolbar color="primary">
+                <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+                <v-tabs v-model="tabModel">
+                  <v-tab v-for="item in tabTitle" :key="item" @click="isTab = item">{{ item }}</v-tab>
+                </v-tabs>
+                <v-spacer></v-spacer>
+                <v-tabs hide-slider>
+                  <v-tab v-ripple="false"><v-btn icon title="Fechar" class="rounded-circle ml-2" variant="tonal"
+                      @click="dialog = false, initialize()">
+                      <v-icon>mdi-close</v-icon>
+                    </v-btn></v-tab>
+                </v-tabs>
+              </v-toolbar>
+              <v-container fluid>
+                <v-card-text>
+                  <v-form ref="form" lazy-validation>
+                    <v-row v-if="isTab === 'Título'">
+                      <v-col cols="12" md="12">
+                        <v-text-field v-model="action.title" :rules="[
+                          () => !!action.title || 'Título é requerido!',
+                          () => !(action.title.length > 60) || 'Título maior que o suportado',
+                        ]" label="Título" :counter="60" required></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
+                          item-value="_id" :rules="[
+                            () => !!action.responsible_id || 'Responsável é requerido!',
+                            () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
+                          ]" label="Responsável" :counter="60" required>
+                        </v-autocomplete>
+                      </v-col>
+                    </v-row>
+                    <v-row dense v-else-if="isTab === 'Dados'">
+                      <v-col cols="12" md="12">
+                        <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="label"
+                          item-value="type" :rules="[
+                            () => !!action.type || 'Tipo é requerido!',
+                          ]"></v-select>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="_id"
+                          v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords"
+                          label="Palavras-chave" required></v-combobox>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                        <v-text-field v-model="action.started_at" label="Data de início" :rules="[
+                          () => !!action.started_at || 'Data de ínicio é requirido',
+                          () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
+                        ]" required v-mask-date.br></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                        <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
+                          () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
+                        ]" v-mask-date.br :disabled="disabled"></v-text-field>
+                      </v-col>
+
+                      <v-col cols="12" md="3">
+                        <v-switch color="primary" v-model="action.international" inset
+                          :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                        <v-switch color="primary" v-model="action.free" inset
+                          :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-textarea v-model="action.description" :rules="[
+                          () => !!action.description || 'Descrição é requerida!',
+                          () => !(action.description.length > 200) || 'Descrição maior que o suportado',
+                        ]" label="Descrição" :counter="200" required></v-textarea>
+                      </v-col>
+                    </v-row>
+                    <v-row dense v-else-if="isTab === 'Avaliar'">
+                      <v-col cols="12" md="6">
+                        <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
+                          label="Situação" required></v-select>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                  <v-card v-if="isTab === 'Financiamentos'">
+                    <ActionsFinancialView />
+                  </v-card>
+                  <v-card v-if="isTab === 'Membros'">
+                    <ActionsMembersView />
+                  </v-card>
+                </v-card-text>
+              </v-container>
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -170,13 +241,13 @@
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
-                @click="editAction(item.raw)"></v-list-item>
+                @click="editAction(item.raw, 'Título')"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteAction(item.raw)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
                 @click="dialogMembers = true"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
-                @click="dialogFinancing = true"></v-list-item>
+                @click="editAction(item.raw, 'Financiamentos')"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -201,7 +272,17 @@ export default {
     dialog: false,
     itemsDelete: false,
     dialogMembers: false,
-    user:  'professor',
+    isTab: 'Título',
+    tabModel: null,
+    tabTitle: [
+      'Título',
+      'Dados',
+      'Financiamentos',
+      'Membros',
+      'Enviar',
+      'Avaliar'
+    ],
+    user: 'professor',
     dialogFinancing: false,
     headers: [
       {
@@ -329,9 +410,11 @@ export default {
       });
     },
 
-    editAction(item) {
+    editAction(item, tab) {
       this.action = item;
       this.dialog = true;
+      this.isTab = tab;
+      this.tabModel = tab;
     },
 
     deleteAction(item) {
@@ -415,7 +498,7 @@ export default {
       );
       return typeItems ? typeItems.label : "";
     },
-    
+
     compareDates(start, end) {
       let momentInit = moment.utc(start, "DD/MM/YYYY");
       let momentFinal = moment.utc(end, "DD/MM/YYYY");

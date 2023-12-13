@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-checkbox class="elevation-0" label="Declaro que está ação não possui financiamento" v-model="declareNoFinancing" v-if="items.length <= 0"></v-checkbox>
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" v-if="!declareNoFinancing">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Financiamentos</v-toolbar-title>
@@ -56,9 +57,7 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-btn icon title="Voltar" class="rounded-circle ml-2" variant="tonal" @click="$emit('closeModal', true)">           
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
+
           <!-- Confirm delete -->
           <v-dialog v-model="itemsDelete" max-width="420px">
             <v-card class="rounded-lg">
@@ -110,6 +109,7 @@ export default {
     valid: false,
     dialog: false,
     itemsDelete: false,
+    declareNoFinancing: false,
     headers: [
       {
         title: "Instituição",
