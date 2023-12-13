@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-checkbox class="elevation-0" label="Declaro que está ação não possui membros" v-model="declareNoMembers" v-if="items.length <= 0"></v-checkbox>
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" v-if="!declareNoMembers">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
@@ -100,6 +101,7 @@ export default {
     valid: false,
     dialog: false,
     itemsDelete: false,
+    declareNoMembers: false,
     headers: [
       {
         title: "Pessoa",

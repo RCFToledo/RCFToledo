@@ -8,123 +8,16 @@
           <download-csv :data="items" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
-          <v-dialog persistent v-model="dialog" max-width="800px" v-if="user === 'staff'">
+          <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="action = { ...defaultAction }"></v-btn>
-            </template>
-            <v-card>
-              <v-card-title class="bg-primary">
-                <v-spacer></v-spacer>
-                <span class="text-h5">{{ formTitle }}</span>
-                <v-spacer></v-spacer>
-              </v-card-title>
-              <v-card-text>
-                <v-form ref="form" lazy-validation>
-                  <v-row dense>
-                    <v-col cols="12" md="8">
-                      <v-text-field v-model="action.title" :rules="[
-                        () => !!action.title || 'Título é requerido!',
-                        () => !(action.title.length > 60) || 'Título maior que o suportado',
-                      ]" label="Título" :counter="60" required></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="4">
-                      <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="label" item-value="type"
-                        :rules="[
-                          () => !!action.type || 'Tipo é requerido!',
-                        ]"></v-select>
-                    </v-col>
-                    <v-col cols="12" md="12">
-                      <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
-                        item-value="_id" :rules="[
-                          () => !!action.responsible_id || 'Responsável é requerido!',
-                          () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
-                        ]" label="Responsável" :counter="60" required>
-                      </v-autocomplete>
-                    </v-col>
-
-                    <v-col cols="12" md="12">
-                      <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="_id"
-                        v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" :items="keywords"
-                        label="Palavras-chave" required></v-combobox>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                      <v-text-field v-model="action.started_at" label="Data de início" :rules="[
-                        () => !!action.started_at || 'Data de ínicio é requirido',
-                        () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
-                      ]" required v-mask-date.br></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                      <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
-                        () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
-                      ]" v-mask-date.br :disabled="disabled"></v-text-field>
-                    </v-col>
-
-                    <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.international" inset
-                        :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
-                    </v-col>
-                    <v-col cols="12" md="3">
-                      <v-switch color="primary" v-model="action.free" inset
-                        :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
-                        label="Situação" required></v-select>
-                    </v-col>
-
-                    <v-col cols="12" md="12">
-                      <v-textarea v-model="action.description" :rules="[
-                        () => !!action.description || 'Descrição é requerida!',
-                        () => !(action.description.length > 200) || 'Descrição maior que o suportado',
-                      ]" label="Descrição" :counter="200" required></v-textarea>
-                    </v-col>
-                  </v-row>
-                </v-form>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
-                  Cancelar
-                </v-btn>
-                <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <!-- Confirm delete -->
-          <v-dialog v-model="itemsDelete" max-width="420px">
-            <v-card class="rounded-lg">
-              <v-card-title class="bg-primary">
-                Confirmar exclusão
-              </v-card-title>
-              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
-                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
-                excluir esse item?
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn color="blue-darken-1" variant="plain" @click="itemsDelete = false">
-                  Cancelar
-                </v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteActionConfirm">
-                  Excluir
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialog" fullscreen v-if="user === 'professor'">
-            <template v-slot:activator="{ props }">
-              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="action = { ...defaultAction }"></v-btn>
+                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título'"></v-btn>
             </template>
             <v-card>
               <v-toolbar color="primary">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
-                <v-tabs v-model="tabModel">
-                  <v-tab v-for="item in tabTitle" :key="item" @click="isTab = item">{{ item }}</v-tab>
+                <v-tabs v-model="tabModal">
+                  <v-tab v-for="(item, index) in tabTitle" :key="index" @click="isTab = item" :value="index">{{ item }}</v-tab>
                 </v-tabs>
                 <v-spacer></v-spacer>
                 <v-tabs hide-slider>
@@ -145,12 +38,17 @@
                         ]" label="Título" :counter="60" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name"
-                          item-value="_id" :rules="[
+                        <v-text-field v-model="action.responsible_id" :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
                             () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Responsável" :counter="60" required>
-                        </v-autocomplete>
+                        </v-text-field>
+                        <v-col cols="12" md="12">
+                        <v-text-field v-model="action.assistant_id"  :rules="[
+                            () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
+                          ]" label="Auxiliar" :counter="60">
+                        </v-text-field>
+                      </v-col>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
@@ -196,18 +94,34 @@
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Avaliar'">
-                      <v-col cols="12" md="6">
+                      <v-col cols="12" md="12">
                         <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
-                          label="Situação" required></v-select>
+                          label="Situação" :rules="[
+                            () => !!action.status || 'Situação é requerida',
+                          ]" required></v-select>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-textarea v-model="action.justify"
+                          label="Justificativa" required></v-textarea>
                       </v-col>
                     </v-row>
-                  </v-form>
-                  <v-card v-if="isTab === 'Financiamentos'">
+                    <v-spacer></v-spacer>
+                    <v-card v-if="isTab === 'Financiamentos'">
                     <ActionsFinancialView />
                   </v-card>
                   <v-card v-if="isTab === 'Membros'">
                     <ActionsMembersView />
                   </v-card>
+                  <v-card v-if="isTab === 'Enviar'">
+                    <v-checkbox class="elevation-0" label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="acceptTerm" :rules="[
+                      () => !!acceptTerm || 'Aceitar o termo é requerido',
+                    ]" required></v-checkbox>
+                  </v-card>
+                  <v-col>
+                    <v-btn color="primary" variant="tonal" @click="formSubmit" v-if="isTab !== 'Financiamentos' && isTab !== 'Membros'">{{isTab !== 'Enviar'? 'Salvar' : 'Finalizar'}}</v-btn>
+                  </v-col>
+                  </v-form>
+                  
                 </v-card-text>
               </v-container>
             </v-card>
@@ -240,14 +154,19 @@
           <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
-              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+              <v-list-item class="bg-primary" size="small">Editar</v-list-item>
+              <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
                 @click="editAction(item.raw, 'Título')"></v-list-item>
-              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteAction(item.raw)"></v-list-item>
+                <v-list-item prepend-icon="mdi-database" title="Dados"
+                @click="editAction(item.raw, 'Dados', 1)"></v-list-item>
+                <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
+                @click="editAction(item.raw, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
-                @click="dialogMembers = true"></v-list-item>
-              <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
-                @click="editAction(item.raw, 'Financiamentos')"></v-list-item>
+                @click="editAction(item.raw, 'Membros', 3)"></v-list-item>
+                <v-list-item prepend-icon="mdi-poll" title="Avaliação"
+                @click="editAction(item.raw, 'Avaliar', 5)"></v-list-item>
+                <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteAction(item.raw)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -272,15 +191,17 @@ export default {
     dialog: false,
     itemsDelete: false,
     dialogMembers: false,
+    acceptTerm: false,
     isTab: 'Título',
-    tabModel: null,
+    tabModal: null,
     tabTitle: [
       'Título',
       'Dados',
       'Financiamentos',
       'Membros',
-      'Enviar',
-      'Avaliar'
+      'Avaliar',
+      'Enviar', 
+      
     ],
     user: 'professor',
     dialogFinancing: false,
@@ -316,6 +237,8 @@ export default {
       started_at: null,
       ended_at: null,
       free: null,
+      assistant_id: null,
+      justify: null,
     },
     status: [
       {
@@ -393,7 +316,7 @@ export default {
         .then((response) => {
           let people = response.data;
           people.forEach((person) => {
-            if (person.institution_id === this.$store.getters.getUnicamp_id) {
+            if (person.institution_id === this.$store.getters.getUnicamp_id && person.academic_profile !== 'staff') {
               this.itemsPeople.push(person);
             }
           });
@@ -410,11 +333,11 @@ export default {
       });
     },
 
-    editAction(item, tab) {
+    editAction(item, tab, index) {
       this.action = item;
       this.dialog = true;
       this.isTab = tab;
-      this.tabModel = tab;
+      this.tabModal = index;
     },
 
     deleteAction(item) {
@@ -465,7 +388,9 @@ export default {
                 action.ended_at = this.getDate(action.ended_at);
               })
               this.$toast.success(response.statusText);
-              this.dialog = false;
+              if(this.isTab  === 'Enviar') {
+                this.dialog = false;
+              } 
             } else {
               this.$toast.error(response.statusText);
             }
@@ -482,7 +407,9 @@ export default {
               this.initialize();
               this.action = this.defaultAction;
               this.$toast.success(response.statusText);
-              this.dialog = false;
+              if(this.isTab  === 'Enviar') {
+                this.dialog = false;
+              }
             } else {
               this.$toast.error(response.statusText);
             }
