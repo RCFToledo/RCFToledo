@@ -19,12 +19,13 @@ import VueMask from '@devindex/vue-mask';
 loadFonts();
 
 const app = createApp(App);
-app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000, dismissible:true});
+  
+  // Configuração do z-index para o vue-toast-notification
+app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000, dismissible:true});  
 
 app.component('download-csv', JsonCSV)
 
 app.use(axios, { keycloak });
 app.component('v-data-table', VDataTable);
 app.mount('#app');
-
 
