@@ -17,7 +17,8 @@
               <v-toolbar color="primary">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-tabs v-model="tabModal">
-                  <v-tab v-for="(item, index) in tabTitle" :key="index" @click="isTab = item" :value="index">{{ item }}</v-tab>
+                  <v-tab v-for="(item, index) in tabTitle" :key="index" @click="isTab = item" :value="index">{{ item
+                  }}</v-tab>
                 </v-tabs>
                 <v-spacer></v-spacer>
                 <v-tabs hide-slider>
@@ -39,16 +40,16 @@
                       </v-col>
                       <v-col cols="12" md="12">
                         <v-text-field v-model="action.responsible_id" :rules="[
-                            () => !!action.responsible_id || 'Responsável é requerido!',
-                            () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
-                          ]" label="Responsável" :counter="60" required>
+                          () => !!action.responsible_id || 'Responsável é requerido!',
+                          () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
+                        ]" label="Responsável" :counter="60" required>
                         </v-text-field>
                         <v-col cols="12" md="12">
-                        <v-text-field v-model="action.assistant_id"  :rules="[
+                          <v-text-field v-model="action.assistant_id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
-                        </v-text-field>
-                      </v-col>
+                          </v-text-field>
+                        </v-col>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
@@ -101,29 +102,99 @@
                           ]" required></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea v-model="action.justify"
-                          label="Justificativa" required></v-textarea>
+                        <v-textarea v-model="action.justify" label="Justificativa" required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
                     <v-card v-if="isTab === 'Financiamentos'">
-                    <ActionsFinancialView />
-                  </v-card>
-                  <v-card v-if="isTab === 'Membros'">
-                    <ActionsMembersView />
-                  </v-card>
-                  <v-card v-if="isTab === 'Enviar'">
-                    <v-checkbox class="elevation-0" label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="acceptTerm" :rules="[
-                      () => !!acceptTerm || 'Aceitar o termo é requerido',
-                    ]" required></v-checkbox>
-                  </v-card>
-                  <v-col>
-                    <v-btn color="primary" variant="tonal" @click="formSubmit" v-if="isTab !== 'Financiamentos' && isTab !== 'Membros'">{{isTab !== 'Enviar'? 'Salvar' : 'Finalizar'}}</v-btn>
-                  </v-col>
+                      <ActionsFinancialView />
+                    </v-card>
+                    <v-card v-if="isTab === 'Membros'">
+                      <ActionsMembersView />
+                    </v-card>
+                    <v-card v-if="isTab === 'Enviar'" variant="tonal">
+                      <v-card-title>Termo de responsabilidades</v-card-title>
+                      <v-card-text class="text-body-1 text-left">
+                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of
+                        type and scrambled it to make a type specimen book. It has survived not only five centuries, but
+                        also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in
+                        the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently
+                        with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+
+                        <p>Why do we use it?
+                        It is a long established fact that a reader will be distracted by the readable content of a page
+                        when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal
+                        distribution of letters, as opposed to using 'Content here, content here', making it look like
+                        readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as
+                        their default model text, and a search for 'lorem ipsum' will uncover many web sites still in
+                        their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on
+                        purpose (injected humour and the like).</p><br>
+
+
+                        <p>Where does it come from?
+                        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of
+                        classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin
+                        professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words,
+                        consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical
+                        literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33
+                        of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC.
+                        This book is a treatise on the theory of ethics, very popular during the Renaissance. The first
+                        line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p><br>
+
+                        <p>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested.
+                        Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in
+                        their exact original form, accompanied by English versions from the 1914 translation by H.
+                        Rackham.</p><br>
+
+                        <p>Where can I get some?
+                        There are many variations of passages of Lorem Ipsum available, but the majority have suffered
+                        alteration in some form, by injected humour, or randomised words which don't look even slightly
+                        believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't
+                        anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet
+                        tend to repeat predefined chunks as necessary, making this the first true generator on the
+                        Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence
+                        structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore
+                        always free from repetition, injected humour, or non-characteristic words etc.</p><br>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-checkbox class="elevation-0"
+                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="acceptTerm"
+                          :rules="[
+                            () => !!acceptTerm || 'Aceitar o termo é requerido',
+                          ]" required></v-checkbox>
+                      </v-card-actions>
+                    </v-card>
+                    <v-col>
+                      <v-btn color="primary" variant="tonal" @click="formSubmit"
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros'">{{ isTab !== 'Enviar' ? 'Salvar' :
+                          'Finalizar' }}</v-btn>
+                    </v-col>
                   </v-form>
-                  
                 </v-card-text>
               </v-container>
+              {{  }}
+            </v-card>
+          </v-dialog>
+          <!-- Confirm delete -->
+          <v-dialog v-model="itemsDelete" max-width="420px">
+            <v-card class="rounded-lg">
+              <v-card-title class="bg-primary">
+                Confirmar exclusão
+              </v-card-title>
+              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
+                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
+                excluir esse item?
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions class="bg-secondary d-flex justify-center">
+                <v-btn color="blue-darken-1" variant="plain" @click="itemsDelete = false">
+                  Cancelar
+                </v-btn>
+                <v-btn color="primary" variant="tonal" @click="deleteActionConfirm">
+                  Excluir
+                </v-btn>
+              </v-card-actions>
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -157,15 +228,15 @@
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
                 @click="editAction(item.raw, 'Título')"></v-list-item>
-                <v-list-item prepend-icon="mdi-database" title="Dados"
+              <v-list-item prepend-icon="mdi-database" title="Dados"
                 @click="editAction(item.raw, 'Dados', 1)"></v-list-item>
-                <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
+              <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item.raw, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
                 @click="editAction(item.raw, 'Membros', 3)"></v-list-item>
-                <v-list-item prepend-icon="mdi-poll" title="Avaliação"
+              <v-list-item prepend-icon="mdi-poll" title="Avaliação"
                 @click="editAction(item.raw, 'Avaliar', 5)"></v-list-item>
-                <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteAction(item.raw)"></v-list-item>
             </v-list>
           </v-menu>
@@ -199,9 +270,8 @@ export default {
       'Dados',
       'Financiamentos',
       'Membros',
+      'Enviar',
       'Avaliar',
-      'Enviar', 
-      
     ],
     user: 'professor',
     dialogFinancing: false,
@@ -382,15 +452,15 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.action = this.defaultAction;
               this.items.forEach((action) => {
                 action.started_at = this.getDate(action.started_at);
                 action.ended_at = this.getDate(action.ended_at);
               })
               this.$toast.success(response.statusText);
-              if(this.isTab  === 'Enviar') {
+              if (this.isTab === 'Enviar') {
                 this.dialog = false;
-              } 
+                this.action = this.defaultAction;
+              }
             } else {
               this.$toast.error(response.statusText);
             }
@@ -405,10 +475,10 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
-              this.action = this.defaultAction;
               this.$toast.success(response.statusText);
-              if(this.isTab  === 'Enviar') {
+              if (this.isTab === 'Enviar') {
                 this.dialog = false;
+                this.action = this.defaultAction;
               }
             } else {
               this.$toast.error(response.statusText);
