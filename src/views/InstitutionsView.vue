@@ -124,16 +124,16 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.raw.type) }}
+        {{ getTypeTitle(item.type) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
-        {{ getCountryCountryTitle(item.raw.country_code) }}
+        {{ getCountryCountryTitle(item.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editInstitutions(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteInstitutions(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

@@ -213,23 +213,23 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.raw.type) }}
+        {{ getTypeTitle(item.type) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.responsible_id="{ item }">
-        {{ getResponsibleNameById(item.raw.responsible_id) }}
+        {{ getResponsibleNameById(item.responsible_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.international="{ item }">
-        {{ getBooleanType(item.raw.international) }}
+        {{ getBooleanType(item.international) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.free="{ item }">
-        {{ getBooleanType(item.raw.free) }}
+        {{ getBooleanType(item.free) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.status="{ item }">
-        {{ getStatusTitle(item.raw.status) }}
+        {{ getStatusTitle(item.status) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -239,17 +239,17 @@
             <v-list>
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
-                @click="editAction(item.raw, 'Título')"></v-list-item>
+                @click="editAction(item, 'Título')"></v-list-item>
               <v-list-item prepend-icon="mdi-database" title="Dados"
-                @click="editAction(item.raw, 'Dados', 1)"></v-list-item>
+                @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
-                @click="editAction(item.raw, 'Financiamentos', 2)"></v-list-item>
+                @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
-                @click="editAction(item.raw, 'Membros', 3)"></v-list-item>
+                @click="editAction(item, 'Membros', 3)"></v-list-item>
               <v-list-item prepend-icon="mdi-poll" title="Avaliação"
-                @click="editAction(item.raw, 'Avaliar', 5)"></v-list-item>
+                @click="editAction(item, 'Avaliar', 5)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteAction(item.raw)"></v-list-item>
+                @click="deleteAction(item)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>

@@ -87,16 +87,16 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
-        {{ getPersonNameById(item.raw.person_id) }}
+        {{ getPersonNameById(item.person_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.role="{ item }">
-        {{ getRoleById(item.raw.role) }}
+        {{ getRoleById(item.role) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editGroupMember(item.raw)">mdi-pencil</v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteGroupMember(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editGroupMember(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteGroupMember(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

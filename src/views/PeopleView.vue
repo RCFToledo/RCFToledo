@@ -138,19 +138,19 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.register="{ item }">
-        {{ getRegisterNumberByIds(item.raw.student_id, item.raw.employee_id) }}
+        {{ getRegisterNumberByIds(item.student_id, item.employee_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.academic_profile="{ item }">
-        {{ getProfileTitle(item.raw.academic_profile) }}
+        {{ getProfileTitle(item.academic_profile) }}
       </template>
 
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editItem(item.raw)">
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editItem(item)">
           mdi-pencil
         </v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteItem(item.raw)"> mdi-delete </v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
