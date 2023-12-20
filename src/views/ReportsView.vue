@@ -2,7 +2,7 @@
     <div>
         <v-row justify="center">
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table
@@ -14,7 +14,7 @@
                 </v-data-table>
             </v-col>
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e nível do programa acadêmico</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="headersActions" :items="actions" class="elevation-3" >
@@ -35,7 +35,7 @@
         </v-row>
         <v-row justify="center">
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Pessoas por tipo e tipo de ação</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="headersPeople" :items="people" class="elevation-3" >
@@ -45,7 +45,7 @@
                 </v-data-table>
             </v-col>
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" >
@@ -59,7 +59,7 @@
                 </v-data-table>
             </v-col>
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Financiamentos por tipo de ação</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :items="financing" class="elevation-3">
