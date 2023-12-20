@@ -49,6 +49,10 @@
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" >
+                     <!-- eslint-disable-next-line -->
+                    <template v-slot:item.related_subjects="{ item }">
+                        <v-chip variant="text" v-for="theme in item.related_subjects" :key="theme">{{theme}}</v-chip>
+                    </template>
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
