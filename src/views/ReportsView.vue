@@ -7,8 +7,9 @@
                 </v-toolbar>
                 <v-data-table
                     :headers="[{ title: 'Tipo', align: 'start', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
-                    :items="actions" key="undergraduate">
+                    :items="actions" key="undergraduate" class="elevation-3" >
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -16,16 +17,18 @@
                 <v-toolbar density="compact" color="primary">
                     <v-toolbar-title>Ações por tipo e nível do programa acadêmico</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActions" :items="actions">
+                <v-data-table :headers="headersActions" :items="actions" class="elevation-3" >
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template></v-data-table>
             </v-col>
             <v-col cols="4">
-                <v-toolbar density="compact" color="primary">
+                <v-toolbar density="compact" color="primary" class="elevation-3" >
                     <v-toolbar-title>Estudantes por tipo de ação e nível do programa acadêmico</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActions" :items="students">
+                <v-data-table :headers="headersActions" :items="students" class="elevation-3" >
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -35,8 +38,9 @@
                 <v-toolbar density="compact" color="primary">
                     <v-toolbar-title>Pessoas por tipo e tipo de ação</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersPeople" :items="people">
+                <v-data-table :headers="headersPeople" :items="people" class="elevation-3" >
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -44,8 +48,9 @@
                 <v-toolbar density="compact" color="primary">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActionsSubjects" :items="actions">
+                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" >
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -53,8 +58,9 @@
                 <v-toolbar density="compact" color="primary">
                     <v-toolbar-title>Financiamentos por tipo de ação</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :items="financing">
+                <v-data-table :items="financing" class="elevation-3">
                     <template v-slot:bottom>
+                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -87,18 +93,8 @@ export default {
         ],
         headersActionsSubjects: [
             { title: "Tipo", align: "start", key: "type" },
-            { title: "Curso", key: "course" },
-            { title: "Evento", key: "event" },
-            { title: "Programa de Extensão", key: "extension_program" },
-            { title: "Projeto de Extensão", key: "extension_project" },
-            { title: "Convênio", key: "agreement" },
-            { title: "Prestação de Serviço", key: "service_provision" },
-            {
-                title: 'Temas relacionados',
-                align: 'center',
-                children: [
-                ],
-            }
+            { title: "Temas relacionados", key: "related_subjects"},
+            { title: "Quantidade", key: "count"},
         ],
 
         actions: [
