@@ -81,12 +81,12 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
-        {{ getPersonNameById(item.raw.person_id) }}
+        {{ getPersonNameById(item.person_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editActionMembers(item.raw)">mdi-pencil</v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteActionMembers(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editActionMembers(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteActionMembers(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

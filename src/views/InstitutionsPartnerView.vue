@@ -91,20 +91,20 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.legal_category_id="{ item }">
-        {{ getCategoryById(item.raw.legal_category_id) }}
+        {{ getCategoryById(item.legal_category_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.legal_nature_id="{ item }">
-        {{ getNatureByCategoryIdNatureId(item.raw.legal_category_id, item.raw.legal_nature_id) }}
+        {{ getNatureByCategoryIdNatureId(item.legal_category_id, item.legal_nature_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
-        {{ getCountryCountryTitle(item.raw.country_code) }}
+        {{ getCountryCountryTitle(item.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editInstitutions(item.raw)">mdi-pencil</v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteInstitutions(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editInstitutions(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteInstitutions(item)">mdi-delete</v-icon>
       </template>
 
       <template v-slot:no-data> Não há dados para exibir!</template>

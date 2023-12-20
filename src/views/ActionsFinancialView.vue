@@ -83,17 +83,17 @@
       </template>
        <!-- eslint-disable-next-line -->
        <template v-slot:item.amount="{ item }">
-        {{ convertByBrazilDefault(item.raw.amount) }}
+        {{ convertByBrazilDefault(item.amount) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
-        {{  getInstitutionsFinacialNameById(item.raw.institution_id) }}
+        {{  getInstitutionsFinacialNameById(item.institution_id) }}
       </template>
      
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editAction(item.raw)">mdi-pencil</v-icon>
-        <v-icon color="primary" title="Excluir" size="small" @click="deleteAction(item.raw)">mdi-delete</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editAction(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Excluir" size="small" @click="deleteAction(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>

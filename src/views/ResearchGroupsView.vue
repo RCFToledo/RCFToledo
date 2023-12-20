@@ -89,7 +89,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.removed="{ item }">
-        {{ getRemoved(item.raw.removed) }}
+        {{ getRemoved(item.removed) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -98,9 +98,9 @@
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
-                @click="editResearchGroup(item.raw)"></v-list-item>
+                @click="editResearchGroup(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteGroup(item.raw)"></v-list-item>
+                @click="deleteGroup(item)"></v-list-item>
               <v-list-item @click="dialogMembers = true" prepend-icon="mdi-account-multiple" title="Membros"></v-list-item>
 
             </v-list>

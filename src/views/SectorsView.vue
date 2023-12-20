@@ -104,11 +104,11 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.raw.type) }}
+        {{ getTypeTitle(item.type) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
-        {{ getCountryCodeTitle(item.raw.country_code) }}
+        {{ getCountryCodeTitle(item.country_code) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -117,11 +117,11 @@
           <v-menu activator="parent" color="secondary">
             <v-list>
               <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
-                @click="editSectors(item.raw)"></v-list-item>
+                @click="editSectors(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteSectors(item.raw)"></v-list-item>
+                @click="deleteSectors(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
-                @click="visualizeMembers(item.raw)"></v-list-item>
+                @click="visualizeMembers(item)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
