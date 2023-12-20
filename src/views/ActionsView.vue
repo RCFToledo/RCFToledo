@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <v-data-table :headers="headers" :items="items" item-key="_id" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat color="primary">
@@ -30,7 +29,6 @@
                 </v-tabs>
               </v-toolbar>
               <v-container fluid>
-                {{ action.started_at }}
                 <v-card-text>
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
@@ -48,7 +46,7 @@
                         </v-text-field>
                         <v-col cols="12" md="12">
                           <v-text-field v-model="action.assistant_id" :rules="[
-                            () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
+                            () => !(action.assistant_id === null && action.assistant_id.length < 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
                           </v-text-field>
                         </v-col>
@@ -73,12 +71,12 @@
                         <v-text-field v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
                           () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
-                        ]" required v-mask-date.br></v-text-field>
+                        ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
                         <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
                           () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
-                        ]" v-mask-date.br :disabled="disabled"></v-text-field>
+                        ]" v-mask-date.br :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
 
                       <v-col cols="12" md="3">
