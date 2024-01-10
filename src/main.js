@@ -9,11 +9,11 @@ import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
 import './plugins/theme-toastification.css';
 import JsonCSV from 'vue-json-csv';
-
-//o import está dando erro
+//import VueChartJS from 'vue-chartjs';
 import VueMask from '@devindex/vue-mask';
 //import VueMoment from 'vue-moment';
 
+  
 
 loadFonts();
 
@@ -23,6 +23,7 @@ const app = createApp(App);
 app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000000000, dismissible:true});  
 
 app.component('download-csv', JsonCSV)
+
 
 app.use(axios, { keycloak });
 app.mount('#app');

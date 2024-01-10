@@ -62,6 +62,8 @@
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
+          <v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title"
+                :to="reports.to"></v-list-item>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
@@ -92,6 +94,11 @@ export default {
       rail: true,
       drawer: true,
       model:true,
+      reports: {
+          title: "Relatórios",
+          icon: "mdi-file-chart-outline",
+          to: "/reports",
+      },
       peopleGroups: [
         {
           title: "Pessoas",
