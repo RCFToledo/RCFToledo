@@ -86,7 +86,7 @@
                   <v-row dense>
                     <v-col cols="12" md="6">
                       <v-autocomplete v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
-                        item-title="name" item-value="_id" :rules="[
+                        item-title="name" item-value="id" :rules="[
                           () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',
@@ -95,11 +95,11 @@
                     <v-col cols="12" md="6"
                       v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
                       <v-autocomplete v-model="people.department_id" label="Departamento" :items="itemsDepartments"
-                        item-title="name" item-value="_id"></v-autocomplete>
+                        item-title="name" item-value="id"></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6" v-else-if="people.academic_profile === 'staff'">
                       <v-autocomplete v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
-                        item-value="_id"></v-autocomplete>
+                        item-value="id"></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -360,15 +360,15 @@ export default {
       this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people.id) {
         this.$axios
-          .put(" http://127.0.0.1:8000/api/people/" + this.people.id, this.people)
+          .put("http://127.0.0.1:8000/api/people/" + this.people.id, this.people)
           .then((response) => {
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -376,15 +376,15 @@ export default {
           });
       } else {
         this.$axios
-          .post(" http://127.0.0.1:8000/api/people", this.people)
+          .post("http://127.0.0.1:8000/api/people", this.people)
           .then((response) => {
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.people = this.defaultPeople;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
