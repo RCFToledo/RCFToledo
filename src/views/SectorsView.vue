@@ -265,7 +265,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/sectors", this.sectors)
+          .post("https://test-people.fe.unicamp.br/api/sectors", this.sectors)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

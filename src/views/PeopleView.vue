@@ -297,7 +297,7 @@ export default {
     },
     initializeDepartments() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/departments")
+        .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.itemsDepartments = response.data.data;
         })
@@ -308,7 +308,7 @@ export default {
 
     initializeSectors() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/sectors")
+        .get("https://test-people.fe.unicamp.br/api/sectors")
         .then((response) => {
           this.itemsSectors = response.data.data;
         })
@@ -319,7 +319,7 @@ export default {
 
     initializeInstitutions() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/institutions")
+        .get("https://test-people.fe.unicamp.br/api/institutions")
         .then((response) => {
           this.itemsInstitutions = response.data.data;
         })
@@ -340,7 +340,7 @@ export default {
 
     deletePeopleConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/people/" + this.people.id)
+        .delete("https://test-people.fe.unicamp.br/api/people/" + this.people.id)
         .then((response) => {
           if (response.status == 200) {
             this.initialize();
@@ -360,7 +360,7 @@ export default {
       this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/people/" + this.people.id, this.people)
+          .put("https://test-people.fe.unicamp.br/api/people/" + this.people.id, this.people)
           .then((response) => {
             if (response.status == 200) {
               this.initialize();
@@ -376,7 +376,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/people", this.people)
+          .post("https://test-people.fe.unicamp.br/api/people", this.people)
           .then((response) => {
             if (response.status == 201) {
               this.initialize();

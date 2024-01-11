@@ -197,7 +197,7 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/departments")
+        .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.items = response.data.data;
         })
@@ -206,7 +206,7 @@ export default {
         });
     },
     initializePeople() {
-      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+      this.$axios.get("https://test-people.fe.unicamp.br/api/people").then((response) => {
         this.itemsPeople = response.data.data;
       })
     },
@@ -222,7 +222,7 @@ export default {
 
     deleteDepartmentsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/departments/" + this.departments.id)
+        .delete("https://test-people.fe.unicamp.br/api/departments/" + this.departments.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -242,7 +242,7 @@ export default {
     save() {
       if (this.departments.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/departments/" + this.departments.id, this.departments)
+          .put("https://test-people.fe.unicamp.br/api/departments/" + this.departments.id, this.departments)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -259,7 +259,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/departments", this.departments)
+          .post("https://test-people.fe.unicamp.br/api/departments", this.departments)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

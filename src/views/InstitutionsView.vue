@@ -196,7 +196,7 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/institutions")
+        .get("https://test-people.fe.unicamp.br/api/institutions")
         .then((response) => {
           this.items = response.data.data;
         })
@@ -227,7 +227,7 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/institutions/" + this.institution.id)
+        .delete("https://test-people.fe.unicamp.br/api/institutions/" + this.institution.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -247,7 +247,7 @@ export default {
     save() {
       if (this.institution.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/institutions/" + this.institution.id, this.institution)
+          .put("https://test-people.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -264,7 +264,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/institutions", this.institution)
+          .post("https://test-people.fe.unicamp.br/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
