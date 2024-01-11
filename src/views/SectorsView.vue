@@ -50,7 +50,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
-                          () => !(sectors.abbr_name !== null && sectors.abbr_name.length < 20) || 'Nome Abreviado maior que o suportado',
+                          () => !(sectors.abbr_name === null && sectors.abbr_name.length < 20) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -172,12 +172,12 @@ export default {
     sectors: [],
     itemsPeople: [],
     defaultSector: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       code: null,
       members: null,
-      people_id: null,
+      peopleid: null,
     },
   }),
 
@@ -188,7 +188,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.sectors._id ? "Novo Setor" : "Editar Setor";
+      return !this.sectors.id ? "Novo Setor" : "Editar Setor";
     },
   },
   methods: {
@@ -201,17 +201,17 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("sectors/")
+        .get("http://127.0.0.1:8000/api/sectors")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
         })
         .catch((error) => {
           console.error(error);
         });
     },
     initializePeople() {
-      this.$axios.get("people/").then((response) => {
-        this.itemsPeople = response.data
+      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+        this.itemsPeople = response.data.data
       }).catch((error) => {
         console.error(error);
       });
@@ -228,15 +228,15 @@ export default {
 
     deleteSectorsConfirm() {
       this.$axios
-        .delete("sectors/" + this.sectors._id)
+        .delete("http://127.0.0.1:8000/api/sectors/" + this.sectors.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.sectorsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -246,18 +246,18 @@ export default {
     },
 
     save() {
-      if (this.sectors._id) {
+      if (this.sectors.id) {
         this.$axios
-          .put("sectors/" + this.sectors._id, this.sectors)
+          .put("http://127.0.0.1:8000/api/sectors/" + this.sectors.id, this.sectors)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.sectors = this.defaultSector;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialogEdit = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -265,16 +265,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("sectors/", this.sectors)
+          .post("http://127.0.0.1:8000/api/sectors", this.sectors)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.sectors = this.defaultSector;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialogEdit = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {

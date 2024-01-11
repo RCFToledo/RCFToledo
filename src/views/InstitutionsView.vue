@@ -168,7 +168,7 @@ export default {
     editedIndex: -1,
     institution: {},
     defaultInstitution: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       type: null,
@@ -178,7 +178,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.institution._id ? "Nova Instituição" : "Editar Instituição";
+      return !this.institution.id ? "Nova Instituição" : "Editar Instituição";
     },
   },
 
@@ -196,9 +196,9 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("institutions/")
+        .get("http://127.0.0.1:8000/api/institutions")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -227,15 +227,15 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("institutions/" + this.institution._id)
+        .delete("http://127.0.0.1:8000/api/institutions/" + this.institution.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.institutionsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -245,18 +245,18 @@ export default {
     },
 
     save() {
-      if (this.institution._id) {
+      if (this.institution.id) {
         this.$axios
-          .put("institutions/" + this.institution._id, this.institution)
+          .put("http://127.0.0.1:8000/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.institution = this.defaultInstitution;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -264,16 +264,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("institutions/", this.institution)
+          .post("http://127.0.0.1:8000/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.institution = this.defaultInstitution;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
