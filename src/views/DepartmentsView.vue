@@ -169,7 +169,7 @@ export default {
     departments: [],
     itemsPeople: [],
     defaultDepartment: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       code: null,
@@ -184,7 +184,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.departments._id ? "Novo Departamento " : "Editar Departamento";
+      return !this.departments.id ? "Novo Departamento " : "Editar Departamento";
     },
   },
   methods: {
@@ -197,17 +197,17 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("departments/")
+        .get("http://127.0.0.1:8000/api/departments")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
         })
         .catch((error) => {
           console.error(error);
         });
     },
     initializePeople() {
-      this.$axios.get("people/").then((response) => {
-        this.itemsPeople = response.data
+      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+        this.itemsPeople = response.data.data;
       })
     },
     editDepartments(item) {
@@ -222,15 +222,15 @@ export default {
 
     deleteDepartmentsConfirm() {
       this.$axios
-        .delete("departments/" + this.departments._id)
+        .delete("http://127.0.0.1:8000/api/departments/" + this.departments.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.departmentsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -240,18 +240,18 @@ export default {
     },
 
     save() {
-      if (this.departments._id) {
+      if (this.departments.id) {
         this.$axios
-          .put("departments/" + this.departments._id, this.departments)
+          .put("http://127.0.0.1:8000/api/departments/" + this.departments.id, this.departments)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.departments = this.defaultDepartment;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialogEdit = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -259,16 +259,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("departments/", this.departments)
+          .post("http://127.0.0.1:8000/api/departments", this.departments)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.departments = this.defaultDepartment;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialogEdit = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {

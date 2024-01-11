@@ -207,7 +207,7 @@ export default {
     peopleIndex: -1,
     people: [],
     defaultPeople: {
-      id_: null,
+      id: null,
       full_name: null,
       type: null,
       student_id: null,
@@ -253,7 +253,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return !this.people._id ? "Nova Pessoa" : "Editar Informações";
+      return !this.people.id ? "Nova Pessoa" : "Editar Informações";
     },
   },
 
@@ -275,10 +275,10 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("people/")
+        .get("http://127.0.0.1:8000/api/people")
         .then((response) => {
           console.log(response.data);
-          this.items = response.data;
+          this.items = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -297,9 +297,9 @@ export default {
     },
     initializeDepartments() {
       this.$axios
-        .get("departments/")
+        .get("http://127.0.0.1:8000/api/departments")
         .then((response) => {
-          this.itemsDepartments = response.data;
+          this.itemsDepartments = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -308,9 +308,9 @@ export default {
 
     initializeSectors() {
       this.$axios
-        .get("sectors/")
+        .get("http://127.0.0.1:8000/api/sectors")
         .then((response) => {
-          this.itemsSectors = response.data;
+          this.itemsSectors = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -319,9 +319,9 @@ export default {
 
     initializeInstitutions() {
       this.$axios
-        .get("institutions/")
+        .get("http://127.0.0.1:8000/api/institutions")
         .then((response) => {
-          this.itemsInstitutions = response.data;
+          this.itemsInstitutions = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -340,14 +340,14 @@ export default {
 
     deletePeopleConfirm() {
       this.$axios
-        .delete("people/" + this.people._id)
+        .delete("http://127.0.0.1:8000/api/people/" + this.people.id)
         .then((response) => {
           if (response.status == 200) {
             this.initialize();
             this.dialogDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -358,9 +358,9 @@ export default {
 
     save() {
       this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
-      if (this.people._id) {
+      if (this.people.id) {
         this.$axios
-          .put("people/" + this.people._id, this.people)
+          .put(" http://127.0.0.1:8000/api/people/" + this.people.id, this.people)
           .then((response) => {
             if (response.status == 200) {
               this.initialize();
@@ -376,7 +376,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("people/", this.people)
+          .post(" http://127.0.0.1:8000/api/people", this.people)
           .then((response) => {
             if (response.status == 200) {
               this.initialize();
@@ -410,19 +410,19 @@ export default {
     getPeopleDataByIds(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {
-          if (person.institution_id === data._id) {
+          if (person.institution_id === data.id) {
             person.institution_id = data.name;
           }
         });
  
         departments.forEach((data) => {
-          if (person.department_id === data._id) {
+          if (person.department_id === data.id) {
             person.department_id = data.name;
           }
         });
 
         sectors.forEach((data) => {
-          if (person.sector_id === data._id) {
+          if (person.sector_id === data.id) {
             person.sector_id = data.name;
           }
         });
@@ -433,19 +433,19 @@ export default {
       people.forEach((person) => {
         institutions.forEach((data) => {
           if (person.institution_id === data.name) {
-            person.institution_id = data._id;
+            person.institution_id = data.id;
           }
         });
  
         departments.forEach((data) => {
           if (person.department_id === data.name) {
-            person.department_id = data._id;
+            person.department_id = data.id;
           }
         });
 
         sectors.forEach((data) => {
           if (person.sector_id === data.name) {
-            person.sector_id = data._id;
+            person.sector_id = data.id;
           }
         });
       });
