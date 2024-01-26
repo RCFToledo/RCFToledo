@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="getPeopleDataByIds(items, itemsInstitutions, itemsDepartments, itemsSectors)"
+          <download-csv :data="items"
             style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
@@ -152,6 +152,16 @@
         </v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
   </div>
@@ -165,6 +175,8 @@ export default {
     dialog: false,
     dialogDelete: false,
     register: null,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome Completo",
@@ -211,6 +223,10 @@ export default {
       full_name: null,
       type: null,
       student_id: null,
+      rne: null,
+      passport: null,
+      institution_id: null,
+      department_id: null,
       academic_profile: null,
       employee_id: null,
       sector_id: null,
@@ -258,7 +274,7 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializeDepartments();
     this.initializeInstitutions();
     this.initializeSectors();
@@ -273,12 +289,13 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("http://127.0.0.1:8000/api/people")
+        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}`)
         .then((response) => {
           console.log(response.data);
           this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -357,7 +374,7 @@ export default {
     },
 
     save() {
-      this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
+      //this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people.id) {
         this.$axios
           .put("https://test-people.fe.unicamp.br/api/people/" + this.people.id, this.people)
@@ -406,24 +423,24 @@ export default {
           return gridProfile.title;
         }
       }
-    },
-    getPeopleDataByIds(people, institutions, departments, sectors) {
+    }, 
+    /*getPeopleDataByIds(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {
           if (person.institution_id === data.id) {
-            person.institution_id = data.name;
+            person.institution_name = data.name;
           }
         });
  
         departments.forEach((data) => {
           if (person.department_id === data.id) {
-            person.department_id = data.name;
+            person.department_name = data.name;
           }
         });
 
         sectors.forEach((data) => {
           if (person.sector_id === data.id) {
-            person.sector_id = data.name;
+            person.sector_name = data.name;
           }
         });
       });
@@ -449,7 +466,7 @@ export default {
           }
         });
       });
-    }
+    }*/
   },
 };
 </script>

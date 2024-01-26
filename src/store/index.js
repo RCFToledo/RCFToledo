@@ -4,7 +4,7 @@ export default createStore({
   state: {
     username: null,
     token: null,
-    unicamp_id: '653964ad00e637af8ca63548',
+    unicamp_id: 1,
     userData: null,
     isAuthenticated: null,
     logout: null,

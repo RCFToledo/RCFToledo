@@ -16,13 +16,17 @@
                 <span class="text-h5">{{ `Membros - ${departments.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-              <v-list lines="one" :items="departments.members" item-title="name" item-value="id"></v-list>
+              <v-list-item v-for="(member, index) in departments.members" :key="index" :value="member.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{ member.full_name }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
                   ">
-                  FSechar
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -50,7 +54,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
-                          () => !!departments.abbr_name  || 'Nome Abreviado requerido',
+                          () => !!departments.abbr_name || 'Nome Abreviado requerido',
                           () => !((departments.abbr_name !== null) && (!departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
@@ -71,9 +75,9 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                  <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
-                    Cancelar
-                  </v-btn>
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
+                  Cancelar
+                </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
@@ -112,13 +116,16 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-          <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+        <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
-            <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small" @click="editDepartments(item)"></v-list-item>
-            <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteDepartments(item)"></v-list-item>
-            <v-list-item prepend-icon="mdi-eye" title="Visualizar membros" @click="visualizeMembers(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+                @click="editDepartments(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteDepartments(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
+                @click="initializeMembers(item.id, item.name)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -136,24 +143,6 @@ export default {
     dialogEdit: false,
     dialogView: false,
     departmentsDelete: false,
-    tic: [
-      {
-        name: "Matheus Barbosa",
-        id: 1,
-      },
-      {
-        name: "Renato Tartori",
-        id: 2,
-      },
-      {
-        name: "Rafael Bellagama",
-        id: 3,
-      },
-      {
-        name: "Daniel",
-        id: 4,
-      },
-    ],
     headers: [
       {
         title: "Nome",
@@ -200,6 +189,20 @@ export default {
         .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.items = response.data.data;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializeMembers(id, departmentName) {
+      this.$axios
+        .get(`https://test-people.fe.unicamp.br/api/departments/${id}/members`)
+        .then((response) => {
+          this.departments.members = response.data.data;
+          console.log(departmentName);
+          this.departments.name = departmentName;
+          this.dialogView = true;
+
         })
         .catch((error) => {
           console.error(error);
@@ -279,9 +282,7 @@ export default {
     visualizeMembers(item) {
       this.departments = item;
       this.dialogView = true;
-      this.departments.members = this.tic
     },
-
   },
 };
 </script>

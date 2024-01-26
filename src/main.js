@@ -20,7 +20,7 @@ loadFonts();
 const app = createApp(App);
   
   // Configuração do z-index para o vue-toast-notification
-app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:5000000000, dismissible:true});  
+app.use(router).use(VueMask).use(vuetify).use(store).use(ToastPlugin, {position: 'top-right', duration:4000, dismissible:true});  
 
 app.component('download-csv', JsonCSV)
 

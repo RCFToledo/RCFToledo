@@ -16,7 +16,18 @@
                 <span class="text-h5">{{ `Membros - ${sectors.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-              <v-list lines="one" :items="sectors.members" item-title="name" item-value="id"></v-list>
+              <v-list v-if="Object.keys(sectors.members).length > 0">
+              <v-list-item v-for="(member, index) in sectors.members" :key="index" :value="member.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{member.full_name}}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              </v-list>
+              <v-list v-else>
+                <v-list-item>
+                  <v-list-item-title>Não há membros</v-list-item-title>
+              </v-list-item>
+              </v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
@@ -50,7 +61,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
-                          () => !(sectors.abbr_name === null && sectors.abbr_name.length < 20) || 'Nome Abreviado maior que o suportado',
+                          () => !(sectors.abbr_name !== null && sectors.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -121,7 +132,7 @@
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteSectors(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
-                @click="visualizeMembers(item)"></v-list-item>
+                @click="initializeMembers(item.id, item.name)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -140,24 +151,6 @@ export default {
     dialogEdit: false,
     dialogView: false,
     sectorsDelete: false,
-    tic: [
-      {
-        name: "Matheus Barbosa",
-        id: 1,
-      },
-      {
-        name: "Renato Tartori",
-        id: 2,
-      },
-      {
-        name: "Rafael Bellagama",
-        id: 3,
-      },
-      {
-        name: "Daniel",
-        id: 4,
-      },
-    ],
     headers: [
       {
         title: "Nome",
@@ -201,7 +194,7 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/sectors")
+        .get("https://test-people.fe.unicamp.br/api/sectors")
         .then((response) => {
           this.items = response.data.data;
         })
@@ -210,12 +203,28 @@ export default {
         });
     },
     initializePeople() {
-      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+      this.$axios.get("https://test-people.fe.unicamp.br/api/people").then((response) => {
         this.itemsPeople = response.data.data
       }).catch((error) => {
         console.error(error);
       });
     },
+    initializeMembers(id, sectorName) {
+      this.$axios
+        .get(`https://test-people.fe.unicamp.br/api/sectors/${id}/members`)
+        .then((response) => {
+          delete response.data.data.message;
+          this.sectors.members = response.data.data;
+          this.sectors.name = sectorName;
+          console.log(response.data.data);
+          this.dialogView = true;
+
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
     editSectors(item) {
       this.sectors = item;
       this.dialogEdit = true;
@@ -228,7 +237,7 @@ export default {
 
     deleteSectorsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/sectors/" + this.sectors.id)
+        .delete("https://test-people.fe.unicamp.br/api/sectors/" + this.sectors.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -248,7 +257,7 @@ export default {
     save() {
       if (this.sectors.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/sectors/" + this.sectors.id, this.sectors)
+          .put("https://test-people.fe.unicamp.br/api/sectors/" + this.sectors.id, this.sectors)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -281,11 +290,6 @@ export default {
             console.error(error);
           });
       }
-    },
-    visualizeMembers(item) {
-      this.sectors = item;
-      this.dialogView = true;
-      this.sectors.members = this.tic
     },
   },
 };
