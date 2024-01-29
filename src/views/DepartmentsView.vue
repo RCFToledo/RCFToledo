@@ -16,11 +16,18 @@
                 <span class="text-h5">{{ `Membros - ${departments.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
+              <v-list v-if="Object.keys(departments.members).length > 0">
               <v-list-item v-for="(member, index) in departments.members" :key="index" :value="member.id">
                 <v-list-item-content>
-                  <v-list-item-title>{{ member.full_name }}</v-list-item-title>
+                  <v-list-item-title>{{member.full_name}}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
+              </v-list>
+              <v-list v-else>
+                <v-list-item>
+                  <v-list-item-title>Não há membros</v-list-item-title>
+              </v-list-item>
+              </v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
@@ -198,8 +205,8 @@ export default {
       this.$axios
         .get(`https://test-people.fe.unicamp.br/api/departments/${id}/members`)
         .then((response) => {
+          delete response.data.data.message;
           this.departments.members = response.data.data;
-          console.log(departmentName);
           this.departments.name = departmentName;
           this.dialogView = true;
 
