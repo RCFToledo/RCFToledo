@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Setores</v-toolbar-title>
@@ -137,6 +137,16 @@
           </v-menu>
         </v-btn>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
   </div>
@@ -151,6 +161,8 @@ export default {
     dialogEdit: false,
     dialogView: false,
     sectorsDelete: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -175,7 +187,7 @@ export default {
   }),
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializePeople()
   },
 
@@ -192,11 +204,12 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("https://test-people.fe.unicamp.br/api/sectors")
+        .get(`https://test-people.fe.unicamp.br/api/sectors?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -216,7 +229,6 @@ export default {
           delete response.data.data.message;
           this.sectors.members = response.data.data;
           this.sectors.name = sectorName;
-          console.log(response.data.data);
           this.dialogView = true;
 
         })

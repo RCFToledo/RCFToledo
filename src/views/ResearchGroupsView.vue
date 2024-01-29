@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
@@ -107,6 +107,16 @@
           </v-menu>
         </v-btn>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
@@ -123,6 +133,8 @@ export default {
     valid: false,
     dialog: false,
     researchGroupDelete: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -154,7 +166,7 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize(1);
   },
   methods: {
     formSubmit() {
@@ -168,7 +180,8 @@ export default {
       this.$axios
         .get("research-groups/")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);

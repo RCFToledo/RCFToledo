@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
@@ -98,6 +98,16 @@
         <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editGroupMember(item)">mdi-pencil</v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteGroupMember(item)">mdi-delete</v-icon>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
@@ -112,6 +122,8 @@ export default {
     valid: false,
     dialog: false,
     groupMemberDelete: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Pessoa",
@@ -172,7 +184,8 @@ export default {
       this.$axios
         .get("research-groups-members/")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.configPagination = response.data;
           this.items.forEach((memberGroup) => {
             if (!this.items.stay_start) {
               memberGroup.stay_start = this.getDate(memberGroup.stay_start);

@@ -293,7 +293,6 @@ export default {
       this.$axios
         .get(`https://test-people.fe.unicamp.br/api/people?page=${page}`)
         .then((response) => {
-          console.log(response.data);
           this.items = response.data.data;
           this.configPagination = response.data;
         })

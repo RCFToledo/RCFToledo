@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
@@ -18,9 +18,7 @@
               </v-card-title>
               <v-list v-if="Object.keys(departments.members).length > 0">
               <v-list-item v-for="(member, index) in departments.members" :key="index" :value="member.id">
-                <v-list-item-content>
                   <v-list-item-title>{{member.full_name}}</v-list-item-title>
-                </v-list-item-content>
               </v-list-item>
               </v-list>
               <v-list v-else>
@@ -137,6 +135,16 @@
           </v-menu>
         </v-btn>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
   </div>
@@ -150,6 +158,8 @@ export default {
     dialogEdit: false,
     dialogView: false,
     departmentsDelete: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -174,7 +184,7 @@ export default {
   }),
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializePeople()
   },
 
@@ -196,6 +206,7 @@ export default {
         .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);

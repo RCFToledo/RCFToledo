@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" item-key="_id" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
@@ -60,7 +60,7 @@
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="_id"
+                        <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="id"
                           v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
@@ -252,6 +252,16 @@
           </v-menu>
         </v-btn>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
@@ -275,6 +285,8 @@ export default {
     acceptTerm: false,
     isTab: 'Título',
     tabModal: null,
+    currentPage: 1,
+    configPagination: [],
     tabTitle: [
       'Título',
       'Dados',
@@ -306,7 +318,7 @@ export default {
     action: {},
     disabled: null,
     defaultAction: {
-      _id: null,
+      id: null,
       type: null,
       description: null,
       keywords: null,
@@ -359,7 +371,7 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.getActionSubjects();
     this.initializePeople();
     this.initializeActionTypes();
@@ -372,11 +384,12 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("actions/")
+        .get(`https://test-bapex.fe.unicamp.br/api/action?page=${page}`)
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.configPagination = response.data;
           this.items.forEach((memberGroup) => {
             if (!this.items.started_at) {
               memberGroup.started_at = this.getDate(memberGroup.started_at);
@@ -427,7 +440,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("actions/" + this.action._id)
+        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action._id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -457,7 +470,7 @@ export default {
       }
       if (this.action._id) {
         this.$axios
-          .put("actions/" + this.action._id, this.action)
+          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action._id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -480,7 +493,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("actions/", this.action)
+          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
