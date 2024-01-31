@@ -211,7 +211,7 @@ export default {
         .get(`https://test-people.fe.unicamp.br/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
         })
         .catch((error) => {
           console.error(error);

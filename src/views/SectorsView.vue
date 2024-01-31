@@ -209,7 +209,7 @@ export default {
         .get(`https://test-people.fe.unicamp.br/api/sectors?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
         })
         .catch((error) => {
           console.error(error);
@@ -227,7 +227,7 @@ export default {
         .get(`https://test-people.fe.unicamp.br/api/sectors/${id}/members`)
         .then((response) => {
           delete response.data.data.message;
-          this.sectors.members = response.data.data;
+          this.sectors.members = response.data;
           this.sectors.name = sectorName;
           this.dialogView = true;
 

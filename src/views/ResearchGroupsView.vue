@@ -150,7 +150,7 @@ export default {
     researchGroup: {},
     dialogMembers: false,
     defaultResearchGroup: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       lattes_url: null,
@@ -161,7 +161,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.researchGroup._id ? "Novo grupo de pesquisa" : "Editar grupo de pesquisa";
+      return !this.researchGroup.id ? "Novo grupo de pesquisa" : "Editar grupo de pesquisa";
     },
   },
 
@@ -200,15 +200,15 @@ export default {
 
     deleteGroupConfirm() {
       this.$axios
-        .delete("research-groups/" + this.researchGroup._id)
+        .delete("research-groups/" + this.researchGroup.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.researchGroupDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -218,18 +218,18 @@ export default {
     },
 
     save() {
-      if (this.researchGroup._id) {
+      if (this.researchGroup.id) {
         this.$axios
-          .put("research-groups/" + this.researchGroup._id, this.researchGroup)
+          .put("research-groups/" + this.researchGroup.id, this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.researchGroup = this.defaultResearchGroup;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -240,13 +240,13 @@ export default {
           .post("research-groups/", this.researchGroup)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.researchGroup = this.defaultResearchGroup;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {

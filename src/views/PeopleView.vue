@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      :page="currentPage" :items-per-page="15">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items"
-            style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+          <download-csv :data="items" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
@@ -34,7 +34,7 @@
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
-                      people.academic_profile == 'professor' || people.academic_profile == 'researcher' 
+                      people.academic_profile == 'professor' || people.academic_profile == 'researcher'
                       ">
                       <v-text-field v-model="people.employee_id" :rules="[
                         () =>
@@ -64,12 +64,12 @@
                       ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.country_code !== 'BR'" class="d-flex flex-row">
-                      <v-text-field class="mr-2" v-model="people.rne" label="RNE" ></v-text-field>
-                      <v-text-field v-model="people.passport" label="Passaporte" ></v-text-field>
+                      <v-text-field class="mr-2" v-model="people.rne" label="RNE"></v-text-field>
+                      <v-text-field v-model="people.passport" label="Passaporte"></v-text-field>
                     </v-col>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 4 : 6">
-                      <v-autocomplete v-model="people.country_code" label="País de Origem" :items="institutionsCountryCode" item-title="name"
-                        item-value="code"></v-autocomplete>
+                      <v-autocomplete v-model="people.country_code" label="País de Origem"
+                        :items="institutionsCountryCode" item-title="name" item-value="code"></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -155,9 +155,10 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
-          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1"
+            v-model="currentPage" @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
           </v-pagination>
         </v-footer>
@@ -214,7 +215,7 @@ export default {
     items: [],
     itemsDepartments: [],
     itemsInstitutions: [],
-    institutionsCountryCode: [],  
+    institutionsCountryCode: [],
     itemsSectors: [],
     peopleIndex: -1,
     people: [],
@@ -235,21 +236,21 @@ export default {
   }),
   watch: {
     'people.academic_profile'(newValue) {
-      if (newValue === 'staff') {        
+      if (newValue === 'staff') {
         this.people.department_id = null
         this.people.student_id = null;
       }
-      else if ((newValue === 'professor') || (newValue === 'researcher')) {        
+      else if ((newValue === 'professor') || (newValue === 'researcher')) {
         this.people.sector_id = null
         this.people.student_id = null;
-      }      
-      else if(newValue === 'student') {
-        this.people.employee_id = null;        
+      }
+      else if (newValue === 'student') {
+        this.people.employee_id = null;
         this.people.department_id = null;
         this.people.sector_id = null;
       }
       else {
-        this.people.employee_id = null;        
+        this.people.employee_id = null;
         this.people.department_id = null;
         this.people.sector_id = null;
         this.people.student_id = null;
@@ -294,7 +295,8 @@ export default {
         .get(`https://test-people.fe.unicamp.br/api/people?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
+          console.log(response.data.meta);
         })
         .catch((error) => {
           console.error(error);
@@ -305,7 +307,7 @@ export default {
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
           this.institutionsCountryCode = response.data.data;
-          
+
         })
         .catch((error) => {
           console.error(error);
@@ -422,7 +424,7 @@ export default {
           return gridProfile.title;
         }
       }
-    }, 
+    },
     /*getPeopleDataByIds(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {

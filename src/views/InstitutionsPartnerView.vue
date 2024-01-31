@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/financing-institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
+          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -200,7 +200,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/financing-institutions?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data;
@@ -246,7 +246,7 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("https://test-bapex.fe.unicamp.br/api/financing-institutions/" + this.institution.id)
+        .delete("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -266,7 +266,7 @@ export default {
     save() {
       if (this.institution.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/financing-institutions/" + this.institution.id, this.institution)
+          .put("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -283,7 +283,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/financing-institutions", this.institution)
+          .post("https://test-bapex.fe.unicamp.br/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

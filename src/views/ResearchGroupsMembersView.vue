@@ -229,9 +229,9 @@ export default {
           if (response.status == 200) {
             this.initialize();
             this.groupMemberDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -257,10 +257,10 @@ export default {
                 memberGroup.stay_start = this.getDate(memberGroup.stay_start);
                 memberGroup.stay_end = this.getDate(memberGroup.stay_end);
               })
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -271,13 +271,13 @@ export default {
           .post("research-groups-members/", this.groupMember)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.groupMember = this.defaultGroupMember;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {

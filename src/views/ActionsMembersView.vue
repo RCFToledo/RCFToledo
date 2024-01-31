@@ -25,7 +25,7 @@
                   <v-row dense>
                     <v-col cols="12" md="12">
                       <v-autocomplete
-                        v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="_id" :rules="[ () => !!actionMembers.person_id || 'Membro é requerido' ]" required></v-autocomplete>
+                        v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[ () => !!actionMembers.person_id || 'Membro é requerido' ]" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-select v-model="actionMembers.degree"
@@ -107,6 +107,9 @@
 <script>
 import moment from 'moment'
 export default {
+  props: {
+    actionId: Number
+  },
   data: () => ({
     valid: false,
     dialog: false,
@@ -129,7 +132,7 @@ export default {
     itemsPeople: [],
     actionMembers: {},
     defaultActionMembers: {
-      id_: null,
+      id: null,
       person_id: null,
       degree: null,
       stay_start: null,
@@ -154,12 +157,12 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.actionMembers._id ? "Novo Membro" : "Editar Membro";
+      return !this.actionMembers.id ? "Novo Membro" : "Editar Membro";
     },
   },
 
   created() {
-    this.initialize(1);
+    this.initialize(1, this.actionId);
     this.initializePeople();
   },
   methods: {
@@ -172,7 +175,7 @@ export default {
     },
     initialize(page, id) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/action/${id}/members?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data;
@@ -192,9 +195,9 @@ export default {
 
     initializePeople() {
       this.$axios
-        .get("people/")
+        .get("https://test-people.fe.unicamp.br/api/institutions?include[]=people")
         .then((response) => {
-          this.itemsPeople = response.data;
+          this.itemsPeople = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -213,15 +216,15 @@ export default {
 
     deleteActionMembersConfirm() {
       this.$axios
-        .delete("members/" + this.actionMembers._id)
+        .delete(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.itemsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -235,9 +238,9 @@ export default {
       if (this.actionMembers.stay_end) {
         this.actionMembers.stay_end = this.setDate(this.actionMembers.stay_end)
       }
-      if (this.actionMembers._id) {
+      if (this.actionMembers.id) {
         this.$axios
-          .put("members/" + this.actionMembers._id, this.actionMembers)
+          .put(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -247,10 +250,10 @@ export default {
                 actionMembers.stay_start = this.getDate(actionMembers.stay_start);
                 actionMembers.stay_end = this.getDate(actionMembers.stay_end);
               })
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -258,16 +261,16 @@ export default {
           });
       } else {
         this.$axios
-          .post("members/", this.actionMembers)
+          .post(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members`, this.actionMembers)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.actionMembers = this.defaultActionMembers;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -314,7 +317,7 @@ export default {
     },
     getPersonNameById(personId) {
       const person = this.itemsPeople.find(
-        (item) => item._id === personId
+        (item) => item.id === personId
       );
       return person ? person.full_name : "";
     },

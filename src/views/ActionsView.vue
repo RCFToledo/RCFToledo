@@ -110,7 +110,7 @@
                       <ActionsFinancialView />
                     </v-card>
                     <v-card v-if="isTab === 'Membros'">
-                      <ActionsMembersView />
+                      <ActionsMembersView :actionId="action.id || items.length++" />
                     </v-card>
                     <v-card v-if="isTab === 'Enviar'" variant="tonal">
                       <v-card-title>Termo de responsabilidades</v-card-title>
@@ -355,7 +355,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.action._id ? "Nova ação" : "Editar ação";
+      return !this.action.id ? "Nova ação" : "Editar ação";
     },
   },
 
@@ -405,11 +405,12 @@ export default {
     },
     initializePeople() {
       this.$axios
-        .get("people/")
+        .get("https://test-people.fe.unicamp.br/api/people")
         .then((response) => {
-          let people = response.data;
+          let people = response.data.data;
+          console.log(response.data);
           people.forEach((person) => {
-            if (person.institution_id === this.$store.getters.getUnicamp_id && person.academic_profile !== 'staff') {
+            if (person.institution_id == 1 && person.academic_profile !== 'staff') {
               this.itemsPeople.push(person);
             }
           });
@@ -440,15 +441,15 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action._id)
+        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.itemsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -468,9 +469,9 @@ export default {
       if (this.action.ended_at) {
         this.action.ended_at = this.setDate(this.action.ended_at);
       }
-      if (this.action._id) {
+      if (this.action.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action._id, this.action)
+          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -479,13 +480,13 @@ export default {
                 action.started_at = this.getDate(action.started_at);
                 action.ended_at = this.getDate(action.ended_at);
               })
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = this.defaultAction;
               }
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -496,15 +497,15 @@ export default {
           .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = this.defaultAction;
               }
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -551,7 +552,7 @@ export default {
     },
     getResponsibleNameById(responsibleId) {
       const responsible = this.itemsPeople.find(
-        (item) => item._id === responsibleId
+        (item) => item.id === responsibleId
       );
       return responsible ? responsible.full_name : "";
     },
