@@ -46,7 +46,7 @@
                         </v-text-field>
                         <v-col cols="12" md="12">
                           <v-text-field v-model="action.assistant_id" :rules="[
-                            () => !(action.assistant_id === null && action.assistant_id.length < 60) || 'Nome maior que o suportado',
+                            () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
                           </v-text-field>
                         </v-col>
@@ -389,7 +389,7 @@ export default {
         .get(`https://test-bapex.fe.unicamp.br/api/action?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
           this.items.forEach((memberGroup) => {
             if (!this.items.started_at) {
               memberGroup.started_at = this.getDate(memberGroup.started_at);

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="15">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
@@ -24,7 +24,7 @@
                   <v-row dense>
                     <v-col cols="12">
                       <v-autocomplete v-model="groupMember.person_id" :items="itemsPeople" item-title="full_name"
-                        item-value="_id" :rules="[
+                        item-value="id" :rules="[
                           () => !!groupMember.person_id || 'Pessoa é requerido!',
                           () => !(groupMember.person_id.length > 60) || 'Nome maior que o suportado',
                         ]" label="Pessoa" :counter="60" required>
@@ -77,7 +77,7 @@
                 <v-btn color="blue-darken-1" variant="plain" @click="groupMemberDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteGroupMemberConfirm">
+                <v-btn color="primary" variant="tonal" @click="deleteGroupMemberConfirm(researchGroupId)">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -99,12 +99,18 @@
         <v-icon color="primary" title="Excluir" size="small" @click="deleteGroupMember(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:bottom>
-        <v-footer flat color="secondary">
+        <v-footer flat color="secondary" v-if="Object.keys(this.items).length > 0">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p>Itens na páginas: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+        <v-footer flat color="secondary" v-else>
+          <v-spacer></v-spacer>
+          <p>Itens na páginas: <strong>{{ items.length }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :total-visible="1">
           </v-pagination>
         </v-footer>
       </template>
@@ -118,6 +124,9 @@
 import moment from 'moment'
 
 export default {
+  props: {
+    researchGroupId: Number,
+  },
   data: () => ({
     valid: false,
     dialog: false,
@@ -154,46 +163,57 @@ export default {
     editedIndex: -1,
     groupMember: {},
     defaultGroupMember: {
-      id_: null,
+      id: null,
       person_id: null,
       role: null,
       stay_start: null,
       stay_end: null,
+      research_group_id: null,
     },
   }),
 
   computed: {
     formTitle() {
-      return !this.groupMember._id ? "Novo membro" : "Editar membro";
+      return !this.groupMember.id ? "Novo membro" : "Editar membro";
     },
   },
   created() {
-    this.initialize();
+    if(Object.keys(this.items).length > 0) {
+      this.initialize(1, this.researchGroupId);
+    }
     this.initializePeople();
   },
-
+  beoreUpdate() {
+      this.initialize(1, this.researchGroupId);
+  },
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
         if (isValid.valid) {
-          this.save();
+          this.save(this.researchGroupId);
         }
       });
     },
-    initialize() {
+    initialize(page, id) {
+      console.log(page, id)
+      console.log(`http://127.0.0.1:8001/api/research-groups/${id}/members?page=${page}`)
       this.$axios
-        .get("research-groups-members/")
+        .get(`http://127.0.0.1:8001/api/research-groups/${id}/members?page=${page}`)
         .then((response) => {
+        
           this.items = response.data.data;
-          this.configPagination = response.data;
-          this.items.forEach((memberGroup) => {
-            if (!this.items.stay_start) {
+          console.log(response.data.data);
+          this.configPagination = response.data.meta;
+          if(Object.keys(this.items).length > 0) {
+            this.items.forEach((memberGroup) => {
+            if (!memberGroup.stay_start) {
               memberGroup.stay_start = this.getDate(memberGroup.stay_start);
             }
-            if (!this.items.stay_end) {
+            if (!memberGroup.stay_end) {
               memberGroup.stay_end = this.getDate(memberGroup.stay_end);
             }
           })
+          }
         })
         .catch((error) => {
           console.error(error);
@@ -202,9 +222,9 @@ export default {
 
     initializePeople() {
       this.$axios
-        .get("people/")
+        .get("https://test-people.fe.unicamp.br/api/people")
         .then((response) => {
-          this.itemsPeople = response.data;
+          this.itemsPeople = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -221,9 +241,9 @@ export default {
       this.groupMemberDelete = true;
     },
 
-    deleteGroupMemberConfirm() {
+    deleteGroupMemberConfirm(id) {
       this.$axios
-        .delete("research-groups-members/" + this.groupMember._id)
+        .delete(`http://127.0.0.1:8001/api/research-groups/${id}/members/${this.groupMember.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -240,14 +260,15 @@ export default {
       this.groupMember = this.defaultGroupMember;
     },
 
-    save() {
+    save(id) {
+      this.groupMember.research_group_id = id;
       this.groupMember.stay_start = this.setDate(this.groupMember.stay_start)
       if (this.groupMember.stay_end) {
         this.groupMember.stay_end = this.setDate(this.groupMember.stay_end)
       }
-      if (this.groupMember._id) {
+      if (this.groupMember.id) {
         this.$axios
-          .put("research-groups-members/" + this.groupMember._id, this.groupMember)
+          .put(`http://127.0.0.1:8001/api/research-groups/${id}/members/${this.groupMember.id}`, this.groupMember)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -268,7 +289,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("research-groups-members/", this.groupMember)
+          .post(`http://127.0.0.1:8001/api/research-groups/${id}/members`, this.groupMember)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
@@ -287,7 +308,7 @@ export default {
     },
     getPersonNameById(personId) {
       const person = this.itemsPeople.find(
-        (item) => item._id === personId
+        (item) => item.id === personId
       );
       return person ? person.full_name : "";
     },

@@ -82,7 +82,7 @@
           </v-dialog>
           <v-dialog fullscreen v-model="dialogMembers">
             <v-card>
-              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" />
+              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" :researchGroupId="researchGroupId" />
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -101,7 +101,7 @@
                 @click="editResearchGroup(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteGroup(item)"></v-list-item>
-              <v-list-item @click="dialogMembers = true" prepend-icon="mdi-account-multiple" title="Membros"></v-list-item>
+              <v-list-item @click="dialogMembers = true, researchGroupId = item.id" prepend-icon="mdi-account-multiple" title="Membros"></v-list-item>
 
             </v-list>
           </v-menu>
@@ -148,6 +148,7 @@ export default {
     items: [],
     editedIndex: -1,
     researchGroup: {},
+    researchGroupId: null,
     dialogMembers: false,
     defaultResearchGroup: {
       id: null,
@@ -176,12 +177,12 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("research-groups/")
+        .get(`http://127.0.0.1:8001/api/research-groups?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
         })
         .catch((error) => {
           console.error(error);
@@ -200,7 +201,7 @@ export default {
 
     deleteGroupConfirm() {
       this.$axios
-        .delete("research-groups/" + this.researchGroup.id)
+        .delete("http://127.0.0.1:8001/api/research-groups/" + this.researchGroup.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -220,7 +221,7 @@ export default {
     save() {
       if (this.researchGroup.id) {
         this.$axios
-          .put("research-groups/" + this.researchGroup.id, this.researchGroup)
+          .put("http://127.0.0.1:8001/api/research-groups/" + this.researchGroup.id, this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -237,7 +238,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("research-groups/", this.researchGroup)
+          .post("http://127.0.0.1:8001/api/research-groups", this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
