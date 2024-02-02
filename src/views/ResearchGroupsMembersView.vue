@@ -52,7 +52,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(1, this.researchGroupId);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -103,8 +103,8 @@
           <v-spacer></v-spacer>
           <p>Itens na páginas: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
-            @last="initialize(configPagination.last_page)">
+            @next="initialize(currentPage, researchGroupId)" @prev="initialize(currentPage,researchGroupId)" @first="initialize(1, researchGroupId)"
+            @last="initialize(configPagination.last_page, researchGroupId)">
           </v-pagination>
         </v-footer>
         <v-footer flat color="secondary" v-else>
@@ -177,15 +177,13 @@ export default {
       return !this.groupMember.id ? "Novo membro" : "Editar membro";
     },
   },
-  created() {
-    if(Object.keys(this.items).length > 0) {
-      this.initialize(1, this.researchGroupId);
-    }
+  created() {    
+    this.initialize(1, this.researchGroupId);    
     this.initializePeople();
   },
-  beoreUpdate() {
+  /*beoreUpdate() {
       this.initialize(1, this.researchGroupId);
-  },
+  },*/
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
@@ -196,14 +194,14 @@ export default {
     },
     initialize(page, id) {
       console.log(page, id)
-      console.log(`http://127.0.0.1:8001/api/research-groups/${id}/members?page=${page}`)
+      console.log(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members?page=${page}`)
       this.$axios
-        .get(`http://127.0.0.1:8001/api/research-groups/${id}/members?page=${page}`)
+        .get(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members?page=${page}`)
         .then((response) => {
         
           this.items = response.data.data;
           console.log(response.data.data);
-          this.configPagination = response.data.meta;
+          this.configPagination = response.data;
           if(Object.keys(this.items).length > 0) {
             this.items.forEach((memberGroup) => {
             if (!memberGroup.stay_start) {
@@ -243,11 +241,11 @@ export default {
 
     deleteGroupMemberConfirm(id) {
       this.$axios
-        .delete(`http://127.0.0.1:8001/api/research-groups/${id}/members/${this.groupMember.id}`)
+        .delete(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members/${this.groupMember.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(1,id);
             this.groupMemberDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -268,11 +266,11 @@ export default {
       }
       if (this.groupMember.id) {
         this.$axios
-          .put(`http://127.0.0.1:8001/api/research-groups/${id}/members/${this.groupMember.id}`, this.groupMember)
+          .put(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members/${this.groupMember.id}`, this.groupMember)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(1,id);
               this.groupMember = this.defaultGroupMember;
               this.items.forEach((memberGroup) => {
                 memberGroup.stay_start = this.getDate(memberGroup.stay_start);
@@ -289,11 +287,11 @@ export default {
           });
       } else {
         this.$axios
-          .post(`http://127.0.0.1:8001/api/research-groups/${id}/members`, this.groupMember)
+          .post(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members`, this.groupMember)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(1,id);
               this.groupMember = this.defaultGroupMember;
               this.$toast.success(response.data.message);
               this.dialog = false;

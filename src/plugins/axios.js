@@ -16,7 +16,7 @@ const authInterceptor = (config, keycloak) => {
 export default {
   install: (app, { keycloak }) => {
     // Configure o Axios da maneira que você deseja
-    axios.defaults.baseURL = 'http://177.220.83.21:3000/';
+    //axios.defaults.baseURL = 'http://177.220.83.21:3000/';
     axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
     axios.defaults.validateStatus = function (status) { return (status >= 200 && status < 300) || status == 422; },
 
