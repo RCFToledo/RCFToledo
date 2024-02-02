@@ -195,7 +195,7 @@ export default {
 
     initializePeople() {
       this.$axios
-        .get("https://test-people.fe.unicamp.br/api/institutions?include[]=people")
+        .get("https://test-people.fe.unicamp.br/api/people")
         .then((response) => {
           this.itemsPeople = response.data.data;
         })
