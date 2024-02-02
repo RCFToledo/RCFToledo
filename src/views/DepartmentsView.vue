@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
@@ -16,13 +16,22 @@
                 <span class="text-h5">{{ `Membros - ${departments.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-              <v-list lines="one" :items="departments.members" item-title="name" item-value="id"></v-list>
+              <v-list v-if="Object.keys(departments.members).length > 0">
+              <v-list-item v-for="(member, index) in departments.members" :key="index" :value="member.id">
+                  <v-list-item-title>{{member.full_name}}</v-list-item-title>
+              </v-list-item>
+              </v-list>
+              <v-list v-else>
+                <v-list-item>
+                  <v-list-item-title>Não há membros</v-list-item-title>
+              </v-list-item>
+              </v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
                   dialogView = false
                   ">
-                  FSechar
+                  Fechar
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -50,7 +59,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="departments.abbr_name" label="Nome Abreviado" :rules="[
-                          () => !!departments.abbr_name  || 'Nome Abreviado requerido',
+                          () => !!departments.abbr_name || 'Nome Abreviado requerido',
                           () => !((departments.abbr_name !== null) && (!departments.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
@@ -71,9 +80,9 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                  <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
-                    Cancelar
-                  </v-btn>
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
+                  Cancelar
+                </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
               </v-card-actions>
             </v-card>
@@ -112,16 +121,29 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-          <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
+        <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
           <v-menu activator="parent" color="secondary">
             <v-list>
-            <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small" @click="editDepartments(item)"></v-list-item>
-            <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteDepartments(item)"></v-list-item>
-            <v-list-item prepend-icon="mdi-eye" title="Visualizar membros" @click="visualizeMembers(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-pencil" title="Editar" size="small"
+                @click="editDepartments(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
+                @click="deleteDepartments(item)"></v-list-item>
+              <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
+                @click="initializeMembers(item.id, item.name)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
+      </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -136,24 +158,8 @@ export default {
     dialogEdit: false,
     dialogView: false,
     departmentsDelete: false,
-    tic: [
-      {
-        name: "Matheus Barbosa",
-        id: 1,
-      },
-      {
-        name: "Renato Tartori",
-        id: 2,
-      },
-      {
-        name: "Rafael Bellagama",
-        id: 3,
-      },
-      {
-        name: "Daniel",
-        id: 4,
-      },
-    ],
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -178,7 +184,7 @@ export default {
   }),
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializePeople()
   },
 
@@ -197,16 +203,31 @@ export default {
     },
     initialize() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/departments")
+        .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.items = response.data.data;
+          this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializeMembers(id, departmentName) {
+      this.$axios
+        .get(`https://test-people.fe.unicamp.br/api/departments/${id}/members`)
+        .then((response) => {
+          delete response.data.data.message;
+          this.departments.members = response.data.data;
+          this.departments.name = departmentName;
+          this.dialogView = true;
+
         })
         .catch((error) => {
           console.error(error);
         });
     },
     initializePeople() {
-      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+      this.$axios.get("https://test-people.fe.unicamp.br/api/people").then((response) => {
         this.itemsPeople = response.data.data;
       })
     },
@@ -222,7 +243,7 @@ export default {
 
     deleteDepartmentsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/departments/" + this.departments.id)
+        .delete("https://test-people.fe.unicamp.br/api/departments/" + this.departments.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -242,7 +263,7 @@ export default {
     save() {
       if (this.departments.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/departments/" + this.departments.id, this.departments)
+          .put("https://test-people.fe.unicamp.br/api/departments/" + this.departments.id, this.departments)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -259,7 +280,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/departments", this.departments)
+          .post("https://test-people.fe.unicamp.br/api/departments", this.departments)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
@@ -279,9 +300,7 @@ export default {
     visualizeMembers(item) {
       this.departments = item;
       this.dialogView = true;
-      this.departments.members = this.tic
     },
-
   },
 };
 </script>

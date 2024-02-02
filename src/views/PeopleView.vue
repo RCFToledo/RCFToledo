@@ -1,12 +1,12 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      :page="currentPage" :items-per-page="15">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="getPeopleDataByIds(items, itemsInstitutions, itemsDepartments, itemsSectors)"
-            style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+          <download-csv :data="items" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
@@ -34,7 +34,7 @@
                         ]"></v-select>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
-                      people.academic_profile == 'professor' || people.academic_profile == 'researcher' 
+                      people.academic_profile == 'professor' || people.academic_profile == 'researcher'
                       ">
                       <v-text-field v-model="people.employee_id" :rules="[
                         () =>
@@ -64,12 +64,12 @@
                       ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.country_code !== 'BR'" class="d-flex flex-row">
-                      <v-text-field class="mr-2" v-model="people.rne" label="RNE" ></v-text-field>
-                      <v-text-field v-model="people.passport" label="Passaporte" ></v-text-field>
+                      <v-text-field class="mr-2" v-model="people.rne" label="RNE"></v-text-field>
+                      <v-text-field v-model="people.passport" label="Passaporte"></v-text-field>
                     </v-col>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 4 : 6">
-                      <v-autocomplete v-model="people.country_code" label="País de Origem" :items="institutionsCountryCode" item-title="name"
-                        item-value="code"></v-autocomplete>
+                      <v-autocomplete v-model="people.country_code" label="País de Origem"
+                        :items="institutionsCountryCode" item-title="name" item-value="code"></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -86,7 +86,7 @@
                   <v-row dense>
                     <v-col cols="12" md="6">
                       <v-autocomplete v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
-                        item-title="name" item-value="_id" :rules="[
+                        item-title="name" item-value="id" :rules="[
                           () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',
@@ -95,11 +95,11 @@
                     <v-col cols="12" md="6"
                       v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
                       <v-autocomplete v-model="people.department_id" label="Departamento" :items="itemsDepartments"
-                        item-title="name" item-value="_id"></v-autocomplete>
+                        item-title="name" item-value="id"></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6" v-else-if="people.academic_profile === 'staff'">
                       <v-autocomplete v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
-                        item-value="_id"></v-autocomplete>
+                        item-value="id"></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -152,6 +152,17 @@
         </v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1"
+            v-model="currentPage" @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
   </div>
@@ -165,6 +176,8 @@ export default {
     dialog: false,
     dialogDelete: false,
     register: null,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome Completo",
@@ -202,7 +215,7 @@ export default {
     items: [],
     itemsDepartments: [],
     itemsInstitutions: [],
-    institutionsCountryCode: [],  
+    institutionsCountryCode: [],
     itemsSectors: [],
     peopleIndex: -1,
     people: [],
@@ -211,6 +224,10 @@ export default {
       full_name: null,
       type: null,
       student_id: null,
+      rne: null,
+      passport: null,
+      institution_id: null,
+      department_id: null,
       academic_profile: null,
       employee_id: null,
       sector_id: null,
@@ -219,21 +236,21 @@ export default {
   }),
   watch: {
     'people.academic_profile'(newValue) {
-      if (newValue === 'staff') {        
+      if (newValue === 'staff') {
         this.people.department_id = null
         this.people.student_id = null;
       }
-      else if ((newValue === 'professor') || (newValue === 'researcher')) {        
+      else if ((newValue === 'professor') || (newValue === 'researcher')) {
         this.people.sector_id = null
         this.people.student_id = null;
-      }      
-      else if(newValue === 'student') {
-        this.people.employee_id = null;        
+      }
+      else if (newValue === 'student') {
+        this.people.employee_id = null;
         this.people.department_id = null;
         this.people.sector_id = null;
       }
       else {
-        this.people.employee_id = null;        
+        this.people.employee_id = null;
         this.people.department_id = null;
         this.people.sector_id = null;
         this.people.student_id = null;
@@ -258,7 +275,7 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializeDepartments();
     this.initializeInstitutions();
     this.initializeSectors();
@@ -273,12 +290,13 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("http://127.0.0.1:8000/api/people")
+        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}`)
         .then((response) => {
-          console.log(response.data);
           this.items = response.data.data;
+          this.configPagination = response.data.meta;
+          console.log(response.data.meta);
         })
         .catch((error) => {
           console.error(error);
@@ -289,7 +307,7 @@ export default {
         .get("https://test-bapex.fe.unicamp.br/api/countries")
         .then((response) => {
           this.institutionsCountryCode = response.data.data;
-          
+
         })
         .catch((error) => {
           console.error(error);
@@ -297,7 +315,7 @@ export default {
     },
     initializeDepartments() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/departments")
+        .get("https://test-people.fe.unicamp.br/api/departments")
         .then((response) => {
           this.itemsDepartments = response.data.data;
         })
@@ -308,7 +326,7 @@ export default {
 
     initializeSectors() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/sectors")
+        .get("https://test-people.fe.unicamp.br/api/sectors")
         .then((response) => {
           this.itemsSectors = response.data.data;
         })
@@ -319,7 +337,7 @@ export default {
 
     initializeInstitutions() {
       this.$axios
-        .get("http://127.0.0.1:8000/api/institutions")
+        .get("https://test-people.fe.unicamp.br/api/institutions")
         .then((response) => {
           this.itemsInstitutions = response.data.data;
         })
@@ -340,7 +358,7 @@ export default {
 
     deletePeopleConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/people/" + this.people.id)
+        .delete("https://test-people.fe.unicamp.br/api/people/" + this.people.id)
         .then((response) => {
           if (response.status == 200) {
             this.initialize();
@@ -357,18 +375,18 @@ export default {
     },
 
     save() {
-      this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
+      //this.setPeopleDataByName(this.items, this.itemsInstitutions, this.itemsDepartments, this.itemsSectors)
       if (this.people.id) {
         this.$axios
-          .put(" http://127.0.0.1:8000/api/people/" + this.people.id, this.people)
+          .put("https://test-people.fe.unicamp.br/api/people/" + this.people.id, this.people)
           .then((response) => {
             if (response.status == 200) {
               this.initialize();
               this.people = this.defaultPeople;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -376,15 +394,15 @@ export default {
           });
       } else {
         this.$axios
-          .post(" http://127.0.0.1:8000/api/people", this.people)
+          .post("https://test-people.fe.unicamp.br/api/people", this.people)
           .then((response) => {
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.people = this.defaultPeople;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -407,23 +425,23 @@ export default {
         }
       }
     },
-    getPeopleDataByIds(people, institutions, departments, sectors) {
+    /*getPeopleDataByIds(people, institutions, departments, sectors) {
       people.forEach((person) => {
         institutions.forEach((data) => {
           if (person.institution_id === data.id) {
-            person.institution_id = data.name;
+            person.institution_name = data.name;
           }
         });
  
         departments.forEach((data) => {
           if (person.department_id === data.id) {
-            person.department_id = data.name;
+            person.department_name = data.name;
           }
         });
 
         sectors.forEach((data) => {
           if (person.sector_id === data.id) {
-            person.sector_id = data.name;
+            person.sector_name = data.name;
           }
         });
       });
@@ -449,7 +467,7 @@ export default {
           }
         });
       });
-    }
+    }*/
   },
 };
 </script>

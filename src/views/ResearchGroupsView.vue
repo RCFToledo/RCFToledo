@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
@@ -107,6 +107,16 @@
           </v-menu>
         </v-btn>
       </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
+      </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
   </div>
@@ -123,6 +133,8 @@ export default {
     valid: false,
     dialog: false,
     researchGroupDelete: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -138,7 +150,7 @@ export default {
     researchGroup: {},
     dialogMembers: false,
     defaultResearchGroup: {
-      id_: null,
+      id: null,
       name: null,
       abbr_name: null,
       lattes_url: null,
@@ -149,12 +161,12 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.researchGroup._id ? "Novo grupo de pesquisa" : "Editar grupo de pesquisa";
+      return !this.researchGroup.id ? "Novo grupo de pesquisa" : "Editar grupo de pesquisa";
     },
   },
 
   created() {
-    this.initialize();
+    this.initialize(1);
   },
   methods: {
     formSubmit() {
@@ -168,7 +180,8 @@ export default {
       this.$axios
         .get("research-groups/")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.configPagination = response.data;
         })
         .catch((error) => {
           console.error(error);
@@ -187,15 +200,15 @@ export default {
 
     deleteGroupConfirm() {
       this.$axios
-        .delete("research-groups/" + this.researchGroup._id)
+        .delete("research-groups/" + this.researchGroup.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.researchGroupDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -205,18 +218,18 @@ export default {
     },
 
     save() {
-      if (this.researchGroup._id) {
+      if (this.researchGroup.id) {
         this.$axios
-          .put("research-groups/" + this.researchGroup._id, this.researchGroup)
+          .put("research-groups/" + this.researchGroup.id, this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
               this.initialize();
               this.researchGroup = this.defaultResearchGroup;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -227,13 +240,13 @@ export default {
           .post("research-groups/", this.researchGroup)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.researchGroup = this.defaultResearchGroup;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Setores</v-toolbar-title>
@@ -16,7 +16,18 @@
                 <span class="text-h5">{{ `Membros - ${sectors.name}` }}</span>
                 <v-spacer></v-spacer>
               </v-card-title>
-              <v-list lines="one" :items="sectors.members" item-title="name" item-value="id"></v-list>
+              <v-list v-if="Object.keys(sectors.members).length > 0">
+              <v-list-item v-for="(member, index) in sectors.members" :key="index" :value="member.id">
+                <v-list-item-content>
+                  <v-list-item-title>{{member.full_name}}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              </v-list>
+              <v-list v-else>
+                <v-list-item>
+                  <v-list-item-title>Não há membros</v-list-item-title>
+              </v-list-item>
+              </v-list>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
                 <v-btn color="primary" variant="tonal" @click="
@@ -50,7 +61,7 @@
                       </v-col>
                       <v-col cols="12">
                         <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
-                          () => !(sectors.abbr_name === null && sectors.abbr_name.length < 20) || 'Nome Abreviado maior que o suportado',
+                          () => !(sectors.abbr_name !== null && sectors.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
@@ -121,10 +132,20 @@
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteSectors(item)"></v-list-item>
               <v-list-item prepend-icon="mdi-eye" title="Visualizar membros"
-                @click="visualizeMembers(item)"></v-list-item>
+                @click="initializeMembers(item.id, item.name)"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
+      </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+            @last="initialize(configPagination.last_page)">
+          </v-pagination>
+        </v-footer>
       </template>
       <template v-slot:no-data> Não há dados para exibir! </template>
     </v-data-table>
@@ -140,24 +161,8 @@ export default {
     dialogEdit: false,
     dialogView: false,
     sectorsDelete: false,
-    tic: [
-      {
-        name: "Matheus Barbosa",
-        id: 1,
-      },
-      {
-        name: "Renato Tartori",
-        id: 2,
-      },
-      {
-        name: "Rafael Bellagama",
-        id: 3,
-      },
-      {
-        name: "Daniel",
-        id: 4,
-      },
-    ],
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Nome",
@@ -182,7 +187,7 @@ export default {
   }),
 
   created() {
-    this.initialize();
+    this.initialize(1);
     this.initializePeople()
   },
 
@@ -199,23 +204,39 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("http://127.0.0.1:8000/api/sectors")
+        .get(`https://test-people.fe.unicamp.br/api/sectors?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
+          this.configPagination = response.data.meta;
         })
         .catch((error) => {
           console.error(error);
         });
     },
     initializePeople() {
-      this.$axios.get("http://127.0.0.1:8000/api/people").then((response) => {
+      this.$axios.get("https://test-people.fe.unicamp.br/api/people").then((response) => {
         this.itemsPeople = response.data.data
       }).catch((error) => {
         console.error(error);
       });
     },
+    initializeMembers(id, sectorName) {
+      this.$axios
+        .get(`https://test-people.fe.unicamp.br/api/sectors/${id}/members`)
+        .then((response) => {
+          delete response.data.data.message;
+          this.sectors.members = response.data;
+          this.sectors.name = sectorName;
+          this.dialogView = true;
+
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
     editSectors(item) {
       this.sectors = item;
       this.dialogEdit = true;
@@ -228,7 +249,7 @@ export default {
 
     deleteSectorsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/sectors/" + this.sectors.id)
+        .delete("https://test-people.fe.unicamp.br/api/sectors/" + this.sectors.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -248,7 +269,7 @@ export default {
     save() {
       if (this.sectors.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/sectors/" + this.sectors.id, this.sectors)
+          .put("https://test-people.fe.unicamp.br/api/sectors/" + this.sectors.id, this.sectors)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -265,7 +286,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/sectors", this.sectors)
+          .post("https://test-people.fe.unicamp.br/api/sectors", this.sectors)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
@@ -281,11 +302,6 @@ export default {
             console.error(error);
           });
       }
-    },
-    visualizeMembers(item) {
-      this.sectors = item;
-      this.dialogView = true;
-      this.sectors.members = this.tic
     },
   },
 };

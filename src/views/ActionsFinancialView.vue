@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-checkbox class="elevation-0" label="Declaro que está ação não possui financiamento" v-model="declareNoFinancing" v-if="items.length <= 0"></v-checkbox>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" v-if="!declareNoFinancing">
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" v-if="!declareNoFinancing" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Financiamentos</v-toolbar-title>
@@ -110,6 +110,8 @@ export default {
     dialog: false,
     itemsDelete: false,
     declareNoFinancing: false,
+    currentPage: 1,
+    configPagination: [],
     headers: [
       {
         title: "Instituição",
@@ -127,7 +129,7 @@ export default {
     relatedSubjectsItems: [],
     action: {},
     defaultAction: {
-      id_: null,
+      id: null,
       institution_id: null,
       amount: null,
       started_at: null,
@@ -138,7 +140,7 @@ export default {
 
   computed: {
     formTitle() {
-      return !this.action._id ? "Novo financiamento" : "Editar financiamento";
+      return !this.action.id ? "Novo financiamento" : "Editar financiamento";
     },
   },
 
@@ -158,9 +160,11 @@ export default {
       this.$axios
         .get("financing/")
         .then((response) => {
-          this.items = response.data;
+          this.items = response.data.data;
+          this.configPagination = response.data;
           this.items.forEach((action) => {
             if (!this.items.started_at) {
+              
               action.started_at = this.getDate(action.started_at);
             }
             if (!this.items.ended_at) {
@@ -178,9 +182,9 @@ export default {
 
     initializeInstitutionsFinancial() {
       this.$axios
-        .get("institutionsF/")
+        .get("https://test-bapex.fe.unicamp.br/api/institutions")
         .then((response) => {
-          this.itemsInstitutionsFinancial = response.data;
+          this.itemsInstitutionsFinancial = response.data.data;
         })
         .catch((error) => {
           console.error(error);
@@ -199,15 +203,15 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("financing/" + this.action._id)
+        .delete("financing/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
             this.initialize();
             this.itemsDelete = false;
-            this.$toast.success(response.statusText);
+            this.$toast.success(response.data.message);
           } else {
-            this.$toast.error(response.statusText);
+            this.$toast.error(response.data.message);
           }
         })
         .catch((error) => {
@@ -222,9 +226,9 @@ export default {
       if (this.action.ended_at) {
         this.action.ended_at = this.setDate(this.action.ended_at)
       }
-      if (this.action._id) {
+      if (this.action.id) {
         this.$axios
-          .put("financing/" + this.action._id, this.action)
+          .put("financing/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -234,10 +238,10 @@ export default {
                 action.started_at = this.getDate(action.started_at);
                 action.ended_at = this.getDate(action.ended_at);
               })
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -248,13 +252,13 @@ export default {
           .post("financing", this.action)
           .then((response) => {
             console.log(response);
-            if (response.status == 200) {
+            if (response.status == 201) {
               this.initialize();
               this.action = this.defaultAction;
-              this.$toast.success(response.statusText);
+              this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
-              this.$toast.error(response.statusText);
+              this.$toast.error(response.data.message);
             }
           })
           .catch((error) => {
@@ -306,7 +310,7 @@ export default {
     },
     getInstitutionsFinacialNameById(institutionId) {
       const institution = this.itemsInstitutionsFinancial.find(
-        (item) => item._id === institutionId
+        (item) => item.id === institutionId
       );
       return institution ? institution.name : "";
     }
