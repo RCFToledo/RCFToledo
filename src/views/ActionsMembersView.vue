@@ -29,7 +29,7 @@
                     </v-col>
                     <v-col cols="12" md="12">
                       <v-select v-model="actionMembers.degree"
-                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
+                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) !== 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
                           () => !!actionMembers.degree || 'Nível no programa é requerido',
                         ]" required></v-select>
                     </v-col>
@@ -49,7 +49,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(1, actionId);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -91,10 +91,10 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
-            @last="initialize(configPagination.last_page)">
+            @next="initialize(currentPage, actionId)" @prev="initialize(currentPage, actionId)" @first="initialize(1, actionId)"
+            @last="initialize(configPagination.last_page, actionId)">
           </v-pagination>
         </v-footer>
       </template>
@@ -137,6 +137,7 @@ export default {
       degree: null,
       stay_start: null,
       stay_end: null,
+      action_id: null,
     },
     student_degree: [
       {
@@ -169,13 +170,13 @@ export default {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
         if (isValid.valid) {
-          this.save();
+          this.save(this.actionId);
         }
       });
     },
     initialize(page, id) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members?page=${page}`)
+        .get(`http://127.0.0.1:8001/api/actions/${id}/members?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data;
@@ -216,11 +217,11 @@ export default {
 
     deleteActionMembersConfirm() {
       this.$axios
-        .delete(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`)
+        .delete(`http://127.0.0.1:8001/api/actions/${this.actionId}/members/${this.actionMembers.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(1, this.actionId);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -233,18 +234,19 @@ export default {
       this.actionMembers = this.defaultActionMembers;
     },
 
-    save() {
+    save(id) {
+      this.actionMembers.action_id = id;
       this.actionMembers.stay_start = this.setDate(this.actionMembers.stay_start)
       if (this.actionMembers.stay_end) {
         this.actionMembers.stay_end = this.setDate(this.actionMembers.stay_end)
       }
       if (this.actionMembers.id) {
         this.$axios
-          .put(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`, this.actionMembers)
+          .put(`http://127.0.0.1:8001/api/actions/${id}/members/${this.actionMembers.id}`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(1, this.actionId);
               this.actionMembers = this.defaultActionMembers;
               this.items.forEach((actionMembers) => {
                 actionMembers.stay_start = this.getDate(actionMembers.stay_start);
@@ -261,11 +263,11 @@ export default {
           });
       } else {
         this.$axios
-          .post(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members`, this.actionMembers)
+          .post(`http://127.0.0.1:8001/api/actions/${id}/members`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(1, this.actionId);
               this.actionMembers = this.defaultActionMembers;
               this.$toast.success(response.data.message);
               this.dialog = false;

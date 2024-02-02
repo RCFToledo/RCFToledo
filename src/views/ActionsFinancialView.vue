@@ -25,7 +25,7 @@
                   <v-row dense>
                     <v-col cols="12" md="8">
                       <v-autocomplete v-model="action.institution_id" :items="itemsInstitutionsFinancial"
-                        item-title="name" item-value="_id" :rules="[
+                        item-title="name" item-value="id" :rules="[
                           () => !!action.institution_id || 'Instituição é requerida!',
                         ]" label="Instituição" required></v-autocomplete>
                     </v-col>
@@ -50,7 +50,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(1, actionId);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -105,6 +105,9 @@
 import moment from 'moment'
 
 export default {
+  props: {
+    actionId: Number
+  },
   data: () => ({
     valid: false,
     dialog: false,
@@ -134,6 +137,7 @@ export default {
       amount: null,
       started_at: null,
       ended_at: null,
+      action_id: null,
     },
   }),
 
@@ -145,20 +149,20 @@ export default {
   },
 
   created() {
-    this.initialize();
+    this.initialize(1, this.actionId);
     this.initializeInstitutionsFinancial();
   },
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
         if (isValid.valid) {
-          this.save();
+          this.save(this.actionId);
         }
       });
     },
-    initialize() {
+    initialize(page, id) {
       this.$axios
-        .get("financing/")
+        .get(`http://127.0.0.1:8001/api/actions/${id}/financing?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data;
@@ -182,7 +186,7 @@ export default {
 
     initializeInstitutionsFinancial() {
       this.$axios
-        .get("https://test-bapex.fe.unicamp.br/api/institutions")
+        .get("http://127.0.0.1:8001/api/institutions")
         .then((response) => {
           this.itemsInstitutionsFinancial = response.data.data;
         })
@@ -203,11 +207,11 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("financing/" + this.action.id)
+        .delete(`http://127.0.0.1:8001/api/actions/${this.actionId}/financing/${this.action.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(1, this.actionId);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -220,7 +224,8 @@ export default {
       this.action = this.defaultAction;
     },
 
-    save() {
+    save(id) {
+      this.action.action_id = id;
       this.action.amount = this.convertByUnitedStatesDefault(this.action.amount)
       this.action.started_at = this.setDate(this.action.started_at)
       if (this.action.ended_at) {
@@ -228,11 +233,11 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("financing/" + this.action.id, this.action)
+          .put(`http://127.0.0.1:8001/api/actions/${this.actionId}/financing/${this.action.id}`, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(1, this.actionId);
               this.action = this.defaultAction;
               this.items.forEach((action) => {
                 action.started_at = this.getDate(action.started_at);
@@ -249,11 +254,11 @@ export default {
           });
       } else {
         this.$axios
-          .post("financing", this.action)
+          .post(`http://127.0.0.1:8001/api/actions/${this.actionId}/financing`, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(1, this.actionId);
               this.action = this.defaultAction;
               this.$toast.success(response.data.message);
               this.dialog = false;

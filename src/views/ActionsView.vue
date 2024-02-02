@@ -106,11 +106,17 @@
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
-                    <v-card v-if="isTab === 'Financiamentos'">
-                      <ActionsFinancialView />
+                    <v-card v-if="isTab === 'Financiamentos' && action.id">
+                      <ActionsFinancialView :actionId="action.id" />
                     </v-card>
-                    <v-card v-if="isTab === 'Membros'">
-                      <ActionsMembersView :actionId="action.id || items.length++" />
+                    <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
+                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
+                    </v-card>
+                    <v-card v-if="isTab === 'Membros' && action.id">
+                      <ActionsMembersView :actionId="action.id" />
+                    </v-card>
+                    <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
+                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
                     <v-card v-if="isTab === 'Enviar'" variant="tonal">
                       <v-card-title>Termo de responsabilidades</v-card-title>

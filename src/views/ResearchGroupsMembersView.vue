@@ -193,14 +193,10 @@ export default {
       });
     },
     initialize(page, id) {
-      console.log(page, id)
-      console.log(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members?page=${page}`)
       this.$axios
         .get(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members?page=${page}`)
         .then((response) => {
-        
           this.items = response.data.data;
-          console.log(response.data.data);
           this.configPagination = response.data;
           if(Object.keys(this.items).length > 0) {
             this.items.forEach((memberGroup) => {
