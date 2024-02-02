@@ -179,7 +179,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8001/api/research-groups?page=${page}`)
+        .get(`https://test-research.fe.unicamp.br/api/research-groups?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -201,7 +201,7 @@ export default {
 
     deleteGroupConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8001/api/research-groups/" + this.researchGroup.id)
+        .delete("https://test-research.fe.unicamp.br/api/research-groups" + this.researchGroup.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -221,7 +221,7 @@ export default {
     save() {
       if (this.researchGroup.id) {
         this.$axios
-          .put("http://127.0.0.1:8001/api/research-groups/" + this.researchGroup.id, this.researchGroup)
+          .put("https://test-research.fe.unicamp.br/api/research-groups" + this.researchGroup.id, this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -238,7 +238,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8001/api/research-groups", this.researchGroup)
+          .post("https://test-research.fe.unicamp.br/api/research-groups", this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
