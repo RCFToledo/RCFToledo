@@ -144,6 +144,10 @@
       <template v-slot:item.academic_profile="{ item }">
         {{ getProfileTitle(item.academic_profile) }}
       </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.institution_id="{ item }">
+        {{ getResponsibleNameById(item.institution_id) }}
+      </template>
 
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -425,49 +429,12 @@ export default {
         }
       }
     },
-    /*getPeopleDataByIds(people, institutions, departments, sectors) {
-      people.forEach((person) => {
-        institutions.forEach((data) => {
-          if (person.institution_id === data.id) {
-            person.institution_name = data.name;
-          }
-        });
- 
-        departments.forEach((data) => {
-          if (person.department_id === data.id) {
-            person.department_name = data.name;
-          }
-        });
-
-        sectors.forEach((data) => {
-          if (person.sector_id === data.id) {
-            person.sector_name = data.name;
-          }
-        });
-      });
-      return people;
+    getResponsibleNameById(institutionId) {
+      const institution = this.itemsInstitutions.find(
+        (item) => item.id === institutionId
+      );
+      return institution ? institution.name : "";
     },
-    setPeopleDataByName(people, institutions, departments, sectors) {
-      people.forEach((person) => {
-        institutions.forEach((data) => {
-          if (person.institution_id === data.name) {
-            person.institution_id = data.id;
-          }
-        });
- 
-        departments.forEach((data) => {
-          if (person.department_id === data.name) {
-            person.department_id = data.id;
-          }
-        });
-
-        sectors.forEach((data) => {
-          if (person.sector_id === data.name) {
-            person.sector_id = data.id;
-          }
-        });
-      });
-    }*/
   },
 };
 </script>

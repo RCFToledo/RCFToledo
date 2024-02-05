@@ -395,7 +395,7 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           console.log(response);
-          this.configPagination = response.data.meta;
+          this.configPagination = response.data;
           this.items.forEach((memberGroup) => {
             if (!this.items.started_at) {
               memberGroup.started_at = this.getDate(memberGroup.started_at);

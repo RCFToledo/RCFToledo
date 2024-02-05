@@ -1,7 +1,9 @@
 <template>
   <div>
-    <v-checkbox class="elevation-0" label="Declaro que está ação não possui financiamento" v-model="declareNoFinancing" v-if="items.length <= 0"></v-checkbox>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" v-if="!declareNoFinancing" :page="currentPage" :items-per-page="configPagination.per_page">
+    <v-checkbox class="elevation-0" label="Declaro que está ação não possui financiamento" v-model="declareNoFinancing"
+      v-if="items.length <= 0"></v-checkbox>
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      v-if="!declareNoFinancing" :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Financiamentos</v-toolbar-title>
@@ -30,7 +32,7 @@
                         ]" label="Instituição" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-text-field v-model="action.amount" label="R$" v-mask-decimal.br="2" required :rules="[
+                      <v-text-field v-model="action.amount" label="R$" required :rules="[
                         () => !!action.amount || 'Valor recebido é obrigatório'
                       ]"></v-text-field>
                     </v-col>
@@ -81,19 +83,29 @@
           </v-dialog>
         </v-toolbar>
       </template>
-       <!-- eslint-disable-next-line -->
-       <template v-slot:item.amount="{ item }">
-        {{ convertByBrazilDefault(item.amount) }}
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.amount="{ item }">
+        {{ convertAmount(item.amount, 'BR') }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
-        {{  getInstitutionsFinacialNameById(item.institution_id) }}
+        {{ getInstitutionsFinacialNameById(item.institution_id) }}
       </template>
-     
+
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editAction(item)">mdi-pencil</v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteAction(item)">mdi-delete</v-icon>
+      </template>
+      <template v-slot:bottom>
+        <v-footer flat color="secondary">
+          <v-spacer></v-spacer>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
+            @next="initialize(currentPage, actionId)" @prev="initialize(currentPage, actionId)" @first="initialize(1, actionId)"
+            @last="initialize(configPagination.last_page, actionId)">
+          </v-pagination>
+        </v-footer>
       </template>
       <template v-slot:no-data> Não há dados para exibir!</template>
     </v-data-table>
@@ -165,17 +177,14 @@ export default {
         .get(`http://127.0.0.1:8001/api/actions/${id}/financing?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
+          console.log(this.configPagination)
           this.items.forEach((action) => {
             if (!this.items.started_at) {
-              
               action.started_at = this.getDate(action.started_at);
             }
             if (!this.items.ended_at) {
               action.ended_at = this.getDate(action.ended_at);
-            }
-            if(!this.items.amount) {
-              action.amount = action.amount.toFixed(2).toString()
             }
           })
         })
@@ -197,6 +206,7 @@ export default {
 
     editAction(item) {
       this.action = item;
+      this.action.amount = this.convertAmount(this.action.amount, 'BR')
       this.dialog = true;
     },
 
@@ -226,7 +236,7 @@ export default {
 
     save(id) {
       this.action.action_id = id;
-      this.action.amount = this.convertByUnitedStatesDefault(this.action.amount)
+      this.action.amount = this.convertAmount(this.action.amount, 'US')
       this.action.started_at = this.setDate(this.action.started_at)
       if (this.action.ended_at) {
         this.action.ended_at = this.setDate(this.action.ended_at)
@@ -299,20 +309,17 @@ export default {
         return null;
       }
     },
-    convertByUnitedStatesDefault(amount) {
-      let amountUS = amount.replace(/[,.]/g, function (match) {
-        return match === ',' ? '.' : '';
-      });
-      let amountFloat = parseFloat(amountUS);
-      return amountFloat.toFixed(2);
-    },
-    convertByBrazilDefault(amount) {
-      let amountString = parseFloat(amount).toFixed(2).toString()
-      let amountBR = amountString.replace(/[,.]/g, function (match) {
-        return match === '.' ? ',' : '';
-      });
-      return amountBR;
-    },
+    convertAmount(amount, targetCountry) {
+      let formattedAmount;
+
+      if (targetCountry === 'US') {
+        formattedAmount = amount.replace(/[,.]/g, match => (match === ',' ? '.' : ''));
+      } else if (targetCountry === 'BR') {
+        formattedAmount = amount.replace(/[,.]/g, match => (match === '.' ? ',' : ''));
+      }
+      return formattedAmount;
+    }
+    ,
     getInstitutionsFinacialNameById(institutionId) {
       const institution = this.itemsInstitutionsFinancial.find(
         (item) => item.id === institutionId

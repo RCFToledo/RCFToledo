@@ -179,7 +179,7 @@ export default {
         .get(`http://127.0.0.1:8001/api/actions/${id}/members?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
           this.items.forEach((memberGroup) => {
             if (!this.items.stay_start) {
               memberGroup.stay_start = this.getDate(memberGroup.stay_start);
