@@ -81,7 +81,7 @@
                 <v-btn
                   color="blue-darken-1"
                   variant="plain"
-                  @click="dialog = false; initialize();"
+                  @click="dialog = false; initialize(currentPage);"
                 >
                   Cancelar
                 </v-btn>
@@ -243,7 +243,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.institutionsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -263,7 +263,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.institution = this.defaultInstitution;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -280,7 +280,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.institution = this.defaultInstitution;
               this.$toast.success(response.data.message);
               this.dialog = false;

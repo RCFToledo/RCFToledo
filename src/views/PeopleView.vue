@@ -83,8 +83,8 @@
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-autocomplete v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
-                        item-title="name" item-value="id" :rules="[
+                      <v-autocomplete v-model="people.institution_id" label="Instituição" :items="items"
+                        item-title="institution.name" item-value="institution.id" :rules="[
                           () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',
@@ -106,7 +106,7 @@
               <v-card-actions class="d-flex justify-center bg-secondary">
                 <v-btn color="blue-darken-1" variant="plain" @click="
                   dialog = false;
-                initialize();
+                initialize(currentPage);
                 ">
                   Cancelar
                 </v-btn>
@@ -294,11 +294,11 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}`)
+        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}&include[]=department&include[]=sector&include[]=institution`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
-          console.log(response.data.meta);
+          console.log(response.data);
         })
         .catch((error) => {
           console.error(error);
@@ -317,9 +317,10 @@ export default {
     },
     initializeDepartments() {
       this.$axios
-        .get("https://test-people.fe.unicamp.br/api/departments")
+        .get("https://test-people.fe.unicamp.br/api/people?include[]=department")
         .then((response) => {
-          this.itemsDepartments = response.data.data;
+          this.itemsDepartments = response.data;
+          console.log(this.itemsDepartments);
         })
         .catch((error) => {
           console.error(error);
@@ -363,7 +364,7 @@ export default {
         .delete("https://test-people.fe.unicamp.br/api/people/" + this.people.id)
         .then((response) => {
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.dialogDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -383,7 +384,7 @@ export default {
           .put("https://test-people.fe.unicamp.br/api/people/" + this.people.id, this.people)
           .then((response) => {
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.people = this.defaultPeople;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -399,7 +400,7 @@ export default {
           .post("https://test-people.fe.unicamp.br/api/people", this.people)
           .then((response) => {
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.people = this.defaultPeople;
               this.$toast.success(response.data.message);
               this.dialog = false;

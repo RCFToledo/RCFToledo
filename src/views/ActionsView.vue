@@ -21,7 +21,7 @@
                 <v-spacer></v-spacer>
                 <v-tabs hide-slider>
                   <v-tab v-ripple="false"><v-btn icon title="Fechar" class="rounded-circle ml-2" variant="tonal"
-                      @click="dialog = false, initialize()">
+                      @click="dialog = false, initialize(currentPage)">
                       <v-icon>mdi-close</v-icon>
                     </v-btn></v-tab>
                 </v-tabs>
@@ -449,7 +449,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -479,7 +479,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.items.forEach((action) => {
                 action.started_at = this.getDate(action.started_at);
                 action.ended_at = this.getDate(action.ended_at);
@@ -502,7 +502,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;

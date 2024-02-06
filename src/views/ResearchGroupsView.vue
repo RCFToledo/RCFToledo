@@ -50,7 +50,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -80,7 +80,7 @@
           </v-dialog>
           <v-dialog fullscreen v-model="dialogMembers">
             <v-card>
-              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" :researchGroupId="researchGroupId" />
+              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize(currentPage);" :researchGroupId="researchGroupId" />
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -204,7 +204,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.researchGroupDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -224,7 +224,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.researchGroup = this.defaultResearchGroup;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -241,7 +241,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.researchGroup = this.defaultResearchGroup;
               this.$toast.success(response.data.message);
               this.dialog = false;

@@ -52,7 +52,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(1, actionId);">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage, actionId);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -222,7 +222,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize(1, this.actionId);
+            this.initialize(this.currentPage, this.actionId);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -248,7 +248,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize(1, this.actionId);
+              this.initialize(this.currentPage, this.actionId);
               this.action = this.defaultAction;
               this.items.forEach((action) => {
                 action.started_at = this.getDate(action.started_at);
@@ -269,7 +269,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize(1, this.actionId);
+              this.initialize(this.currentPage, this.actionId);
               this.action = this.defaultAction;
               this.$toast.success(response.data.message);
               this.dialog = false;

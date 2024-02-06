@@ -78,7 +78,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -200,9 +200,9 @@ export default {
         }
       });
     },
-    initialize() {
+    initialize(page) {
       this.$axios
-        .get("https://test-people.fe.unicamp.br/api/departments")
+        .get(`https://test-people.fe.unicamp.br/api/departments?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -246,7 +246,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.departmentsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -266,7 +266,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.departments = this.defaultDepartment;
               this.$toast.success(response.data.message);
               this.dialogEdit = false;
@@ -283,7 +283,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.departments = this.defaultDepartment;
               this.$toast.success(response.data.message);
               this.dialogEdit = false;
