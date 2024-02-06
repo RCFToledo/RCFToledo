@@ -91,6 +91,7 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
           <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage, actionId)" @prev="initialize(currentPage, actionId)" @first="initialize(1, actionId)"
@@ -176,7 +177,7 @@ export default {
     },
     initialize(page, id) {
       this.$axios
-        .get(`http://127.0.0.1:8001/api/actions/${id}/members?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -217,7 +218,7 @@ export default {
 
     deleteActionMembersConfirm() {
       this.$axios
-        .delete(`http://127.0.0.1:8001/api/actions/${this.actionId}/members/${this.actionMembers.id}`)
+        .delete(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -242,7 +243,7 @@ export default {
       }
       if (this.actionMembers.id) {
         this.$axios
-          .put(`http://127.0.0.1:8001/api/actions/${id}/members/${this.actionMembers.id}`, this.actionMembers)
+          .put(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members/${this.actionMembers.id}`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -263,7 +264,7 @@ export default {
           });
       } else {
         this.$axios
-          .post(`http://127.0.0.1:8001/api/actions/${id}/members`, this.actionMembers)
+          .post(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

@@ -5,9 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Setores</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="setores.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
-          </download-csv>
+          <ExportCSV url="https://test-people.fe.unicamp.br/api/sectors" name="sectors" :lastPage="configPagination.last_page" />
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
@@ -140,7 +138,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">

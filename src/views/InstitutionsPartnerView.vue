@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
+          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/institutions" name="instituições_parceiras" :lastPage="configPagination.last_page" />
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -111,7 +111,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -124,8 +125,6 @@
 
 
 <script>
-import ExportCSV from "../components/ExportCSV.vue"
-
 export default {
   data: () => ({
     valid: false,
@@ -169,9 +168,6 @@ export default {
     },
   }),
 
-  components: {
-    ExportCSV
-  },
 
   computed: {
     formTitle() {
@@ -200,7 +196,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8001/api/institutions?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -246,7 +242,7 @@ export default {
 
     deleteInstitutionsConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8001/api/institutions/" + this.institution.id)
+        .delete("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -266,7 +262,7 @@ export default {
     save() {
       if (this.institution.id) {
         this.$axios
-          .put("http://127.0.0.1:8001/api/institutions/" + this.institution.id, this.institution)
+          .put("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -283,7 +279,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8001/api/institutions", this.institution)
+          .post("https://test-bapex.fe.unicamp.br/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

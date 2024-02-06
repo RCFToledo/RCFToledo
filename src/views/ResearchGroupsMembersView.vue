@@ -101,7 +101,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary" v-if="Object.keys(this.items).length > 0">
           <v-spacer></v-spacer>
-          <p>Itens na páginas: <strong>{{ items.length }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage, researchGroupId)" @prev="initialize(currentPage,researchGroupId)" @first="initialize(1, researchGroupId)"
             @last="initialize(configPagination.last_page, researchGroupId)">

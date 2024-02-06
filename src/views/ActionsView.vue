@@ -5,9 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
-          </download-csv>
+          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/actions" name="ações" :lastPage="configPagination.last_page" />
           <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -260,7 +258,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -391,11 +390,10 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8001/api/actions?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          console.log(response);
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
           this.items.forEach((memberGroup) => {
             if (!this.items.started_at) {
               memberGroup.started_at = this.getDate(memberGroup.started_at);
@@ -447,7 +445,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8001/api/actions/" + this.action.id)
+        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -465,7 +463,7 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("http://127.0.0.1:8001/api/action-subjects").then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects").then((response) => {
         this.relatedSubjectsItems = response.data.data;
       })
     },
@@ -477,7 +475,7 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("http://127.0.0.1:8001/api/actions/" + this.action.id, this.action)
+          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -500,7 +498,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8001/api/actions", this.action)
+          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

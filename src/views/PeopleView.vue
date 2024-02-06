@@ -6,9 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
-          </download-csv>
+          <ExportCSV url="https://test-people.fe.unicamp.br/api/people" name="pessoas" :lastPage="configPagination.last_page" />
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
