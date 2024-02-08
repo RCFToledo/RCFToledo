@@ -144,7 +144,7 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
-        {{ getResponsibleNameById(item.institution_id) }}
+        {{item.institution_id && item.institution ? item.institution.name : ""}}
       </template>
 
       <!-- eslint-disable-next-line -->
@@ -234,6 +234,9 @@ export default {
       employee_id: null,
       sector_id: null,
       country_code: 'BR',
+      institution: null, 
+      department: null,
+      sector: null
     },
   }),
   watch: {
@@ -427,12 +430,6 @@ export default {
           return gridProfile.title;
         }
       }
-    },
-    getResponsibleNameById(institutionId) {
-      const institution = this.itemsInstitutions.find(
-        (item) => item.id === institutionId
-      );
-      return institution ? institution.name : "";
     },
   },
 };
