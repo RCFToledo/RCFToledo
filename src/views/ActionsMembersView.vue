@@ -24,23 +24,23 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="12">
-                      <v-autocomplete
+                      <v-autocomplete variant="outlined"
                         v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[ () => !!actionMembers.person_id || 'Membro é requerido' ]" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="12">
-                      <v-select v-model="actionMembers.degree"
+                      <v-select variant="outlined" v-model="actionMembers.degree"
                         label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) !== 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
                           () => !!actionMembers.degree || 'Nível no programa é requerido',
                         ]" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="actionMembers.stay_start" label="Data de início" :rules="[
+                      <v-text-field variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
                         () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
                         () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de inicio é maior que termino'
                       ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="actionMembers.stay_end" label="Data de término" :rules="[
+                      <v-text-field variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
                         () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de termino é menor que inicial',
                       ]" v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>

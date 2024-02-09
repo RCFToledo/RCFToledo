@@ -24,7 +24,7 @@
                   <v-row dense>
 
                     <v-col cols="12" md="6">
-                      <v-select v-model="people.academic_profile" label="Perfil" item-title="title" item-value="value"
+                      <v-select variant="outlined" v-model="people.academic_profile" label="Perfil" item-title="title" item-value="value"
                         :items="profile" :rules="[
                           () =>
                             !!people.academic_profile ||
@@ -34,21 +34,21 @@
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'staff' ||
                       people.academic_profile == 'professor' || people.academic_profile == 'researcher'
                       ">
-                      <v-text-field v-model="people.employee_id" :rules="[
+                      <v-text-field variant="outlined" v-model="people.employee_id" :rules="[
                         () =>
                           !!people.employee_id || 'Matrícula é requerida!',
                       ]" label="Matrícula"></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6" v-if="people.academic_profile == 'student'">
-                      <v-text-field v-model="people.student_id" :rules="[
+                      <v-text-field  variant="outlined" v-model="people.student_id" :rules="[
                         () => !!people.student_id || 'RA é requerido!',
                       ]" label="RA"></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 6 : 8">
-                      <v-text-field v-model="people.full_name" :rules="[
+                      <v-text-field variant="outlined" v-model="people.full_name" :rules="[
                         () =>
                           !!people.full_name || 'Nome Completo é requerido!',
                         () =>
@@ -57,33 +57,33 @@
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 2 : 4">
-                      <v-text-field v-model="people.cpf" :rules="[
+                      <v-text-field variant="outlined" v-model="people.cpf" :rules="[
                         () => !(people.country_code === 'BR' && people.academic_profile !== 'other' && !people.cpf) || 'CPF é requirido',
                       ]" label="CPF" v-mask-cpf></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6" v-if="people.country_code !== 'BR'" class="d-flex flex-row">
-                      <v-text-field class="mr-2" v-model="people.rne" label="RNE"></v-text-field>
-                      <v-text-field v-model="people.passport" label="Passaporte"></v-text-field>
+                      <v-text-field variant="outlined" class="mr-2" v-model="people.rne" label="RNE"></v-text-field>
+                      <v-text-field variant="outlined" v-model="people.passport" label="Passaporte"></v-text-field>
                     </v-col>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 4 : 6">
-                      <v-autocomplete v-model="people.country_code" label="País de Origem"
+                      <v-autocomplete variant="outlined" v-model="people.country_code" label="País de Origem"
                         :items="institutionsCountryCode" item-title="name" item-value="code"></v-autocomplete>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="people.default_email" :rules="[
+                      <v-text-field variant="outlined" v-model="people.default_email" :rules="[
                         () => !!people.default_email || 'E-mail é requerido!',
                         (v) => /.+@.+\..+/.test(v) || 'E-mail inválido',
                       ]" label="E-mail"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="people.alternative_email" label="E-mail alternativo"></v-text-field>
+                      <v-text-field variant="outlined" v-model="people.alternative_email" label="E-mail alternativo"></v-text-field>
                     </v-col>
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-autocomplete v-model="people.institution_id" label="Instituição" :items="items"
+                      <v-autocomplete variant="outlined" v-model="people.institution_id" label="Instituição" :items="items"
                         item-title="institution.name" item-value="institution.id" :rules="[
                           () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
@@ -92,11 +92,11 @@
                     </v-col>
                     <v-col cols="12" md="6"
                       v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
-                      <v-autocomplete v-model="people.department_id" label="Departamento" :items="itemsDepartments"
+                      <v-autocomplete variant="outlined" v-model="people.department_id" label="Departamento" :items="itemsDepartments"
                         item-title="name" item-value="id"></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6" v-else-if="people.academic_profile === 'staff'">
-                      <v-autocomplete v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
+                      <v-autocomplete variant="outlined" v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
                         item-value="id"></v-autocomplete>
                     </v-col>
                   </v-row>

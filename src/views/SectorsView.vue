@@ -53,25 +53,22 @@
                   <v-form ref="form" lazy-validation>
                     <v-row dense>
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.name" :rules="[
+                        <v-text-field variant="outlined" v-model="sectors.name" :rules="[
                           () => !!sectors.name || 'Nome é requerido!',
                         ]" label="Nome" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
+                        <v-text-field variant="outlined" v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
                           () => !(sectors.abbr_name !== null && sectors.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.code" label="Código da DGA" :rules="[
+                        <v-text-field variant="outlined" v-model="sectors.code" label="Código da DGA" :rules="[
                           () =>
                             !!sectors.code ||
                             'Código da DGA é requerido!',
                         ]" :counter="20"></v-text-field>
-                      </v-col>
-
-                      <v-col cols="12">
                       </v-col>
                     </v-row>
                   </v-form>

@@ -26,24 +26,24 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="8">
-                      <v-autocomplete v-model="action.institution_id" :items="itemsInstitutionsFinancial"
+                      <v-autocomplete variant="outlined" v-model="action.institution_id" :items="itemsInstitutionsFinancial"
                         item-title="name" item-value="id" :rules="[
                           () => !!action.institution_id || 'Instituição é requerida!',
                         ]" label="Instituição" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-text-field v-model="action.amount" label="R$" required :rules="[
+                      <v-text-field variant="outlined" v-model="action.amount" label="R$" required :rules="[
                         () => !!action.amount || 'Valor recebido é obrigatório'
                       ]"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="action.started_at" label="Data de início" :rules="[
+                      <v-text-field variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                         () => !!action.started_at || 'Data de ínicio é requirido',
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
                       ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
+                      <v-text-field variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
                         () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
                       ]" v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>

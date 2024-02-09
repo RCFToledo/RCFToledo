@@ -31,62 +31,62 @@
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
-                        <v-text-field v-model="action.title" :rules="[
+                        <v-text-field variant="outlined" v-model="action.title" :rules="[
                           () => !!action.title || 'Título é requerido!',
                           () => !(action.title.length > 60) || 'Título maior que o suportado',
                         ]" label="Título" :counter="60" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
+                        <v-autocomplete variant="outlined" v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
                           () => !!action.responsible_id || 'Responsável é requerido!',
                           () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
                         ]" label="Responsável" :counter="60" required>
                         </v-autocomplete>
+                      </v-col>
                         <v-col cols="12" md="12">
-                          <v-autocomplete v-model="action.assistant_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
+                          <v-autocomplete variant="outlined" v-model="action.assistant_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
                           </v-autocomplete>
                         </v-col>
-                      </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
                       <v-col cols="12" md="12">
-                        <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="label"
+                        <v-select variant="outlined" v-model="action.type" label="Tipo" :items="itemsType" item-title="label"
                           item-value="type" :rules="[
                             () => !!action.type || 'Tipo é requerido!',
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="id"
+                        <v-autocomplete variant="outlined" multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="id"
                           v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" label="Palavras-chave"
+                        <v-combobox variant="outlined" chips multiple v-model="action.keywords" @keydown="getKeySpace" label="Palavras-chave"
                           required></v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field v-model="action.started_at" label="Data de início" :rules="[
+                        <v-text-field variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
                           () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
                         ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
+                        <v-text-field variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
                           () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
                         ]" v-mask-date.br :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
 
                       <v-col cols="12" md="3">
-                        <v-switch color="primary" v-model="action.international" inset
+                        <v-switch variant="outlined" color="primary" v-model="action.international" inset
                           :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch color="primary" v-model="action.free" inset
+                        <v-switch variant="outlined" color="primary" v-model="action.free" inset
                           :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea v-model="action.description" :rules="[
+                        <v-textarea variant="outlined" v-model="action.description" :rules="[
                           () => !!action.description || 'Descrição é requerida!',
                           () => !(action.description.length > 200) || 'Descrição maior que o suportado',
                         ]" label="Descrição" :counter="200" required></v-textarea>
@@ -94,13 +94,13 @@
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Avaliar'">
                       <v-col cols="12" md="12">
-                        <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
+                        <v-select variant="outlined" v-model="action.status" :items="status" item-value="value" item-title="title"
                           label="Situação" :rules="[
                             () => !!action.status || 'Situação é requerida',
                           ]" required></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea v-model="action.justify" label="Justificativa" required></v-textarea>
+                        <v-textarea variant="outlined" v-model="action.justify" label="Justificativa" required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -119,11 +119,11 @@
                     <v-card v-if="isTab === 'Enviar' && user === 'staff'" variant="tonal">
                     <v-col cols="12" md="12" class="text-body-1 text-left">
                       <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box" style="margin-bottom: 1vw;">{{title_disabled ? "Editar" : "Salvar"  }} titulo do texto</v-btn>
-                        <v-text-field  clearable variant="solo-filled" v-model="term_title" :disabled="title_disabled"></v-text-field>
+                        <v-text-field  clearable variant="outlined" v-model="term_title" :disabled="title_disabled"></v-text-field>
                     </v-col>
                       <v-col cols="12" md="12">
                         <v-btn @click="term_disabled = !term_disabled " variant="tonal" prepend-icon="mdi-pencil-box" style="margin-bottom: 1vw;">{{term_disabled ? "Editar" : "Salvar"  }} corpo do texto</v-btn>
-                        <v-textarea clearable variant="solo-filled" v-model="term" :disabled="term_disabled"></v-textarea>
+                        <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
                     <v-card v-if="isTab === 'Enviar' && user !== 'staff'" variant="tonal">

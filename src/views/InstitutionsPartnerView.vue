@@ -22,7 +22,7 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field v-model="institution.name" :rules="[
+                      <v-text-field variant="outlined" v-model="institution.name" :rules="[
                         () => !!institution.name || 'Nome é requerido!',
                         () =>
                           !(institution.name.length > 60) ||
@@ -30,22 +30,22 @@
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field v-model="institution.abbr_name" label="Nome Abreviado" :rules="[
+                      <v-text-field variant="outlined" v-model="institution.abbr_name" label="Nome Abreviado" :rules="[
                         () =>
                           !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
                           'Nome Abreviado maior que o suportado'
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
+                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.legal_nature_id" label="Natureza jurídica" :items="financialNature"
+                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="financialNature"
                         item-title="nature" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-autocomplete v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
+                      <v-autocomplete variant="outlined" v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
                         :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',

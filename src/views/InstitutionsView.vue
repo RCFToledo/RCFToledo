@@ -30,6 +30,7 @@
                   <v-row dense>
                     <v-col cols="12">
                       <v-text-field
+                      variant="outlined"
                         v-model="institution.name"
                         :rules="[
                           () => !!institution.name || 'Nome é requerido!',
@@ -42,6 +43,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-text-field
+                      variant="outlined"
                         v-model="institution.abbr_name"
                         label="Nome Abreviado"
                         :rules="[
@@ -52,6 +54,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-select
+                      variant="outlined"
                         v-model="institution.type"
                         multiple
                         label="Tipo"
@@ -62,6 +65,7 @@
                     </v-col>
                     <v-col cols="12">
                       <v-autocomplete
+                      variant="outlined"
                         v-model="institution.country_code"
                         label="País"
                         :items="institutionsCountryCode"

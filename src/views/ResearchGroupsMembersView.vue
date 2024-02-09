@@ -23,7 +23,7 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-autocomplete v-model="groupMember.person_id" :items="itemsPeople" item-title="full_name"
+                      <v-autocomplete variant="outlined" v-model="groupMember.person_id" :items="itemsPeople" item-title="full_name"
                         item-value="id" :rules="[
                           () => !!groupMember.person_id || 'Pessoa é requerido!',
                           () => !(groupMember.person_id.length > 60) || 'Nome maior que o suportado',
@@ -31,19 +31,19 @@
                       </v-autocomplete>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="groupMember.role" label="Papel" :items="itemsRole" :title="itemsRole.title"
+                      <v-select variant="outlined" v-model="groupMember.role" label="Papel" :items="itemsRole" :title="itemsRole.title"
                         :value="itemsRole.value" :rules="[
                           () => !!groupMember.role || 'Papel é requerido!',
                         ]" :counter="20"></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
+                      <v-text-field variant="outlined" v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
                         () => !!groupMember.stay_start || 'Ínicio de permanência é requirido',
                         () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Ínicio de permanência é maior que termino'
                       ]" v-mask-date.br></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="groupMember.stay_end" label="Término da permanência" :rules="[
+                      <v-text-field variant="outlined" v-model="groupMember.stay_end" label="Término da permanência" :rules="[
                         () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Término de permanência menor que inicial',
                       ]" v-mask-date.br></v-text-field>
                     </v-col>

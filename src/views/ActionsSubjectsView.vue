@@ -22,7 +22,7 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field v-model="actionSubject.subject" :rules="[
+                      <v-text-field variant="outlined" v-model="actionSubject.subject" :rules="[
                         () => !!actionSubject.subject || 'Tema é requerido',
                         () => !(actionSubject.subject.length > 60) || 'Tema maior que o suportado',
                       ]" label="Tema" :counter="60" required></v-text-field>
