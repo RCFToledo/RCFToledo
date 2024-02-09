@@ -37,15 +37,15 @@
                         ]" :counter="20"></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
+                      <v-text-field type="date" variant="outlined" v-model="groupMember.stay_start" label="Ínicio da permanência" :rules="[
                         () => !!groupMember.stay_start || 'Ínicio de permanência é requirido',
                         () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Ínicio de permanência é maior que termino'
-                      ]" v-mask-date.br></v-text-field>
+                      ]"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="groupMember.stay_end" label="Término da permanência" :rules="[
+                      <v-text-field type="date" variant="outlined" v-model="groupMember.stay_end" label="Término da permanência" :rules="[
                         () => !compareDates(groupMember.stay_start, groupMember.stay_end) || 'Término de permanência menor que inicial',
-                      ]" v-mask-date.br></v-text-field>
+                      ]"></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -93,6 +93,15 @@
       <template v-slot:item.role="{ item }">
         {{ getRoleById(item.role) }}
       </template>
+       <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_start="{ item }">
+        {{ getDate(item.stay_start) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_end="{ item }">
+        {{ getDate(item.stay_end) }}
+      </template>
+
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editGroupMember(item)">mdi-pencil</v-icon>
@@ -199,16 +208,6 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data;
-          if(Object.keys(this.items).length > 0) {
-            this.items.forEach((memberGroup) => {
-            if (!memberGroup.stay_start) {
-              memberGroup.stay_start = this.getDate(memberGroup.stay_start);
-            }
-            if (!memberGroup.stay_end) {
-              memberGroup.stay_end = this.getDate(memberGroup.stay_end);
-            }
-          })
-          }
         })
         .catch((error) => {
           console.error(error);
@@ -257,10 +256,6 @@ export default {
 
     save(id) {
       this.groupMember.research_group_id = id;
-      this.groupMember.stay_start = this.setDate(this.groupMember.stay_start)
-      if (this.groupMember.stay_end) {
-        this.groupMember.stay_end = this.setDate(this.groupMember.stay_end)
-      }
       if (this.groupMember.id) {
         this.$axios
           .put(`https://test-research.fe.unicamp.br/api/research-groups/${id}/members/${this.groupMember.id}`, this.groupMember)
@@ -323,15 +318,6 @@ export default {
           return null;
         }
         
-    },
-    setDate(date) {
-        let momentDate = moment.utc(date, "DD/MM/YYYY");
-        let formatDate = momentDate.format('YYYY-MM-DD');
-        if(momentDate.isValid()) {
-          return formatDate;
-        } else {
-          return null;
-        }
     },
     compareDates(start, end) {
       let momentInit = moment.utc(start, "DD/MM/YYYY");

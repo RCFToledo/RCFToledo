@@ -34,15 +34,14 @@
                         ]" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
+                      <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
                         () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
-                        () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de inicio é maior que termino'
-                      ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                      ]" required><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
+                      <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
                         () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de termino é menor que inicial',
-                      ]" v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                      ]"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -82,6 +81,14 @@
       <!-- eslint-disable-next-line -->
       <template v-slot:item.person_id="{ item }">
         {{ getPersonNameById(item.person_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_start="{ item }">
+        {{ getDate(item.stay_start) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_end="{ item }">
+        {{ getDate(item.stay_end) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
@@ -181,14 +188,6 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
-          this.items.forEach((memberGroup) => {
-            if (!this.items.stay_start) {
-              memberGroup.stay_start = this.getDate(memberGroup.stay_start);
-            }
-            if (!this.items.stay_end) {
-              memberGroup.stay_end = this.getDate(memberGroup.stay_end);
-            }
-          })
         })
         .catch((error) => {
           console.error(error);
@@ -237,10 +236,6 @@ export default {
 
     save(id) {
       this.actionMembers.action_id = id;
-      this.actionMembers.stay_start = this.setDate(this.actionMembers.stay_start)
-      if (this.actionMembers.stay_end) {
-        this.actionMembers.stay_end = this.setDate(this.actionMembers.stay_end)
-      }
       if (this.actionMembers.id) {
         this.$axios
           .put(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members/${this.actionMembers.id}`, this.actionMembers)
@@ -302,15 +297,6 @@ export default {
         return null;
       }
 
-    },
-    setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
-      if (momentDate.isValid()) {
-        return formatDate;
-      } else {
-        return null;
-      }
     },
     getAcademicProfileByPeopleById(people, personId) {
       const profile = people.find((profile) => {

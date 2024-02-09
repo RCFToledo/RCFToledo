@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
+    <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
+      :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
@@ -37,44 +38,45 @@
                         ]" label="Título" :counter="60" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete variant="outlined" v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
-                          () => !!action.responsible_id || 'Responsável é requerido!',
-                          () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
-                        ]" label="Responsável" :counter="60" required>
+                        <v-autocomplete variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
+                          item-title="full_name" item-value="id" :rules="[
+                            () => !!action.responsible_id || 'Responsável é requerido!',
+                            () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
+                          ]" label="Responsável" :counter="60" required>
                         </v-autocomplete>
                       </v-col>
-                        <v-col cols="12" md="12">
-                          <v-autocomplete variant="outlined" v-model="action.assistant_id" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
+                      <v-col cols="12" md="12">
+                        <v-autocomplete variant="outlined" v-model="action.assistant_id" :items="itemsPeople"
+                          item-title="full_name" item-value="id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
-                          </v-autocomplete>
-                        </v-col>
+                        </v-autocomplete>
+                      </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
                       <v-col cols="12" md="12">
-                        <v-select variant="outlined" v-model="action.type" label="Tipo" :items="itemsType" item-title="label"
-                          item-value="type" :rules="[
+                        <v-select variant="outlined" v-model="action.type" label="Tipo" :items="itemsType"
+                          item-title="label" item-value="type" :rules="[
                             () => !!action.type || 'Tipo é requerido!',
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete variant="outlined" multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="id"
-                          v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+                        <v-autocomplete variant="outlined" multiple chips :items="relatedSubjectsItems"
+                          item-title="subject" item-value="id" v-model="action.related_subjects"
+                          label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox variant="outlined" chips multiple v-model="action.keywords" @keydown="getKeySpace" label="Palavras-chave"
-                          required></v-combobox>
+                        <v-combobox variant="outlined" chips multiple v-model="action.keywords" @keydown="getKeySpace"
+                          label="Palavras-chave" required></v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
+                        <v-text-field type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
-                          () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
-                        ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        ]" required ><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
-                          () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
-                        ]" v-mask-date.br :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
+                        ]"  :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                       </v-col>
 
                       <v-col cols="12" md="3">
@@ -94,13 +96,14 @@
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Avaliar'">
                       <v-col cols="12" md="12">
-                        <v-select variant="outlined" v-model="action.status" :items="status" item-value="value" item-title="title"
-                          label="Situação" :rules="[
+                        <v-select variant="outlined" v-model="action.status" :items="status" item-value="value"
+                          item-title="title" label="Situação" :rules="[
                             () => !!action.status || 'Situação é requerida',
                           ]" required></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea variant="outlined" v-model="action.justify" label="Justificativa" required></v-textarea>
+                        <v-textarea variant="outlined" v-model="action.justify" label="Justificativa"
+                          required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
@@ -117,12 +120,15 @@
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
                     <v-card v-if="isTab === 'Enviar' && user === 'staff'" variant="tonal">
-                    <v-col cols="12" md="12" class="text-body-1 text-left">
-                      <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box" style="margin-bottom: 1vw;">{{title_disabled ? "Editar" : "Salvar"  }} titulo do texto</v-btn>
-                        <v-text-field  clearable variant="outlined" v-model="term_title" :disabled="title_disabled"></v-text-field>
-                    </v-col>
+                      <v-col cols="12" md="12" class="text-body-1 text-left">
+                        <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                          style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
+                        <v-text-field clearable variant="outlined" v-model="term_title"
+                          :disabled="title_disabled"></v-text-field>
+                      </v-col>
                       <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled " variant="tonal" prepend-icon="mdi-pencil-box" style="margin-bottom: 1vw;">{{term_disabled ? "Editar" : "Salvar"  }} corpo do texto</v-btn>
+                        <v-btn @click="term_disabled = !term_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                          style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
                         <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
@@ -192,6 +198,14 @@
         {{ getStatusTitle(item.status) }}
       </template>
       <!-- eslint-disable-next-line -->
+      <template v-slot:item.started_at="{ item }">
+        {{ getDate(item.started_at) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.ended_at="{ item }">
+        {{ getDate(item.ended_at) }}
+      </template>
+      <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
@@ -200,8 +214,7 @@
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
                 @click="editAction(item, 'Título')"></v-list-item>
-              <v-list-item prepend-icon="mdi-database" title="Dados"
-                @click="editAction(item, 'Dados', 1)"></v-list-item>
+              <v-list-item prepend-icon="mdi-database" title="Dados" @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
@@ -219,8 +232,8 @@
           <v-spacer></v-spacer>
           <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
           <p>Itens na página: <strong>{{ items.length }}</strong></p>
-          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1"
+            v-model="currentPage" @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
           </v-pagination>
         </v-footer>
@@ -357,14 +370,6 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
-          this.items.forEach((memberGroup) => {
-            if (!this.items.started_at) {
-              memberGroup.started_at = this.getDate(memberGroup.started_at);
-            }
-            if (!this.items.ended_at) {
-              memberGroup.ended_at = this.getDate(memberGroup.ended_at);
-            }
-          })
         })
         .catch((error) => {
           console.error(error);
@@ -432,12 +437,8 @@ export default {
     },
 
     save() {
-      if(this.isTab === 'Enviar') {
+      if (this.isTab === 'Enviar') {
         this.action.status = "in_progress"
-      }
-      this.action.started_at = this.setDate(this.action.started_at);
-      if (this.action.ended_at) {
-        this.action.ended_at = this.setDate(this.action.ended_at);
       }
       if (this.action.id) {
         this.$axios
@@ -446,10 +447,6 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize(this.currentPage);
-              this.items.forEach((action) => {
-                action.started_at = this.getDate(action.started_at);
-                action.ended_at = this.getDate(action.ended_at);
-              })
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
@@ -473,7 +470,7 @@ export default {
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = this.defaultAction;
-                
+
               }
             } else {
               this.$toast.error(response.data.message);
@@ -511,15 +508,6 @@ export default {
         return null;
       }
 
-    },
-    setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
-      if (momentDate.isValid()) {
-        return formatDate;
-      } else {
-        return null;
-      }
     },
     getResponsibleNameById(responsibleId) {
       const responsible = this.itemsPeople.find(

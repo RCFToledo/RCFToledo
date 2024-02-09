@@ -38,14 +38,12 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
-                        () => !!action.started_at || 'Data de ínicio é requirido',
-                        () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
-                      ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        () => !!action.started_at || 'Data de ínicio é requirido'
+                      ]" required type="date"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
-                        () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
-                      ]" v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                      ]" type="date"><v-icon>mdi-calendar-range</v-icon></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -90,6 +88,14 @@
       <!-- eslint-disable-next-line -->
       <template v-slot:item.institution_id="{ item }">
         {{ getInstitutionsFinacialNameById(item.institution_id) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.started_at="{ item }">
+        {{ getDate(item.started_at) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.ended_at="{ item }">
+        {{ getDate(item.ended_at) }}
       </template>
 
       <!-- eslint-disable-next-line -->
@@ -180,14 +186,6 @@ export default {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
           console.log(this.configPagination)
-          this.items.forEach((action) => {
-            if (!this.items.started_at) {
-              action.started_at = this.getDate(action.started_at);
-            }
-            if (!this.items.ended_at) {
-              action.ended_at = this.getDate(action.ended_at);
-            }
-          })
         })
         .catch((error) => {
           console.error(error);
@@ -250,10 +248,6 @@ export default {
             if (response.status == 200) {
               this.initialize(this.currentPage, this.actionId);
               this.action = this.defaultAction;
-              this.items.forEach((action) => {
-                action.started_at = this.getDate(action.started_at);
-                action.ended_at = this.getDate(action.ended_at);
-              })
               this.$toast.success(response.data.message);
               this.dialog = false;
             } else {
@@ -295,15 +289,6 @@ export default {
     getDate(date) {
       let momentDate = moment.utc(date, "YYYY-MM-DD");
       let formatDate = momentDate.format('DD/MM/YYYY');
-      if (momentDate.isValid()) {
-        return formatDate;
-      } else {
-        return null;
-      }
-    },
-    setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
       if (momentDate.isValid()) {
         return formatDate;
       } else {
