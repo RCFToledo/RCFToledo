@@ -1,6 +1,8 @@
 <template>
     <div>
-        <v-select class="text-primary" :items="['2020', '2021', '2022', '2023', '2024']" label="Selecione o ano" variant="outlined" color="primary"></v-select>
+        {{ items }}
+        <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
+            label="Selecione o ano" variant="outlined" color="primary"></v-select>
         <v-row justify="center">
             <v-col cols="4">
                 <v-toolbar density="compact" color="primary" class="elevation-3">
@@ -28,7 +30,8 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por status</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersStatus" :items="actionsStatus" class="elevation-3">
+                <v-data-table :headers="[{ title: 'Estado', key: 'status' }, { title: 'Quantidade', key: 'count' }]"
+                    :items="actionsStatus" class="elevation-3">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -40,7 +43,8 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipos de instituição</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersTypeInstitution" :items="institutionsType" class="elevation-3">
+                <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
+                    :items="institutionsType" class="elevation-3">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -63,8 +67,9 @@
             <v-col cols="4">
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Financiamentos por tipo de ação</v-toolbar-title>
-                </v-toolbar>    
-                <v-data-table :items="financing" class="elevation-3">
+                </v-toolbar>
+                <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
+                    :items="financing" class="elevation-3">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -76,35 +81,25 @@
 </template>
 
 <script>
-
 export default {
     data: () => ({
         itemsPeople: [],
         itemsActions: [],
-        itemsFinancing: [],
+        types: ['count_type_course', 'count_type_event', 'count_type_program', 'count_type_project', 'count_type_agreement', 'count_type_service'],
+        statuses: ['count_in_analise', 'count_in_progress', 'count_repproved', 'count_approved', 'count_cancelled'],
+        categories: ['count_public', 'count_private', 'count_third_sector'],
+        student: ['student_type_course', 'student_type_event', 'student_type_program', 'student_type_project', 'student_type_agreement', 'student_type_service'],
+        financings: ['count_financing_course', 'count_financing_event', 'count_financing_program', 'count_financing_project', 'count_financing_agreement', 'count_financing_service'],
+        items: [],
+        itemsStatus: [],
+        year_id: "2024",
         headersActions: [
             { title: "Tipo", align: "start", key: "type" },
             { title: "Graduação", key: "undergraduate" },
             { title: "Mestrado", key: "masters_degree" },
             { title: "Doutorado", key: "doctorate" },
         ],
-        headersStatus: [
-            { title: "Estado", key: "status" },
-            { title: "2020", key: "2020" },
-            { title: "2021", key: "2021" },
-            { title: "2022", key: "2022" },
-            { title: "2023", key: "2023" },
-            { title: "2024", key: "2024" },
-        ],
 
-        headersTypeInstitution: [
-            { title: "Tipo de instituição", align: "type", key: "type" },
-            { title: "2020", key: "2020" },
-            { title: "2021", key: "2021" },
-            { title: "2022", key: "2022" },
-            { title: "2023", key: "2023" },
-            { title: "2024", key: "2024" },
-        ],
 
         headersPeople: [
             { title: "Tipo", align: "start", key: "type" },
@@ -127,69 +122,37 @@ export default {
         institutionsType: [
             {
                 type: "Publico",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
                 type: "Privado",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
                 type: "Terceiro setor",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
         ],
         actionsStatus: [
             {
                 status: "Em analise",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
                 status: "Em andamento",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
                 status: "Reprovado",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
                 status: "Aprovado",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                count: null,
             },
             {
-                status: "Concluido",
-                "2020": 0,
-                "2021": 1,
-                "2022": 2,
-                "2023": 4,
-                "2024": 6
+                status: "Cancelado",
+                count: null,
             },
         ],
         actions: [
@@ -299,103 +262,51 @@ export default {
                 doctorate: 0,
             },
         ],
-
-        people: [
-            {
-                type: 'Funcionário',
-                count: 0,
-                course: 0,
-                event: 0,
-                extension_program: 0,
-                extension_project: 0,
-                agreement: 0,
-                service_provision: 0,
-            },
-            {
-                type: 'Estudante',
-                count: 0,
-                course: 0,
-                event: 0,
-                extension_program: 0,
-                extension_project: 0,
-                agreement: 0,
-                service_provision: 0,
-            },
-            {
-                type: 'Doscente',
-                count: 0,
-                course: 0,
-                event: 0,
-                extension_program: 0,
-                extension_project: 0,
-                agreement: 0,
-                service_provision: 0,
-            },
-            {
-                type: 'Pesquisador',
-                count: 0,
-                course: 0,
-                event: 0,
-                extension_program: 0,
-                extension_project: 0,
-                agreement: 0,
-                service_provision: 0,
-            },
-            {
-                type: 'Outros',
-                count: 0,
-                course: 0,
-                event: 0,
-                extension_program: 0,
-                extension_project: 0,
-                agreement: 0,
-                service_provision: 0,
-            },
-        ],
-
         financing: [
             {
-                Tipo: 'Curso',
-                Quantidade: 0.0,
+                type: 'Curso',
+                count: null,
             },
             {
-                Tipo: 'Evento',
-                Quantidade: 0.0,
+                type: 'Evento',
+                count: null,
             },
             {
-                Tipo: 'Programa de extensão',
-                Quantidade: 0.0,
+                type: 'Programa de extensão',
+                count: null,
             },
             {
-                Tipo: 'Projeto de extensão',
-                Quantidade: 0.0,
+                type: 'Projeto de extensão',
+                count: null,
             },
             {
-                Tipo: 'Convênio',
-                Quantidade: 0.0,
+                type: 'Convênio',
+                count: null,
             },
             {
-                Tipo: 'Serviço de Provisão',
-                Quantidade: 0.0,
+                type: 'Prestação de serviço',
+                count: null,
             },
         ],
     }),
     created() {
-        this.initializeActions();
-        this.initializePeople();
-        this.initializeFinancing();
+        this.initialize();
     },
     methods: {
-        initializePeople() {
-            this.$axios
-                .get("people/")
-                .then((response) => {
-                    console.log(response.data);
-                    this.itemsPeople = response.data;
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+        initialize() {
+            this.$axios.get(`http://127.0.0.1:8000/api/reports/${this.year_id}`).then((response) => {
+                this.items = response.data.data;
+                for (let i = 0; i < this.actionsStatus.length; i++) {
+                    this.actionsStatus[i].count = this.items[this.statuses[i]];
+                }
+                for (let i = 0; i < this.financing.length; i++) {
+                    this.financing[i].count = this.items[this.financings[i]];
+                }
+                for (let i = 0; i < this.institutionsType.length; i++) {
+                    this.institutionsType[i].count = this.items[this.categories[i]];
+                }
+
+            })
         },
         initializeActions() {
             this.$axios
