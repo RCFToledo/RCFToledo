@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{ items }}
         <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
             label="Selecione o ano" variant="outlined" color="primary"></v-select>
         <v-row justify="center">
@@ -10,7 +9,10 @@
                 </v-toolbar>
                 <v-data-table
                     :headers="[{ title: 'Tipo', align: 'start', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
-                    :items="actions" key="undergraduate" class="elevation-3">
+                    :items="actions" key="undergraduate" class="elevation-3" :loading="loading">
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    </template>
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -20,7 +22,7 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Estudantes por tipo de ação e nível do programa acadêmico</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActions" :items="students" class="elevation-3">
+                <v-data-table :headers="headersActions" :items="students" class="elevation-3" :loading="loading">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -31,7 +33,10 @@
                     <v-toolbar-title>Ações por status</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="[{ title: 'Estado', key: 'status' }, { title: 'Quantidade', key: 'count' }]"
-                    :items="actionsStatus" class="elevation-3">
+                    :items="actionsStatus" class="elevation-3" :loading="loading">
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    </template>
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -44,7 +49,10 @@
                     <v-toolbar-title>Ações por tipos de instituição</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
-                    :items="institutionsType" class="elevation-3">
+                    :items="institutionsType" class="elevation-3" :loading="loading">
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    </template>
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -54,7 +62,11 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3">
+                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" :loading="loading">
+                    <!-- eslint-disable-next-line -->
+                    <template v-slot:loading>
+                        <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+                    </template>
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.related_subjects="{ item }">
                         <v-chip variant="text" v-for="theme in item.related_subjects" :key="theme">{{ theme }}</v-chip>
@@ -69,7 +81,7 @@
                     <v-toolbar-title>Financiamentos por tipo de ação</v-toolbar-title>
                 </v-toolbar>
                 <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
-                    :items="financing" class="elevation-3">
+                    :items="financing" class="elevation-3" :loading="loading">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
                     </template>
@@ -83,9 +95,11 @@
 <script>
 export default {
     data: () => ({
+        loading: true,
         itemsPeople: [],
         itemsActions: [],
-        types: ['count_type_course', 'count_type_event', 'count_type_program', 'count_type_project', 'count_type_agreement', 'count_type_service'],
+        types: ['course', 'event', 'program', 'project', 'agreement', 'service'],
+        degrees: ['undergraduate', 'masters_degree', 'doctorate'],
         statuses: ['count_in_analise', 'count_in_progress', 'count_repproved', 'count_approved', 'count_cancelled'],
         categories: ['count_public', 'count_private', 'count_third_sector'],
         student: ['student_type_course', 'student_type_event', 'student_type_program', 'student_type_project', 'student_type_agreement', 'student_type_service'],
@@ -158,9 +172,9 @@ export default {
         actions: [
             {
                 type: 'Curso',
-                count: 0,
-                undergraduate: 1,
-                masters_degree: 3,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
                 doctorate: 2,
                 related_subjects: [
                     'tema 1',
@@ -168,98 +182,97 @@ export default {
             },
             {
                 type: 'Evento',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
                 related_subjects: [
                     'tema 4'
                 ],
             },
             {
                 type: 'Programa de Extensão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
                 related_subjects: [
                     'tema 2'
                 ],
             },
             {
                 type: 'Projeto de Extensão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
                 related_subjects: [
                     'tema 3'
                 ],
             },
             {
                 type: 'Convênio',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
                 related_subjects: [
                     'tema 5'
                 ],
             },
             {
                 type: 'Serviço de Provisão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
                 related_subjects: [
                     'tema 7'
                 ],
             },
         ],
-
         students: [
             {
                 type: 'Curso',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
             {
                 type: 'Evento',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
             {
                 type: 'Programa de Extensão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
             {
                 type: 'Projeto de Extensão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
             {
                 type: 'Convênio',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
             {
                 type: 'Serviço de Provisão',
-                count: 0,
-                undergraduate: 0,
-                masters_degree: 0,
-                doctorate: 0,
+                count: null,
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
             },
         ],
         financing: [
@@ -305,7 +318,15 @@ export default {
                 for (let i = 0; i < this.institutionsType.length; i++) {
                     this.institutionsType[i].count = this.items[this.categories[i]];
                 }
-
+                for (let i = 0; i < this.actions.length; i++) {
+                    this.actions[i].count = this.items[`count_type_${this.types[i]}`];
+                }
+                for (let i = 0; i < this.students.length; i++) {
+                    this.students[i].undergraduate = this.items[`student_${this.types[i]}_${this.degrees[0]}`];
+                    this.students[i].masters_degree = this.items[`student_${this.types[i]}_${this.degrees[1]}`];
+                    this.students[i].doctorate = this.items[`student_${this.types[i]}_${this.degrees[2]}`];
+                }
+                this.loading = false;
             })
         },
         initializeActions() {
