@@ -37,11 +37,11 @@
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
+                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="[{id: 1, category: 'Empresa Pública'}, {id: 2, category: 'Empresa Privada'}, {id: 3, category: 'Terceiro Setor'}]"
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="financialNature"
+                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="institution.legal_category_id === 1 ? [{id: 1, nature: 'Municipal'}, {id: 2, nature: 'Estadual'}, {id: 3, nature: 'Federal'}] : []"
                         item-title="nature" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
@@ -88,14 +88,6 @@
             </v-card>
           </v-dialog>
         </v-toolbar>
-      </template>
-      <!-- eslint-disable-next-line -->
-      <template v-slot:item.legal_category_id="{ item }">
-        {{ getCategoryById(item.legal_category_id) }}
-      </template>
-      <!-- eslint-disable-next-line -->
-      <template v-slot:item.legal_nature_id="{ item }">
-        {{ getNatureByCategoryIdNatureId(item.legal_category_id, item.legal_nature_id) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
@@ -175,16 +167,24 @@ export default {
     },
   },
 
-  watch: {
+  /*watch: {
     "institution.legal_category_id"(newValue, oldValue) {
       this.getNatureByCategory(this.institutionsLegalCategories, newValue, oldValue);
     },
-  },
+  },*/
 
   created() {
     this.initialize(1);
     this.initializeCountries();
     this.initializeLegalCategories()
+  },
+
+  watch: {
+    'institution.legal_category_id'(newValue) {
+      if(newValue !== 1) {
+        this.institution.legal_nature_id = null;
+      }
+    }
   },
   methods: {
     formSubmit() {
