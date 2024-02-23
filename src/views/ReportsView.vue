@@ -62,7 +62,7 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" :loading="loading">
+                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" :loading="loadingSubject">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
@@ -96,8 +96,7 @@
 export default {
     data: () => ({
         loading: true,
-        itemsPeople: [],
-        itemsActions: [],
+        loadingSubject: true,
         types: ['course', 'event', 'program', 'project', 'agreement', 'service'],
         degrees: ['undergraduate', 'masters_degree', 'doctorate'],
         statuses: ['count_in_analise', 'count_in_progress', 'count_repproved', 'count_approved', 'count_cancelled'],
@@ -304,6 +303,16 @@ export default {
     }),
     created() {
         this.initialize();
+        this.initializeReporSubjects();
+    },
+
+    watch: {
+        'year_id'(newValue) {
+            this.loading = true;
+            this.loadingSubject = true;
+            this.initialize(newValue);
+            this.initializeReporSubjects(newValue);
+        }
     },
     methods: {
         initialize() {
@@ -329,6 +338,14 @@ export default {
                 this.loading = false;
             })
         },
+        initializeReporSubjects() {
+            this.$axios.get(`http://127.0.0.1:8000/api/report-subjects/${this.year_id}`).then((response) => {
+                this.items = response.data.data;
+                console.log(this.items);
+                this.loadingSubject = false;
+            })
+        },
+
         initializeActions() {
             this.$axios
                 .get("actions/")
