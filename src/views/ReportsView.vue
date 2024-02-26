@@ -62,7 +62,8 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3" :loading="loadingSubject">
+                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3"
+                    :loading="loadingSubject">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
@@ -104,6 +105,8 @@ export default {
         student: ['student_type_course', 'student_type_event', 'student_type_program', 'student_type_project', 'student_type_agreement', 'student_type_service'],
         financings: ['count_financing_course', 'count_financing_event', 'count_financing_program', 'count_financing_project', 'count_financing_agreement', 'count_financing_service'],
         items: [],
+        configPagination: [],
+        itemsSubjects: [],
         itemsStatus: [],
         year_id: "2024",
         headersActions: [
@@ -302,8 +305,9 @@ export default {
         ],
     }),
     created() {
-        this.initialize();
-        this.initializeReporSubjects();
+        this.initialize(2024);
+        this.initializeReporSubjects(2024);
+        this.initializeActionsSubjects(1);
     },
 
     watch: {
@@ -315,8 +319,8 @@ export default {
         }
     },
     methods: {
-        initialize() {
-            this.$axios.get(`http://127.0.0.1:8000/api/reports/${this.year_id}`).then((response) => {
+        initialize(year_id) {
+            this.$axios.get(`http://127.0.0.1:8000/api/reports/${year_id}`).then((response) => {
                 this.items = response.data.data;
                 for (let i = 0; i < this.actionsStatus.length; i++) {
                     this.actionsStatus[i].count = this.items[this.statuses[i]];
@@ -338,53 +342,39 @@ export default {
                 this.loading = false;
             })
         },
-        initializeReporSubjects() {
-            this.$axios.get(`http://127.0.0.1:8000/api/report-subjects/${this.year_id}`).then((response) => {
+        initializeReporSubjects(year_id) {
+            this.$axios.get(`http://127.0.0.1:8000/api/report-subjects/${year_id}`).then((response) => {
                 this.items = response.data.data;
                 console.log(this.items);
                 this.loadingSubject = false;
             })
         },
-
-        initializeActions() {
+        initializeActionsSubjects(page) {
             this.$axios
-                .get("actions/")
+                .get(`http://127.0.0.1:8000/api/action-subjects?page=${page}`)
                 .then((response) => {
-                    this.itemsActions = response.data;
-                    this.itemsActions.forEach((memberGroup) => {
-                        if (!this.itemsActions.started_at) {
-                            memberGroup.started_at = this.getDate(memberGroup.started_at);
-                        }
-                        if (!this.itemsActions.ended_at) {
-                            memberGroup.ended_at = this.getDate(memberGroup.ended_at);
-                        }
-                    })
+                    this.itemsSubjects = response.data.data;
+                    this.configPagination = response.data.meta;
+                    this.getAllSubjects();
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         },
-        initializeFinancing() {
-            this.$axios
-                .get("financing/")
+        
+        getAllSubjects() {
+            for (let i = 1; i < this.configPagination.last_page; i++) {
+                this.$axios
+                .get(`http://127.0.0.1:8000/api/action-subjects?page=${i}`)
                 .then((response) => {
-                    this.itemsFinancing = response.data;
-                    this.itemsFinancing.forEach((action) => {
-                        if (!this.itemsFinancing.started_at) {
-                            action.started_at = this.getDate(action.started_at);
-                        }
-                        if (!this.itemsFinancing.ended_at) {
-                            action.ended_at = this.getDate(action.ended_at);
-                        }
-                        if (!this.itemsFinancing.amount) {
-                            action.amount = action.amount.toFixed(2).toString()
-                        }
-                    })
+                    this.itemsSubjects.push(...response.data.data);
+                    console.log(this.itemsSubjects);
                 })
                 .catch((error) => {
                     console.error(error);
                 });
-        },
+            }
+        }
     }
 }
 </script>
