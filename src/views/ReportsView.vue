@@ -48,7 +48,7 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipos de instituição</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
+                <v-data-table :items-per-page="5" :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
                     :items="institutionsType" class="elevation-3" :loading="loading">
                     <template v-slot:loading>
                         <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
@@ -62,7 +62,7 @@
                 <v-toolbar density="compact" color="primary" class="elevation-3">
                     <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
                 </v-toolbar>
-                <v-data-table :headers="headersActionsSubjects" :items="actions" class="elevation-3"
+                <v-data-table :headers="headersActionsSubjects" :items="related_subjects" class="elevation-3"
                     :loading="loadingSubject">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:loading>
@@ -71,9 +71,6 @@
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.related_subjects="{ item }">
                         <v-chip variant="text" v-for="theme in item.related_subjects" :key="theme">{{ theme }}</v-chip>
-                    </template>
-                    <template v-slot:bottom>
-                        <v-divider></v-divider>
                     </template>
                 </v-data-table>
             </v-col>
@@ -98,6 +95,7 @@ export default {
     data: () => ({
         loading: true,
         loadingSubject: true,
+        itemsReportsSubjects: [],
         types: ['course', 'event', 'program', 'project', 'agreement', 'service'],
         degrees: ['undergraduate', 'masters_degree', 'doctorate'],
         statuses: ['count_in_analise', 'count_in_progress', 'count_repproved', 'count_approved', 'count_cancelled'],
@@ -127,13 +125,13 @@ export default {
             { title: "Prestação de Serviço", key: "service_provision" },
         ],
         headersActionsSubjects: [
-            { title: "Temas relacionados", key: "related_subjects" },
+            { title: "Temas relacionados", key: "name" },
             { title: "Curso", key: "course" },
             { title: "Evento", key: "event" },
-            { title: "Programa de Extensão", key: "extension_program" },
-            { title: "Projeto de Extensão", key: "extension_project" },
+            { title: "Programa de Extensão", key: "program" },
+            { title: "Projeto de Extensão", key: "project" },
             { title: "Convênio", key: "agreement" },
-            { title: "Prestação de serviço", key: "service_provision" },
+            { title: "Prestação de serviço", key: "service" },
         ],
         institutionsType: [
             {
@@ -171,6 +169,8 @@ export default {
                 count: null,
             },
         ],
+        related_subjects: [],
+
         actions: [
             {
                 type: 'Curso',
@@ -344,7 +344,7 @@ export default {
         },
         initializeReporSubjects(year_id) {
             this.$axios.get(`http://127.0.0.1:8000/api/report-subjects/${year_id}`).then((response) => {
-                this.items = response.data.data;
+                this.itemsReportsSubjects = response.data.data;
                 console.log(this.items);
                 this.loadingSubject = false;
             })
@@ -361,18 +361,29 @@ export default {
                     console.error(error);
                 });
         },
-        
+
         getAllSubjects() {
-            for (let i = 1; i < this.configPagination.last_page; i++) {
+            for (let i = 2; i <= this.configPagination.last_page; i++) {
                 this.$axios
-                .get(`http://127.0.0.1:8000/api/action-subjects?page=${i}`)
-                .then((response) => {
-                    this.itemsSubjects.push(...response.data.data);
-                    console.log(this.itemsSubjects);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+                    .get(`http://127.0.0.1:8000/api/action-subjects?page=${i}`)
+                    .then((response) => {
+                        this.itemsSubjects.push(...response.data.data);
+                        for (let i = 0; i < this.itemsSubjects.length; i++) {
+                            let relatedSubject = {
+                            name: this.itemsSubjects[i].subject,
+                            course: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_course`],
+                            event: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_event`],
+                            program: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_program`],
+                            project: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_project`],
+                            agreement: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_agreement`],
+                            service: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_service`],
+                        }
+                        this.related_subjects.push(relatedSubject);
+                    }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
             }
         }
     }
