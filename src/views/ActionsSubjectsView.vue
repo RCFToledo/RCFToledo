@@ -7,7 +7,7 @@
           <v-toolbar-title>Ações (Temas Relacionados)</v-toolbar-title>
           <v-spacer></v-spacer>
           <download-csv :data="itemsExport" style="margin-right: 10px" name="temas_relacionados.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -92,6 +92,7 @@ export default {
     dialog: false,
     itemsDelete: false,
     itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Tema",
@@ -144,10 +145,10 @@ export default {
 
     initializeExportData() {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/api/subjects-export`)
+        .get(`http://127.0.0.1:8000/api/subjects-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
-          console.log(this.itemsExport)
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);

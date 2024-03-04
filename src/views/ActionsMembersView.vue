@@ -6,8 +6,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="ações_membros.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="ação_membros.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -125,6 +125,8 @@ export default {
     declareNoMembers: false,
     currentPage: 1,
     configPagination: [],
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Pessoa",
@@ -173,6 +175,7 @@ export default {
   created() {
     this.initialize(1, this.actionId);
     this.initializePeople();
+    this.initializeExportData(this.actionId);
   },
   methods: {
     formSubmit() {
@@ -188,6 +191,18 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData(id) {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/members/${id}/export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);

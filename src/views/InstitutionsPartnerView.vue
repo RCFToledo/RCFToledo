@@ -6,7 +6,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/institutions" name="instituições_parceiras" :lastPage="configPagination.last_page" />
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="instituições_parceiras.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -128,6 +130,8 @@ export default {
     institutionsCountryCode: [],
     dialog: false,
     institutionsDelete: false,
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Nome",
@@ -176,7 +180,8 @@ export default {
   created() {
     this.initialize(1);
     this.initializeCountries();
-    this.initializeLegalCategories()
+    this.initializeLegalCategories();
+    this.initializeExportData();
   },
 
   watch: {
@@ -200,6 +205,18 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData() {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/institutions-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);

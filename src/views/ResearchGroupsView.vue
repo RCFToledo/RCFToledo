@@ -5,7 +5,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-research.fe.unicamp.br/api/research-groups" name="grupos_de_pesquisa" :lastPage="configPagination.last_page" />
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="grupos_de_pesquisa.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -145,6 +147,8 @@ export default {
       { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
+    itemsExport: [],
+    loading: true,
     editedIndex: -1,
     researchGroup: {},
     researchGroupId: null,
@@ -167,6 +171,7 @@ export default {
 
   created() {
     this.initialize(1);
+    this.initializeExportData();
   },
   methods: {
     formSubmit() {
@@ -182,6 +187,18 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData() {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/research-groups-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);

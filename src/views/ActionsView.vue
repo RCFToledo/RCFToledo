@@ -6,7 +6,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="http://127.0.0.1:8001/api/actions" name="ações" :lastPage="configPagination.last_page" />
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -274,6 +276,8 @@ export default {
       'Avaliar',
     ],
     user: 'staff',
+    itemsExport: [],
+    loading: true,
     dialogFinancing: false,
     headers: [
       {
@@ -355,6 +359,7 @@ export default {
     this.getActionSubjects();
     this.initializePeople();
     this.initializeActionTypes();
+    this.initializeExportData();
   },
   methods: {
     formSubmit() {
@@ -366,7 +371,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8001/api/actions?page=${page}`)
+        .get(`http://127.0.0.1:8000/api/actions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -375,6 +380,19 @@ export default {
           console.error(error);
         });
     },
+
+    initializeExportData() {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/actions-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    
     initializePeople() {
       this.$axios
         .get("https://test-people.fe.unicamp.br/api/people")
@@ -392,7 +410,7 @@ export default {
         });
     },
     initializeActionTypes() {
-      this.$axios.get("http://127.0.0.1:8001/api/action-types").then((response) => {
+      this.$axios.get("http://127.0.0.1:8000/api/action-types").then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
@@ -413,7 +431,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8001/api/actions/" + this.action.id)
+        .delete("http://127.0.0.1:8000/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -431,7 +449,7 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("http://127.0.0.1:8001/api/action-subjects").then((response) => {
+      this.$axios.get("http://127.0.0.1:8000/api/action-subjects").then((response) => {
         this.relatedSubjectsItems = response.data.data;
       })
     },
@@ -442,7 +460,7 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("http://127.0.0.1:8001/api/actions/" + this.action.id, this.action)
+          .put("http://127.0.0.1:8000/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -461,7 +479,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8001/api/actions", this.action)
+          .post("http://127.0.0.1:8000/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

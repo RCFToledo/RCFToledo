@@ -5,7 +5,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-people.fe.unicamp.br/api/departments" name="departamentos" :lastPage="configPagination.last_page" />
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="departamentos.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
             <v-card>
@@ -156,6 +158,8 @@ export default {
     departmentsDelete: false,
     currentPage: 1,
     configPagination: [],
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Nome",
@@ -181,7 +185,8 @@ export default {
 
   created() {
     this.initialize(1);
-    this.initializePeople()
+    this.initializePeople();
+    this.initializeExportData();
   },
 
   computed: {
@@ -203,6 +208,17 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializeExportData() {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/departments-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);

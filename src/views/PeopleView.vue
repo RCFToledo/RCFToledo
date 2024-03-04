@@ -6,7 +6,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-people.fe.unicamp.br/api/people" name="pessoas" :lastPage="configPagination.last_page" />
+          <download-csv :data="itemsExport" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -180,6 +182,8 @@ export default {
     register: null,
     currentPage: 1,
     configPagination: [],
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Nome Completo",
@@ -285,6 +289,7 @@ export default {
     this.initializeInstitutions();
     this.initializeSectors();
     this.initializeCountries();
+    this.initializeExportData();
   },
 
   methods: {
@@ -307,6 +312,19 @@ export default {
           console.error(error);
         });
     },
+
+    initializeExportData() {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/people-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
     initializeCountries() {
       this.$axios
         .get("https://test-bapex.fe.unicamp.br/api/countries")
