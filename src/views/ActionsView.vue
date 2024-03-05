@@ -371,7 +371,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/actions?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -383,7 +383,7 @@ export default {
 
     initializeExportData() {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/actions-export`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;  

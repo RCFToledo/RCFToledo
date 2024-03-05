@@ -197,7 +197,7 @@ export default {
 
     initializeExportData(id) {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/financings/${id}/export`)
+        .get(`https://test-bapex.fe.unicamp.br/api/financings/${id}/export`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;  
