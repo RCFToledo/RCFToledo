@@ -195,7 +195,7 @@ export default {
 
     initializeExportData() {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/research-groups-export`)
+        .get(`https://test-research.fe.unicamp.br/api/research-groups-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;  
