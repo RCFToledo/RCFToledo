@@ -34,16 +34,14 @@
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
-                        <v-text-field variant="outlined" v-model="action.title" :rules="[
+                        <v-text-field :maxlength="120" variant="outlined" v-model="action.title" :rules="[
                           () => !!action.title || 'Título é requerido!',
-                          () => !(action.title.length > 60) || 'Título maior que o suportado',
-                        ]" label="Título" :counter="60" required></v-text-field>
+                        ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
+                        <v-autocomplete :maxlength="60" variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
                           item-title="full_name" item-value="id" :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
-                            () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Responsável" :counter="60" required>
                         </v-autocomplete>
                       </v-col>
@@ -74,11 +72,11 @@
                       <v-col cols="12" md="3">
                         <v-text-field type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
-                        ]" required ><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        ]" required ></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
                         <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
-                        ]"  :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        ]"  :disabled="disabled"></v-text-field>
                       </v-col>
 
                       <v-col cols="12" md="3">
@@ -90,9 +88,8 @@
                           :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea variant="outlined" v-model="action.description" :rules="[
+                        <v-textarea :maxlength="200" variant="outlined" v-model="action.description" :rules="[
                           () => !!action.description || 'Descrição é requerida!',
-                          () => !(action.description.length > 200) || 'Descrição maior que o suportado',
                         ]" label="Descrição" :counter="200" required></v-textarea>
                       </v-col>
                     </v-row>
@@ -410,7 +407,7 @@ export default {
         });
     },
     initializeActionTypes() {
-      this.$axios.get("http://127.0.0.1:8000/api/action-types").then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-types").then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
@@ -431,7 +428,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("http://127.0.0.1:8000/api/actions/" + this.action.id)
+        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -449,7 +446,7 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("http://127.0.0.1:8000/api/action-subjects").then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects").then((response) => {
         this.relatedSubjectsItems = response.data.data;
       })
     },
@@ -460,7 +457,7 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/actions/" + this.action.id, this.action)
+          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -479,7 +476,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("http://127.0.0.1:8000/api/actions", this.action)
+          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

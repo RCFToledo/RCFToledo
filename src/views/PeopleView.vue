@@ -50,12 +50,9 @@
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 6 : 8">
-                      <v-text-field variant="outlined" v-model="people.full_name" :rules="[
+                      <v-text-field :maxlength="60" variant="outlined" v-model="people.full_name" :rules="[
                         () =>
                           !!people.full_name || 'Nome Completo é requerido!',
-                        () =>
-                          !(people.full_name.length > 60) ||
-                          'Nome Completo maior que 60 caracteres',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" :md="people.country_code === 'BR' ? 2 : 4">

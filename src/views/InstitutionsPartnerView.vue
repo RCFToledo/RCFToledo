@@ -24,19 +24,12 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field variant="outlined" v-model="institution.name" :rules="[
+                      <v-text-field :maxlength="60" variant="outlined" v-model="institution.name" :rules="[
                         () => !!institution.name || 'Nome é requerido!',
-                        () =>
-                          !(institution.name.length > 60) ||
-                          'Nome maior que o suportado'
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field variant="outlined" v-model="institution.abbr_name" label="Nome Abreviado" :rules="[
-                        () =>
-                          !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
-                          'Nome Abreviado maior que o suportado'
-                      ]" :counter="20"></v-text-field>
+                      <v-text-field :maxlength="20" variant="outlined" v-model="institution.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
                       <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="[{id: 1, category: 'Empresa Pública'}, {id: 2, category: 'Empresa Privada'}, {id: 3, category: 'Terceiro Setor'}]"

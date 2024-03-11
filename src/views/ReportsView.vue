@@ -316,7 +316,7 @@ export default {
     },
     methods: {
         initialize(year_id) {
-            this.$axios.get(`http://127.0.0.1:8000/api/reports/${year_id}`).then((response) => {
+            this.$axios.get(`https://test-bapex.fe.unicamp.br/api/reports/${year_id}`).then((response) => {
                 this.items = response.data.data;
                 for (let i = 0; i < this.actionsStatus.length; i++) {
                     this.actionsStatus[i].count = this.items[this.statuses[i]];
@@ -339,7 +339,7 @@ export default {
             })
         },
         initializeReporSubjects(year_id) {
-            this.$axios.get(`http://127.0.0.1:8000/api/report-subjects/${year_id}`).then((response) => {
+            this.$axios.get(`https://test-bapex.fe.unicamp.br/api/report-subjects/${year_id}`).then((response) => {
                 this.itemsReportsSubjects = response.data.data;
                 console.log(this.items);
                 this.loadingSubject = false;
@@ -347,7 +347,7 @@ export default {
         },
         initializeActionsSubjects(page) {
             this.$axios
-                .get(`http://127.0.0.1:8000/api/action-subjects?page=${page}`)
+                .get(`https://test-bapex.fe.unicamp.br/api/action-subjects?page=${page}`)
                 .then((response) => {
                     this.itemsSubjects = response.data.data;
                     this.configPagination = response.data.meta;
@@ -361,7 +361,7 @@ export default {
         getAllSubjects() {
             for (let i = 2; i <= this.configPagination.last_page; i++) {
                 this.$axios
-                    .get(`http://127.0.0.1:8000/api/action-subjects?page=${i}`)
+                    .get(`https://test-bapex.fe.unicamp.br/api/action-subjects?page=${i}`)
                     .then((response) => {
                         this.itemsSubjects.push(...response.data.data);
                         for (let i = 0; i < this.itemsSubjects.length; i++) {

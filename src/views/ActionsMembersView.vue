@@ -34,15 +34,14 @@
                         ]" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
-                        () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
-                      ]" required><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
-                        () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de termino é menor que inicial',
-                      ]"><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
+                        <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
+                          () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
+                        ]" required ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
+                        ]"  :disabled="disabled"></v-text-field>
+                      </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>

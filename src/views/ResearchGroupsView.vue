@@ -23,15 +23,12 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="8">
-                      <v-text-field variant="outlined" v-model="researchGroup.name" :rules="[
+                      <v-text-field :maxlength="60" variant="outlined" v-model="researchGroup.name" :rules="[
                         () => !!researchGroup.name || 'Nome é requerido!',
-                        () => !(researchGroup.name.length > 60) || 'Nome maior que o suportado',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-text-field variant="outlined" v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[
-                        () => !((researchGroup.abbr_name !== null) && (researchGroup.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
-                      ]" :counter="20"></v-text-field>
+                      <v-text-field :maxlength="20" variant="outlined" v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
                       <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto"></v-switch>

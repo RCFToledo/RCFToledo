@@ -73,7 +73,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens na páginas: <strong>{{ items.length }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na páginas: <strong>{{items.length}}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -93,6 +94,7 @@ export default {
     itemsDelete: false,
     itemsExport: [],
     loading: true,
+    totalItens: 0,
     headers: [
       {
         title: "Tema",

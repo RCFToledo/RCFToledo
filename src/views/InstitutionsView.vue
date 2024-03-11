@@ -33,10 +33,10 @@
                     <v-col cols="12">
                       <v-text-field
                       variant="outlined"
+                      :maxlength="60"
                         v-model="institution.name"
                         :rules="[
                           () => !!institution.name || 'Nome é requerido!',
-                          () => !(institution.name.length > 60) || 'Nome maior que o suportado',
                         ]"
                         label="Nome"
                         :counter="60"
@@ -46,11 +46,9 @@
                     <v-col cols="12">
                       <v-text-field
                       variant="outlined"
+                      :maxlength="20"
                         v-model="institution.abbr_name"
                         label="Nome Abreviado"
-                        :rules="[
-                          () => !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
-                        ]"
                         :counter="20"
                       ></v-text-field>
                     </v-col>

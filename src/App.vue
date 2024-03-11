@@ -15,7 +15,7 @@
           style="height: 50px; margin-top: 15px" />
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!--<v-btn variant="plain" @click="logout()">Sair</v-btn> -->
+      <v-btn variant="plain">Sair</v-btn>
       <!--<Logout />
       <AuthenticateBtn v-if="$store.state.token == null" :showCard="false" />
        -->

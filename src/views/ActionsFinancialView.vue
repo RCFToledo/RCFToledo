@@ -37,14 +37,14 @@
                       ]"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
-                        () => !!action.started_at || 'Data de ínicio é requirido'
-                      ]" required type="date"><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
-                      ]" type="date"><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
+                        <v-text-field type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
+                          () => !!action.started_at || 'Data de ínicio é requirido',
+                        ]" required ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
+                        ]"  :disabled="disabled"></v-text-field>
+                      </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
