@@ -32,12 +32,12 @@
                       <v-text-field :maxlength="20" variant="outlined" v-model="institution.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="[{id: 1, category: 'Empresa Pública'}, {id: 2, category: 'Empresa Privada'}, {id: 3, category: 'Terceiro Setor'}]"
+                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="[{id: 1, category: 'Setor Público'}, {id: 2, category: 'Setor Privado'}, {id: 3, category: 'Terceiro Setor'}]"
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="institution.legal_category_id === 1 ? [{id: 1, nature: 'Municipal'}, {id: 2, nature: 'Estadual'}, {id: 3, nature: 'Federal'}] : []"
-                        item-title="nature" item-value="id"></v-select>
+                        item-title="nature" item-value="id" v-if="institution.legal_category_id == 1"></v-select>
                     </v-col>
                     <v-col cols="12">
                       <v-autocomplete variant="outlined" v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"

@@ -12,7 +12,7 @@
           <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título'"></v-btn>
+                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
             </template>
             <v-card>
               <v-toolbar color="primary">
@@ -34,19 +34,19 @@
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
-                        <v-text-field :maxlength="120" variant="outlined" v-model="action.title" :rules="[
+                        <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined" v-model="action.title" :rules="[
                           () => !!action.title || 'Título é requerido!',
                         ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :maxlength="60" variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
+                        <v-autocomplete :disabled="input_disabled" :maxlength="60" variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
                           item-title="full_name" item-value="id" :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
                           ]" label="Responsável" :counter="60" required>
                         </v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete variant="outlined" v-model="action.assistant_id" :items="itemsPeople"
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" v-model="action.assistant_id" :items="itemsPeople"
                           item-title="full_name" item-value="id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
@@ -55,22 +55,22 @@
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
                       <v-col cols="12" md="12">
-                        <v-select variant="outlined" v-model="action.type" label="Tipo" :items="itemsType"
+                        <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo" :items="itemsType"
                           item-title="label" item-value="type" :rules="[
                             () => !!action.type || 'Tipo é requerido!',
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete variant="outlined" multiple chips :items="relatedSubjectsItems"
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips :items="relatedSubjectsItems"
                           item-title="subject" item-value="id" v-model="action.related_subjects"
                           label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox variant="outlined" chips multiple v-model="action.keywords" @keydown="getKeySpace"
+                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple v-model="action.keywords"
                           label="Palavras-chave" required></v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
+                        <v-text-field :disabled="input_disabled" type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
                         ]" required ></v-text-field>
                       </v-col>
@@ -78,19 +78,18 @@
                         <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
                         ]"  :disabled="disabled"></v-text-field>
                       </v-col>
-
                       <v-col cols="12" md="3">
-                        <v-switch variant="outlined" color="primary" v-model="action.international" inset
+                        <v-switch :disabled="input_disabled" variant="outlined" :color="action.international ? 'primary': 'light-blue-darken-4'" v-model="action.international" inset
                           :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch variant="outlined" color="primary" v-model="action.free" inset
+                        <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free" inset
                           :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea :maxlength="200" variant="outlined" v-model="action.description" :rules="[
+                        <v-textarea :disabled="input_disabled" variant="outlined" v-model="action.description" :rules="[
                           () => !!action.description || 'Descrição é requerida!',
-                        ]" label="Descrição" :counter="200" required></v-textarea>
+                        ]" label="Descrição" required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Avaliar'">
@@ -106,19 +105,19 @@
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
-                    <v-card v-if="isTab === 'Financiamentos' && action.id">
+                    <v-card v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
                       <ActionsFinancialView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card v-if="isTab === 'Membros' && action.id">
+                    <v-card v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
                       <ActionsMembersView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card v-if="isTab === 'Enviar' && user === 'staff'" variant="tonal">
+                    <v-card v-if="isTab === 'Enviar' && user !== 'staff'" variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
                         <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
@@ -131,7 +130,7 @@
                         <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
-                    <v-card v-if="isTab === 'Enviar' && user !== 'staff'" variant="tonal">
+                    <v-card v-if="isTab === 'Enviar' && user === 'staff'" variant="tonal">
                       <v-card-title> {{ term_title }}</v-card-title>
                       <v-card-text class="text-body-1 text-left">{{ term }}</v-card-text>
                       <v-card-actions>
@@ -144,8 +143,8 @@
 
                     </v-card>
                     <v-col>
-                      <v-btn color="primary" variant="tonal" @click="formSubmit"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros'">{{ isTab !== 'Enviar' ? 'Salvar' :
+                      <v-btn color="primary" variant="tonal" @click="action.title ? formSubmit : $toast.error('Título é requerido');"
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{ isTab !== 'Enviar' ? 'Salvar' :
                           'Finalizar' }}</v-btn>
                     </v-col>
                   </v-form>
@@ -208,7 +207,7 @@
       <template v-slot:item.actions="{ item }">
         <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
-          <v-menu activator="parent" color="secondary">
+          <v-menu activator="parent" color="secondary" @click="item.status === 'in_progress' ? input_disabled = true : input_disabled = false">
             <v-list>
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
@@ -295,6 +294,7 @@ export default {
     itemsPeople: [],
     itemsType: [],
     action: {},
+    input_disabled: false,
     title_disabled: true,
     term_disabled: true,
     disabled: null,
@@ -329,6 +329,14 @@ export default {
       {
         title: "Cancelada",
         value: "cancelled"
+      },
+      {
+        title: "Rascunho",
+        value: "draft"
+      },
+      {
+        title: "Devolvido para alteração",
+        value: "returned_to_change"
       }
     ]
   }),
@@ -454,6 +462,8 @@ export default {
     save() {
       if (this.isTab === 'Enviar') {
         this.action.status = "in_progress"
+      } else if(this.tab !== 'Avaliar') {
+        this.action.status = "draft"
       }
       if (this.action.id) {
         this.$axios
@@ -543,4 +553,5 @@ export default {
   },
 }
 </script>
-<style></style>
+<style>
+</style>
