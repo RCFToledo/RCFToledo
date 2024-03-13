@@ -109,7 +109,7 @@
                     </v-btn>
                     </download-csv>
                 </v-toolbar>
-                <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
+                <v-data-table :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }, { title: 'Volume de Recursos', key: 'amount' }]"
                     :items="financing" class="elevation-3 custom-col" :loading="loading">
                     <template v-slot:bottom>
                         <v-divider></v-divider>
@@ -277,26 +277,32 @@ export default {
             {
                 type: 'Curso',
                 count: null,
+                amount: null,
             },
             {
                 type: 'Evento',
                 count: null,
+                amount: null,
             },
             {
                 type: 'Programa de extensão',
                 count: null,
+                amount: null,
             },
             {
                 type: 'Projeto de extensão',
                 count: null,
+                amount: null,
             },
             {
                 type: 'Convênio',
                 count: null,
+                amount: null,
             },
             {
                 type: 'Prestação de serviço',
                 count: null,
+                amount: null,
             },
         ],
     }),

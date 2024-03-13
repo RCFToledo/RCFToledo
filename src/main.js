@@ -8,6 +8,7 @@ import axios from './plugins/axios'; // Importe o seu plugin Axios
 import keycloak from './plugins/keycloak';
 import ToastPlugin from 'vue-toast-notification';
 import './plugins/theme-toastification.css';
+import './plugins/VSwitch.css';
 import JsonCSV from 'vue-json-csv';
 //import VueChartJS from 'vue-chartjs';
 import VueMask from '@devindex/vue-mask';

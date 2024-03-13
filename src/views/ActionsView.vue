@@ -79,7 +79,7 @@
                         ]"  :disabled="disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch :disabled="input_disabled" variant="outlined" :color="action.international ? 'primary': 'light-blue-darken-4'" v-model="action.international" inset
+                        <v-switch :disabled="input_disabled" variant="outlined" :color="action.international ? 'primary': 'green'" v-model="action.international" inset
                           :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="3">
