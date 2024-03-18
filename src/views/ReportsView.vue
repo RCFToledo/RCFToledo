@@ -1,13 +1,19 @@
 <template>
     <div>
-        <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
-            label="Selecione o ano" variant="outlined" color="primary"></v-select>
+        {{ itemsReports }}
+        <v-row style="margin: 0.5vw;">
+            <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
+                label="Selecione o ano" variant="outlined" color="primary"></v-select><download-csv :data="itemsReports" :labels="labels" name="reports.csv" :delimiter="';'"><v-btn
+                    style="margin-left: 1vw;" height="4em" color="green" variant="outlined"
+                    title="Exportar tudo"><v-icon size="x-large">mdi-microsoft-excel</v-icon></v-btn></download-csv>
+        </v-row>
         <v-responsive>
             <v-row justify="center">
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Ações por tipo</v-toolbar-title>
-                        <download-csv :data="actions" name="Ações_por_tipo" delimiter=";">
+                        <download-csv :data="actions" :labels="{ type: 'Tipo', count: 'Quantidade' }"
+                            name="Ações_por_tipo" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -146,6 +152,26 @@ export default {
         configPagination: [],
         itemsSubjects: [],
         itemsStatus: [],
+        fieldsCount: [
+            { label: "Tipo", key: "type" },
+            { label: "Quantidade", key: "count" },
+        ],
+        itemsReports: [],
+        labels: {
+            status: "Estado",
+            count: "Quantidade",
+            type: "Tipo",
+            amount: "Volume de Recursos",
+        },
+        fielsdReports: [
+            { key: "status" },
+            { key: "count" },
+            { key: "type" },
+            { key: "amount" },
+            { key: "undergraduate" },
+            { key: "masters_degree" },
+            { key: "doctorate" },
+        ],
         year_id: "2024",
         headersActions: [
             { title: "Tipo", align: "start", key: "type" },
@@ -187,6 +213,15 @@ export default {
                 count: null,
             },
         ],
+         listDefault: [{
+            status: "",
+            type: "",
+            undergraduate: 0,
+            masters_degree: 0,
+            doctorate: 0,
+            count: 0,
+            amount: 0,
+         }],   
         actionsStatus: [
             {
                 status: "Em analise",
@@ -241,42 +276,36 @@ export default {
         students: [
             {
                 type: 'Curso',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
                 type: 'Evento',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
                 type: 'Programa de Extensão',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
                 type: 'Projeto de Extensão',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
                 type: 'Convênio',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
                 type: 'Prestação de Serviço',
-                count: null,
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
@@ -345,13 +374,13 @@ export default {
                 }
                 for (let i = 0; i < this.actions.length; i++) {
                     this.actions[i].count = this.items[`count_type_${this.types[i]}`];
-
                 }
                 for (let i = 0; i < this.students.length; i++) {
                     this.students[i].undergraduate = this.items[`student_${this.types[i]}_${this.degrees[0]}`];
                     this.students[i].masters_degree = this.items[`student_${this.types[i]}_${this.degrees[1]}`];
                     this.students[i].doctorate = this.items[`student_${this.types[i]}_${this.degrees[2]}`];
                 }
+                this.itemsReports = this.listDefault.concat(this.actionsStatus).concat(this.financing).concat(this.institutionsType).concat(this.actions).concat(this.students);
                 this.loading = false;
             })
         },
@@ -405,8 +434,6 @@ export default {
 <style scoped>
 .custom-col {
     height: 91%;
-    /* Defina a largura desejada */
     max-height: 91%;
-    /* Defina a largura máxima para garantir que cada coluna tenha o mesmo tamanho */
 }
 </style>
