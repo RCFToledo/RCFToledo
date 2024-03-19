@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{ itemsReports }}
         <v-row style="margin: 0.5vw;">
             <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
                 label="Selecione o ano" variant="outlined" color="primary"></v-select><download-csv :data="itemsReports" :labels="labels" name="reports.csv" :delimiter="';'"><v-btn
@@ -22,7 +21,7 @@
                     </v-toolbar>
                     <v-data-table
                         :headers="[{ title: 'Tipo', align: 'start', key: 'type' }, { title: 'Quantidade', key: 'count' }]"
-                        :items="actions" key="undergraduate" class="elevation-3 custom-col" :loading="loading">
+                        :items="actions" key="type" class="elevation-3 custom-col" :loading="loading">
                         <template v-slot:loading>
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
@@ -34,14 +33,14 @@
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Estudantes por tipo de ação e nível do programa acadêmico</v-toolbar-title>
-                        <download-csv :data="students" name="estudantes_por_tipo_e_nivel" delimiter=";">
+                        <download-csv :data="students" :labels="{ s_type: 'Tipo', doctorate: 'Doutorado',  masters_degree: 'Mestrado', undergraduate: 'Graduação'}" name="estudantes_por_tipo_e_nivel" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
                             </v-btn>
                         </download-csv>
                     </v-toolbar>
-                    <v-data-table :headers="headersActions" :items="students" class="elevation-3 custom-col"
+                    <v-data-table :headers="headersStudents" :items="students" class="elevation-3 custom-col"
                         :loading="loading">
                         <template v-slot:bottom>
                             <v-divider></v-divider>
@@ -51,7 +50,7 @@
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Ações por status</v-toolbar-title>
-                        <download-csv :data="actionsStatus" name="Ações_por_status" delimiter=";">
+                        <download-csv :labels="{ status: 'Estado', count: 'Quantidade' }" :data="actionsStatus" name="Ações_por_status" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -73,7 +72,7 @@
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Ações por tipos de instituição</v-toolbar-title>
-                        <download-csv :data="institutionsType" name="Ações_por_instituição" delimiter=";">
+                        <download-csv :data="institutionsType" :labels="{type: 'Tipo', count: 'Quantidade'}" name="Ações_por_instituição" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -93,7 +92,7 @@
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Ações por tipo e temas relacionados</v-toolbar-title>
-                        <download-csv :data="related_subjects" name="Ações_por_temas" delimiter=";">
+                        <download-csv :labels="label_subjects" :data="related_subjects" name="Ações_por_temas" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -117,7 +116,7 @@
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
                     <v-toolbar density="compact" color="primary" class="elevation-3">
                         <v-toolbar-title>Financiamentos por tipo de ação</v-toolbar-title>
-                        <download-csv :data="financing" name="financiamentos_por_tipo" delimiter=";">
+                        <download-csv :labels="{f_type: 'Tipo', count: 'Quantidade', amount:'Volume de Recursos'}" :data="financing" name="financiamentos_por_tipo" delimiter=";">
                             <v-btn size="small" style="margin-right: 5px;" title="Exportar CSV" icon=""
                                 class="rounded-circle" variant="tonal">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -125,7 +124,7 @@
                         </download-csv>
                     </v-toolbar>
                     <v-data-table
-                        :headers="[{ title: 'Tipo', key: 'type' }, { title: 'Quantidade', key: 'count' }, { title: 'Volume de Recursos', key: 'amount' }]"
+                        :headers="[{ title: 'Tipo', key: 'f_type' }, { title: 'Quantidade', key: 'count' }, { title: 'Volume de Recursos', key: 'amount' }]"
                         :items="financing" class="elevation-3 custom-col" :loading="loading">
                         <template v-slot:bottom>
                             <v-divider></v-divider>
@@ -160,21 +159,17 @@ export default {
         labels: {
             status: "Estado",
             count: "Quantidade",
+            s_type: "Estudantes",
+            f_type: "Financiamentos",
             type: "Tipo",
             amount: "Volume de Recursos",
+            doctorate: "Doutorado",
+            masters_degree: "Mestrado",
+            undergraduate: "Graduação",
         },
-        fielsdReports: [
-            { key: "status" },
-            { key: "count" },
-            { key: "type" },
-            { key: "amount" },
-            { key: "undergraduate" },
-            { key: "masters_degree" },
-            { key: "doctorate" },
-        ],
         year_id: "2024",
-        headersActions: [
-            { title: "Tipo", align: "start", key: "type" },
+        headersStudents: [
+            { title: "Tipo", align: "start", key: "s_type" },
             { title: "Graduação", key: "undergraduate" },
             { title: "Mestrado", key: "masters_degree" },
             { title: "Doutorado", key: "doctorate" },
@@ -214,13 +209,15 @@ export default {
             },
         ],
          listDefault: [{
-            status: "",
-            type: "",
-            undergraduate: 0,
-            masters_degree: 0,
-            doctorate: 0,
-            count: 0,
-            amount: 0,
+            status: null,
+            type: null,
+            s_type: null,
+            f_type: null,
+            undergraduate: null,
+            masters_degree: null,
+            doctorate: null,
+            count: null,
+            amount: null,
          }],   
         actionsStatus: [
             {
@@ -246,6 +243,15 @@ export default {
         ],
         related_subjects: [],
 
+        label_subjects: {
+            name: "Temas",
+            course: "Curso",
+            event: "Evento",
+            program: "Programa de extensão",
+            project: "Projeto de extensão",
+            agreement: "Convênio",
+            service: "Prestação de serviço",
+        },
         actions: [
             {
                 type: 'Curso',
@@ -275,37 +281,37 @@ export default {
         ],
         students: [
             {
-                type: 'Curso',
+                s_type: 'Curso',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Evento',
+                s_type: 'Evento',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Programa de Extensão',
+                s_type: 'Programa de Extensão',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Projeto de Extensão',
+                s_type: 'Projeto de Extensão',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Convênio',
+                s_type: 'Convênio',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Prestação de Serviço',
+                s_type: 'Prestação de Serviço',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
@@ -313,32 +319,32 @@ export default {
         ],
         financing: [
             {
-                type: 'Curso',
+                f_type: 'Curso',
                 count: null,
                 amount: null,
             },
             {
-                type: 'Evento',
+                f_type: 'Evento',
                 count: null,
                 amount: null,
             },
             {
-                type: 'Programa de extensão',
+                f_type: 'Programa de extensão',
                 count: null,
                 amount: null,
             },
             {
-                type: 'Projeto de extensão',
+                f_type: 'Projeto de extensão',
                 count: null,
                 amount: null,
             },
             {
-                type: 'Convênio',
+                f_type: 'Convênio',
                 count: null,
                 amount: null,
             },
             {
-                type: 'Prestação de serviço',
+                f_type: 'Prestação de serviço',
                 count: null,
                 amount: null,
             },
