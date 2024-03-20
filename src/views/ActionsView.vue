@@ -301,6 +301,7 @@ export default {
     labels: {
       id: 'Registro',
       name: 'Nome',
+      title: "Titulo",
       description: 'Descrição',
       type: 'Tipo',
       keywords: 'Palavras Chaves',
@@ -319,6 +320,7 @@ export default {
     defaultAction: {
       id: null,
       type: null,
+      title: null,
       description: null,
       keywords: null,
       responsible_id: null,
