@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações (Temas Relacionados)</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="temas_relacionados.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="temas_relacionados.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
@@ -108,6 +108,12 @@ export default {
     currentPage: 1,
     actionSubject: {},
     relatedSubjectsItems: [],
+    labels: {
+      id: 'Registro',
+      subject: 'Tema',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultActionSubject: {
       id_: null,
       subject: null,

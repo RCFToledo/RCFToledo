@@ -5,7 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="grupos_de_pesquisa.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="grupos_de_pesquisa.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
@@ -150,6 +150,16 @@ export default {
     researchGroup: {},
     researchGroupId: null,
     dialogMembers: false,
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      lattes_url: 'Lattes',
+      email: 'E-mail',
+      site_url: 'Site',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultResearchGroup: {
       id: null,
       name: null,

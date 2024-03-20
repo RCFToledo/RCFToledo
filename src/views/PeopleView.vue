@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Pessoas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="pessoas.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" max-width="80%" :persistent="true">
@@ -215,6 +215,20 @@ export default {
         title: "Outros",
       },
     ],
+    labels: {
+      id: 'Registro',
+      full_name: 'Nome Completo',
+      type: 'Tipo',
+      student_id: 'RA',
+      rne: 'RNE',
+      passport: "Passaporte",
+      institution_id: 'Instituto',
+      department_id: 'Departamento',
+      academic_profile: 'Perfil',
+      employee_id: 'Matricula',
+      sector_id: 'Setor',
+      country_code: 'Código do país',
+    },
     items: [],
     itemsDepartments: [],
     itemsInstitutions: [],
@@ -312,7 +326,7 @@ export default {
 
     initializeExportData() {
       this.$axios
-        .get(`https://test-people.fe.unicamp.br/api/people-export`)
+        .get(`https://test-people.fe.unicamp.br/api/people-export&include[]=department&include[]=sector&include[]=institution`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;  

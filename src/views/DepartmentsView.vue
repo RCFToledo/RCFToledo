@@ -5,7 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Departamentos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="departamentos.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="departamentos.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <!--dialog 1-->
@@ -173,6 +173,16 @@ export default {
     editedIndex: -1,
     departments: [],
     itemsPeople: [],
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      type: 'Tipo',
+      code: 'Código',
+      members: 'Membros',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultDepartment: {
       id: null,
       name: null,

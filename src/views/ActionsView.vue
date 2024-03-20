@@ -6,7 +6,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" fullscreen>
@@ -298,6 +298,24 @@ export default {
     title_disabled: true,
     term_disabled: true,
     disabled: null,
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      description: 'Descrição',
+      type: 'Tipo',
+      keywords: 'Palavras Chaves',
+      responsible_id: 'Responsável',
+      status: 'Estado',
+      related_subjects: 'Temas relacionados',
+      international: 'Internacional',
+      started_at:  'Começou em',
+      ended_at: 'Acabou em',
+      free: 'Grátis',
+      assistant_id: 'Assistente',
+      justify: 'Justificativa',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultAction: {
       id: null,
       type: null,

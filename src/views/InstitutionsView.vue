@@ -5,7 +5,7 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="itemsExport" style="margin-right: 10px" name="instituições.csv" :delimiter="';'">
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="instituições.csv" :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
@@ -170,6 +170,15 @@ export default {
     configPagination: [],
     itemsExport: [],
     loading: true,
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      type: 'Tipo',
+      country_code: 'Código do país',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     headers: [
       {
         title: "Nome",
