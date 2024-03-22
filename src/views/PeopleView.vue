@@ -82,8 +82,8 @@
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-autocomplete variant="outlined" v-model="people.institution_id" label="Instituição" :items="items"
-                        item-title="institution.name" item-value="institution.id" :rules="[
+                      <v-autocomplete variant="outlined" v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
+                        item-title="name" item-value="id" :rules="[
                           () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',

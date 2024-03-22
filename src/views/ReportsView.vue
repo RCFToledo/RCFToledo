@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <v-row style="margin: 0.5vw;">
             <v-select class="text-primary" v-model="year_id" :items="['2020', '2021', '2022', '2023', '2024']"
                 label="Selecione o ano" variant="outlined" color="primary"></v-select><download-csv :data="itemsReports" :labels="labels" name="reports.csv" :delimiter="';'"><v-btn
@@ -366,7 +367,7 @@ export default {
     },
     methods: {
         initialize(year_id) {
-            this.$axios.get(`http://127.0.0.1:8000/api/reports/${year_id}`).then((response) => {
+            this.$axios.get(`https://test-bapex.fe.unicamp.br/api/reports/${year_id}`).then((response) => {
                 this.items = response.data.data;
                 for (let i = 0; i < this.actionsStatus.length; i++) {
                     this.actionsStatus[i].count = this.items[this.statuses[i]];
@@ -417,6 +418,7 @@ export default {
                     .then((response) => {
                         this.itemsSubjects.push(...response.data.data);
                         for (let i = 0; i < this.itemsSubjects.length; i++) {
+                            // eslint-disable-next-line
                             let relatedSubject = {
                                 name: this.itemsSubjects[i].subject,
                                 course: this.itemsReportsSubjects[`${this.itemsSubjects[i].subject.replace(/\./g, "").replace(/ /g, "_")}_type_course`],

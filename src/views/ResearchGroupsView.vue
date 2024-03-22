@@ -31,7 +31,7 @@
                       <v-text-field :maxlength="20" variant="outlined" v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
-                      <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto"></v-switch>
+                      <v-switch color="primary" v-model="researchGroup.removed" inset :label="researchGroup.removed ? 'Extinto' : 'Ativo'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="10">
                       <v-text-field variant="outlined" v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"></v-text-field>
