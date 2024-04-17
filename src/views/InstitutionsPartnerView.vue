@@ -36,7 +36,7 @@
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="institution.legal_category_id === 1 ? [{id: 1, nature: 'Municipal'}, {id: 2, nature: 'Estadual'}, {id: 3, nature: 'Federal'}] : []"
+                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="institution.legal_category_id === 1 ? [{id: 1, nature: ' '}, {id: 2, nature: 'Estadual'}, {id: 3, nature: 'Federal'}] : []"
                         item-title="nature" item-value="id" v-if="institution.legal_category_id == 1"></v-select>
                     </v-col>
                     <v-col cols="12">
