@@ -44,7 +44,7 @@
                             </v-btn>
                         </download-csv>
                     </v-toolbar>
-                    <v-data-table :headers="headersStudents" :items="itemsStudents" class="elevation-3 custom-col"
+                    <v-data-table :headers="headersStudents" :items="students" class="elevation-3 custom-col"
                         :loading="loading">
                         <template v-slot:bottom>
                             <v-divider></v-divider>
@@ -179,7 +179,7 @@ export default {
         },
         year: "2024",
         headersStudents: [
-            { title: "Tipo", align: "start", key: "type" },
+            { title: "Tipo", align: "start", key: "label" },
             { title: "Graduação", key: "undergraduate" },
             { title: "Mestrado", key: "masters_degree" },
             { title: "Doutorado", key: "doctorate" },
@@ -222,39 +222,90 @@ export default {
         itemsType: [],
         itemsStudents: [],
         financing: [],
+        defaultStudents: [
+        {
+                label: 'Curso',
+                type: 'course',    
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+            {
+                label: 'Evento',
+                type: 'event',
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+            {
+                label: 'Programa de Extensão',
+                type: 'program',
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+            {
+                label: 'Projeto de Extensão',
+                type: 'project',
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+            {
+                label: 'Convênio',
+                type: 'agreement',
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+            {
+                label: 'Prestação de Serviço',
+                type: 'service',
+                undergraduate: null,
+                masters_degree: null,
+                doctorate: null,
+            },
+        ],
+
         students: [
             {
-                type: 'Curso',
+                label: 'Curso',
+                type: 'course',    
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Evento',
+                label: 'Evento',
+                type: 'event',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Programa de Extensão',
+                label: 'Programa de Extensão',
+                type: 'program',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Projeto de Extensão',
+                label: 'Projeto de Extensão',
+                type: 'project',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Convênio',
+                label: 'Convênio',
+                type: 'agreement',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
             },
             {
-                type: 'Prestação de Serviço',
+                label: 'Prestação de Serviço',
+                type: 'service',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
@@ -283,14 +334,19 @@ export default {
                 this.itemsType = response.data.data.types;
                 this.itemsStatus = response.data.data.status;
                 this.itemsStudents = response.data.data.students;
-                this.students.undergraduate = this.itemsStudents.map((type) => 
-                    );
+                this.students = JSON.parse(JSON.stringify(this.defaultStudents));
+                this.itemsStudents.forEach((item) => {
+                    this.students.forEach((student) => {
+                        if(item.type === student.type) {
+                            student[item.degree] = item.count;
+                        }
+                    })
+                })
                 this.financing = response.data.data.financing;
                 this.itemsInstitutions = response.data.data.category;
-
                 console.log(response);
                 this.loading = false;
-            })
+            });
         },
         initializeReporSubjects(year) {
             this.$axios.get(`http://127.0.0.1:8000/api/action-subjects?year=${year}`).then((response) => {
