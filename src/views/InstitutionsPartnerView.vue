@@ -204,7 +204,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/institutions?page=${page}`)
+        .get(`http://127.0.0.1:8000/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -282,7 +282,7 @@ export default {
     save() {
       if (this.institution.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
+          .put("http://127.0.0.1:8000/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -299,7 +299,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/institutions", this.institution)
+          .post("http://127.0.0.1:8000/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

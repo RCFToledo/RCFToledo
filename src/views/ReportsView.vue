@@ -1,6 +1,5 @@
 <template>
     <div>
-        {{ items }}
         <v-row style="margin: 0.5vw;">
             <v-select class="text-primary" v-model="year" :items="['2020', '2021', '2022', '2023', '2024']"
                 label="Selecione o ano" variant="outlined" color="primary"></v-select><download-csv :data="items"
@@ -27,6 +26,10 @@
                         <template v-slot:loading>
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.type="{ item }">
+                            {{ getLabelsByItem(item.type, this.label_types) }}
+                        </template>
                         <template v-slot:bottom>
                             <v-divider></v-divider>
                         </template>
@@ -46,6 +49,18 @@
                     </v-toolbar>
                     <v-data-table :headers="headersStudents" :items="students" class="elevation-3 custom-col"
                         :loading="loading">
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.undergraduate="{ item }">
+                            {{ item.undergraduate ? item.undergraduate : 0 }}
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.masters_degree="{ item }">
+                            {{ item.masters_degree ? item.masters_degree : 0 }}
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.doctorate="{ item }">
+                            {{ item.doctorate ? item.doctorate : 0 }}
+                        </template>
                         <template v-slot:bottom>
                             <v-divider></v-divider>
                         </template>
@@ -69,6 +84,10 @@
                         </template>
                         <template v-slot:bottom>
                             <v-divider></v-divider>
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.status="{ item }">
+                            {{ getLabelsByItem(item.status, this.label_status) }}
                         </template>
                     </v-data-table>
                 </v-col>
@@ -118,11 +137,6 @@
                         <template v-slot:loading>
                             <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
                         </template>
-                        <!-- eslint-disable-next-line -->
-                        <template v-slot:item.related_subjects="{ item }">
-                            <v-chip variant="text" v-for="theme in item.related_subjects" :key="theme">{{ theme
-                                }}</v-chip>
-                        </template>
                     </v-data-table>
                 </v-col>
                 <v-col cols="8" xl="4" xxl="4" lg="4" md="6" sm="7" xs="8">
@@ -142,6 +156,10 @@
                         <template v-slot:bottom>
                             <v-divider></v-divider>
                         </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.type="{ item }">
+                            {{ getLabelsByItem(item.type, this.label_types) }}
+                        </template>
                     </v-data-table>
                 </v-col>
             </v-row>
@@ -156,7 +174,7 @@ export default {
         loading: true,
         loadingSubject: true,
         itemsReportsSubjects: [],
-        types: ['course', 'event', 'program', 'project', 'agreement', 'service'],
+        types: ["course", "event", "program", "project", "agreement", "service"],
         degrees: ['undergraduate', 'masters_degree', 'doctorate'],
         items: [],
         configPagination: [],
@@ -186,7 +204,7 @@ export default {
         ],
 
         headersitemsSubjects: [
-            { title: "Temas relacionados", key: "name" },
+            { title: "Temas relacionados", key: "subject" },
             { title: "Curso", key: "course" },
             { title: "Evento", key: "event" },
             { title: "Programa de Extensão", key: "program" },
@@ -208,9 +226,19 @@ export default {
             amount: null,
         }],
         itemsStatus: [],
-        related_subjects: [],
+        related_subjects: [
+            {
+                subject: null,
+                course: null,
+                event: null,
+                program: null,
+                project: null,
+                agreement: null,
+                service: null,
+            }
+        ],
 
-        label_subjects: {
+        label_types: {
             name: "Temas",
             course: "Curso",
             event: "Evento",
@@ -219,13 +247,29 @@ export default {
             agreement: "Convênio",
             service: "Prestação de serviço",
         },
+        label_status: {
+            Completed: "Completado",
+            Ongoing: "Em andamento",
+            Pending: "Pendente",
+        },
         itemsType: [],
         itemsStudents: [],
+        subjects: [
+            {
+                subject: null,
+                course: null,
+                event: null,
+                program: null,
+                project: null,
+                agreement: null,
+                service: null,
+            }
+        ],
         financing: [],
         defaultStudents: [
-        {
+            {
                 label: 'Curso',
-                type: 'course',    
+                type: 'course',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
@@ -270,7 +314,7 @@ export default {
         students: [
             {
                 label: 'Curso',
-                type: 'course',    
+                type: 'course',
                 undergraduate: null,
                 masters_degree: null,
                 doctorate: null,
@@ -337,7 +381,7 @@ export default {
                 this.students = JSON.parse(JSON.stringify(this.defaultStudents));
                 this.itemsStudents.forEach((item) => {
                     this.students.forEach((student) => {
-                        if(item.type === student.type) {
+                        if (item.type === student.type) {
                             student[item.degree] = item.count;
                         }
                     })
@@ -346,11 +390,29 @@ export default {
                 this.itemsInstitutions = response.data.data.category;
                 console.log(response);
                 this.loading = false;
+            }).catch((error) => {
+                console.log(error)
             });
         },
         initializeReporSubjects(year) {
             this.$axios.get(`http://127.0.0.1:8000/api/action-subjects?year=${year}`).then((response) => {
                 this.itemsReportsSubjects = response.data.data;
+                this.related_subjects = this.itemsReportsSubjects.map(subject => {
+                    let related_subject = {
+                        "subject": subject.subject,
+                        "course": null,
+                        "event": null,
+                        "program": null,
+                        "project": null,
+                        "agreement": null,
+                        "service": null,
+                    };
+                    for (let type of this.types) {
+                        let counSubjectByType = this.itemsReportsSubjects.find((item) => item.subject === subject.subject && type === item.type);
+                        related_subject[type] = counSubjectByType ? counSubjectByType.count : 0;
+                    }
+                    return related_subject;
+                });
                 console.log(this.items);
                 this.loadingSubject = false;
             })
@@ -361,9 +423,7 @@ export default {
                 .then((response) => {
                     this.itemsSubjects = response.data.data;
                     this.configPagination = response.data.meta;
-                    this.getAllSubjects();
-                })
-                .catch((error) => {
+                }).catch((error) => {
                     console.error(error);
                 });
         },
@@ -382,6 +442,11 @@ export default {
             )
             return newCategory ? newCategory.name : "";
         },
+        getLabelsByItem(item, labels) {
+            let label = labels[item];
+            return label ? label : "";
+        }
+
     }
 }
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ action.started_at }}
     <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
       :items-per-page="configPagination.per_page">
       <template v-slot:top>
@@ -325,7 +326,7 @@ export default {
       keywords: null,
       responsible_id: null,
       status: null,
-      related_subjects: null,
+      subjects: null,
       international: null,
       started_at: null,
       ended_at: null,
@@ -396,7 +397,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -405,7 +406,6 @@ export default {
           console.error(error);
         });
     },
-
     initializeExportData() {
       this.$axios
         .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
@@ -434,12 +434,12 @@ export default {
           console.error(error);
         });
     },
-    initializeActionTypes() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-types").then((response) => {
+   initializeActionTypes() {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'").then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
-      });
+      }); 
     },
 
     editAction(item, tab, index) {
@@ -453,6 +453,10 @@ export default {
       this.action = item;
       this.itemsDelete = true;
     },
+
+   saveRelatedSubject() {
+
+    }, 
 
     deleteActionConfirm() {
       this.$axios

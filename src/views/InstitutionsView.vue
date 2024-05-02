@@ -1,25 +1,21 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
+    {{ institution }}
+    <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
+      :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="instituições.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="instituições.csv"
+            :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle"
+              variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
-              <v-btn
-                color="secondary"
-                size="x-large"
-                density="compact"
-                icon="mdi-plus"
-                v-bind="props"
-                variant="tonal"
-                dark
-                @click="institution = { ...defaultInstitution }"
-              ></v-btn>
+              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                dark @click="institution = { ...defaultInstitution }"></v-btn>
             </template>
             <v-card>
               <v-card-title class="bg-primary">
@@ -31,62 +27,31 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field
-                      variant="outlined"
-                      :maxlength="60"
-                        v-model="institution.name"
-                        :rules="[
-                          () => !!institution.name || 'Nome é requerido!',
-                        ]"
-                        label="Nome"
-                        :counter="60"
-                        required
-                      ></v-text-field>
+                      <v-text-field variant="outlined" :maxlength="60" v-model="institution.name" :rules="[
+      () => !!institution.name || 'Nome é requerido!',
+    ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field
-                      variant="outlined"
-                      :maxlength="20"
-                        v-model="institution.abbr_name"
-                        label="Nome Abreviado"
-                        :counter="20"
-                      ></v-text-field>
+                      <v-text-field variant="outlined" :maxlength="20" v-model="institution.abbr_name"
+                        label="Nome Abreviado" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select
-                      variant="outlined"
-                        v-model="institution.type"
-                        multiple
-                        label="Tipo"
-                        :items="institutionsType"
-                        item-title="typeTitle"
-                        item-value="typeValue"
-                      ></v-select>
+                      <v-select variant="outlined" v-model="institution.type" multiple label="Tipo"
+                        :items="institutionsType" item-title="typeTitle" item-value="typeValue"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-autocomplete
-                      variant="outlined"
-                        v-model="institution.country_code"
-                        label="País"
-                        :items="institutionsCountryCode"
-                        item-title="name"
-                        item-value="code"
-                        :rules="[
-                          () =>
-                            !!institution.country_code || 'País é requerido!',
-                        ]"
-                      ></v-autocomplete>
+                      <v-autocomplete variant="outlined" v-model="institution.country_code" label="País"
+                        :items="institutionsCountryCode" item-title="name" item-value="code" :rules="[
+      () =>
+        !!institution.country_code || 'País é requerido!',
+    ]"></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="dialog = false; initialize(currentPage);"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -105,18 +70,10 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn
-                  color="blue-darken-1"
-                  variant="plain"
-                  @click="institutionsDelete = false"
-                >
+                <v-btn color="blue-darken-1" variant="plain" @click="institutionsDelete = false">
                   Cancelar
                 </v-btn>
-                <v-btn
-                  color="primary"
-                  variant="tonal"
-                  @click="deleteInstitutionsConfirm"
-                >
+                <v-btn color="primary" variant="tonal" @click="deleteInstitutionsConfirm">
                   Excluir
                 </v-btn>
               </v-card-actions>
@@ -126,7 +83,6 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.type="{ item }">
-        {{ getTypeTitle(item.type) }}
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
@@ -134,7 +90,8 @@
       </template>
       <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
-        <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editInstitutions(item)">mdi-pencil</v-icon>
+        <v-icon color="primary" title="Editar" size="small" class="me-2"
+          @click="editInstitutions(item)">mdi-pencil</v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteInstitutions(item)">mdi-delete</v-icon>
       </template>
       <template v-slot:bottom>
@@ -142,8 +99,8 @@
           <v-spacer></v-spacer>
           <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
           <p>Itens na página: <strong>{{ items.length }}</strong></p>
-          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1"
+            v-model="currentPage" @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
           </v-pagination>
         </v-footer>
@@ -223,7 +180,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-people.fe.unicamp.br/api/institutions?page=${page}`)
+        .get(`http://127.0.0.1:8000/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -238,7 +195,7 @@ export default {
         .get(`https://test-people.fe.unicamp.br/api/institutions-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
-          this.loading = false;  
+          this.loading = false;
         })
         .catch((error) => {
           console.error(error);
@@ -286,6 +243,11 @@ export default {
     },
 
     save() {
+      if (Array.isArray(this.institution.type)) {
+        this.institution.type.forEach((type, i) => {
+          return (this.institution.type.length - 2) >= i? type + "," : ""
+        })
+      }
       if (this.institution.id) {
         this.$axios
           .put("https://test-people.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
@@ -323,7 +285,7 @@ export default {
       }
     },
     getTypeTitle(type) {
-      const selectedTypes = [];
+      let selectedTypes = "";
       if (Array.isArray(type)) {
         type.forEach((value) => {
           const typeInstitutions = this.institutionsType.find(
