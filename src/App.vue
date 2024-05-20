@@ -63,7 +63,7 @@
           <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box"
             collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Pessoas e Grupos"></v-list-item>
+              <v-list-item v-bind="props" title="Pessoas e Grupos" v-if="$store.getters.getResourceAccess?.research || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
             <div v-for="items in peopleGroups" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
@@ -73,7 +73,7 @@
           <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
             collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Entidades Organizacionais"></v-list-item>
+              <v-list-item v-bind="props" title="Entidades Organizacionais" v-if="$store.getters.getResourceAccess?.bapex || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
             <div v-for="items in organizationalEntities" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
@@ -83,7 +83,7 @@
           <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box"
             collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Ações"></v-list-item>
+              <v-list-item v-bind="props" title="Ações" v-if="$store.getters.getResourceAccess?.bapex"></v-list-item>
             </template>
             <div v-for="items in actionsThemes" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
