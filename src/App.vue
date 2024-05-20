@@ -113,10 +113,6 @@
 //import LogoutBtn from "./components/LogoutBtn.vue";
 export default {
   name: "App",
-  components: {
-    //AuthenticateBtn,
-    //LogoutBtn
-  },
   data() {
     return {
       rail: true,
