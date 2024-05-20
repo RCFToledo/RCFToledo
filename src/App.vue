@@ -29,13 +29,13 @@
     </v-footer>
     <!--NAVIGATION DRAWER-->
 
-    <v-navigation-drawer v-model="drawer" color="secondary"
-      :permanent="$vuetify.display.smAndUp">
+    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
           <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
           <v-divider></v-divider>
-          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Pessoas e Grupos"></v-list-item>
             </template>
@@ -44,7 +44,8 @@
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
-          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Entidades Organizacionais"></v-list-item>
             </template>
@@ -53,7 +54,8 @@
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
-          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Ações"></v-list-item>
             </template>
@@ -63,7 +65,7 @@
             </div>
           </v-list-group>
           <v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title"
-                :to="reports.to"></v-list-item>
+            :to="reports.to"></v-list-item>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
@@ -85,19 +87,15 @@
 //import LogoutBtn from "./components/LogoutBtn.vue";
 export default {
   name: "App",
-  components: {
-    //AuthenticateBtn,
-    //LogoutBtn
-  },
   data() {
     return {
       rail: true,
       drawer: true,
-      model:true,
+      model: true,
       reports: {
-          title: "Relatórios",
-          icon: "mdi-file-chart-outline",
-          to: "/reports",
+        title: "Relatórios",
+        icon: "mdi-file-chart-outline",
+        to: "/reports",
       },
       peopleGroups: [
         {

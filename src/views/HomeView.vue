@@ -9,16 +9,37 @@
       <h1>Sistema BAPEX</h1>
       <p>Você está autenticado!</p>
       <button @click="confirmLogout">Sair</button>
+      <h2>Dados do Usuário</h2>
       <div>
-        <h2>Dados do Usuário</h2>
-        <p>Nome: {{ $store.getters.getUserData.given_name + ' ' + $store.getters.getUserData.family_name }}</p>
-        <p>Email: {{ $store.getters.getUserData.email }}</p>
+        <p>
+          Nome:
+          {{
+            $store != null && $store.getters.getUserData != null
+              ? $store.getters.getUserData.given_name +
+              " " +
+              $store.getters.getUserData.family_name
+              : ""
+          }}
+        </p>
+        <p>
+          Email:
+          {{
+            $store != null && $store.getters.getUserData != null
+              ? $store.getters.getUserData.email
+              : ""
+          }}
+        </p>
         <!-- Adicione outros campos conforme necessário -->
       </div>
       <div>
         <h2>Token de Acesso</h2>
-        <pre>{{ $store.getters.getToken}}</pre>
+        <pre>{{ $store.getters.getToken }}</pre>
       </div>
+      <p>
+        {{ $store != null && $store.getters.getResourceAccess != null
+        ? $store.getters.getResourceAccess : ""
+        }}
+      </p>
     </div>
   </div>
 </template>
@@ -39,6 +60,7 @@ export default {
             this.$store.commit('setUserData', keycloak.idTokenParsed);
             // Acesse o token de acesso
             this.$store.commit('setToken', keycloak.token);
+            this.$store.commit('setResourceAccess', keycloak.resourceAccess);
           } else {
             console.error("Falha na autenticação.");
           }
@@ -68,6 +90,7 @@ export default {
       this.$store.commit('setIsAuthenticated', true);
       this.$store.commit('setUserData', keycloak.idTokenParsed);
       this.$store.commit('setToken', keycloak.token);
+      this.$store.commit('setResourceAccess', keycloak.resourceAccess);
     } else {
       this.login();
     }
