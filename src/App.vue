@@ -2,43 +2,51 @@
   <v-app>
     <!-- APP BAR -->
     <v-app-bar color="primary" app>
-      <v-app-bar-nav-icon v-if="!$vuetify.display.smAndUp" @click="
-        drawer = !drawer;
-      rail = false;
-      " style="margin-top: 40px;"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        v-if="!$vuetify.display.smAndUp"
+        @click="
+          drawer = !drawer;
+          rail = false;
+        "
+        style="margin-top: 40px"
+      ></v-app-bar-nav-icon>
       <a href="https://www.unicamp.br" style="text-decoration: none">
-        <img src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo_unicamp.png" alt="Logo UNICAMP"
-          style="height: 50px; margin-top: 15px; margin-left: 100px;" />
+        <img
+          src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo_unicamp.png"
+          alt="Logo UNICAMP"
+          style="height: 50px; margin-top: 15px; margin-left: 100px"
+        />
       </a>
       <v-toolbar-title @click="$router.push('/')" style="cursor: pointer">
-        <img src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo.png" alt="Faculdade de Educação"
-          style="height: 50px; margin-top: 15px" />
+        <img
+          src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo.png"
+          alt="Faculdade de Educação"
+          style="height: 50px; margin-top: 15px"
+        />
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div>
-        <v-avatar variant="plain" icon="mdi-account" style="margin-right: 10px; cursor: pointer"></v-avatar>
+        <v-avatar
+          variant="plain"
+          icon="mdi-account"
+          style="margin-right: 10px; cursor: pointer"
+        ></v-avatar>
         <v-menu activator="parent" color="secondary" rounded>
-              <v-card>
-                <v-card-text>
-                  <div class="mx-auto text-center">
-                    <v-avatar color="primary">
-                      <span class="text-h5">JM</span>
-                    </v-avatar>
-                    <h3>Juliana Marques</h3>
-                    <p class="text-caption mt-1">
-                      juml@unicamp.br 
-                    </p>
-                    <v-divider class="my-3"></v-divider>
-                    <v-btn variant="text" rounded>
-                      Editar conta
-                    </v-btn>
-                    <v-divider class="my-3"></v-divider>
-                    <v-btn variant="text" rounded>
-                      Sair da sessão
-                    </v-btn>
-                  </div>
-                </v-card-text>
-              </v-card>
+          <v-card>
+            <v-card-text>
+              <div class="mx-auto text-center">
+                <v-avatar color="primary">
+                  <span class="text-h5">JM</span>
+                </v-avatar>
+                <h3>Juliana Marques</h3>
+                <p class="text-caption mt-1">juml@unicamp.br</p>
+                <v-divider class="my-3"></v-divider>
+                <v-btn variant="text" rounded> Editar conta </v-btn>
+                <v-divider class="my-3"></v-divider>
+                <v-btn variant="text" rounded> Sair da sessão </v-btn>
+              </div>
+            </v-card-text>
+          </v-card>
         </v-menu>
       </div>
 
@@ -54,7 +62,7 @@
       </p>
     </v-footer>
     <!--NAVIGATION DRAWER-->
-
+    <!--
     <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
@@ -96,8 +104,23 @@
         </v-list>
       </v-list-item>
       <v-divider></v-divider>
-    </v-navigation-drawer>
-
+    </v-navigation-drawer>-->
+    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
+  <v-list-item>
+    <v-list density="compact" nav>
+      <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
+      <v-divider></v-divider>
+      <v-list-group v-for="category in filteredCategories" :key="category.categoryId" :value="category.categoryId" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+        <template v-slot:activator="{ props }">
+          <v-list-item v-bind="props" :title="category.category"></v-list-item>
+        </template>
+        <v-list-item v-for="item in filteredItems(category)" :key="item.id" :title="item.title" :prepend-icon="item.icon" :to="item.to"></v-list-item>
+      </v-list-group>
+      <v-divider></v-divider>
+    </v-list>
+  </v-list-item>
+  <v-divider></v-divider>
+</v-navigation-drawer>
     <!-- MAIN -->
     <v-main class="custom-main">
       <v-container fluid>
@@ -113,15 +136,128 @@
 //import LogoutBtn from "./components/LogoutBtn.vue";
 export default {
   name: "App",
+  methods: {
+  hasCategoryAccess(category) {
+    return category.items.some(item => this.hasItemAccess(item));
+  },
+  hasItemAccess(item) {
+    return this.resourceAccess.some(resource => {
+      return Object.values(resource).some(access => {
+        return access.roles.includes(item.id);
+      });
+    });
+  }
+},computed: {
+  filteredCategories() {
+    return this.menu.filter(category => {
+      return category.items.some(item => this.hasItemAccess(item));
+    });
+  },
+  filteredItems() {
+    return category => {
+      return category.items.filter(item => this.hasItemAccess(item));
+    };
+  }
+},
   data() {
     return {
       rail: true,
       drawer: true,
       model: true,
+      resourceAccess: [
+        {
+          bapex: { roles: ["institution.view"] },
+          people: { roles: ["person.viewAny", "person.view"] },
+          account: {
+            roles: ["manage-account", "manage-account-links", "view-profile"],
+          },
+        },
+      ],
+      menu: [
+        {
+          categoryId: "reports_category",
+          category: "Relatórios",
+          items: [
+            {
+              id: "reports",
+              title: "Relatórios",
+              icon: "mdi-file-chart-outline",
+              to: "/reports",
+            },
+          ],
+        },
+        {
+          categoryId: "people",
+          category: "Pessoas e Grupos",
+          items: [
+            {
+              id: "person.view",
+              title: "Pessoas",
+              icon: "mdi-account-multiple",
+              to: "/people",
+            },
+            {
+              id: "research_groups",
+              title: "Grupos de Pesquisas",
+              icon: "mdi-account-group",
+              to: "/research-groups",
+            },
+          ],
+        },
+        {
+          categoryId: "bapex_old",
+          category: "Ações e Temas Relacionados",
+          items: [
+            {
+              id: "actions",
+              title: "Ações",
+              icon: "mdi-account-cog",
+              to: "/actions",
+            },
+            {
+              id: "actions_subjects",
+              title: "Ações (Temas Relacionados)",
+              icon: "mdi-table",
+              to: "/actions-subjects",
+            },
+          ],
+        },
+        {
+          categoryId: "bapex",
+          category: "Entidades Organizacionais",
+          items: [
+            {
+              id: "institution.view",
+              title: "Instituições",
+              icon: "mdi-school",
+              to: "/institutions",
+            },
+            {
+              id: "institution_partners",
+              title: "Instituições Parceiras",
+              icon: "mdi-bank",
+              to: "/institutions-partners",
+            },
+            {
+              id: "departments",
+              title: "Departamentos",
+              icon: "mdi-briefcase",
+              to: "/departments",
+            },
+            {
+              id: "sectors",
+              title: "Setores",
+              icon: "mdi-view-list",
+              to: "/sectors",
+            },
+          ],
+        },
+      ],
+      /*,
       reports: {
         title: "Relatórios",
         icon: "mdi-file-chart-outline",
-        to: "/reports",
+        to: "/reports",        
       },
       peopleGroups: [
         {
@@ -168,7 +304,7 @@ export default {
           icon: "mdi-view-list",
           to: "/sectors",
         },
-      ],
+      ],*/
     };
   },
 };
