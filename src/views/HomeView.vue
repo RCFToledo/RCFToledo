@@ -60,7 +60,9 @@ export default {
             this.$store.commit('setUserData', keycloak.idTokenParsed);
             // Acesse o token de acesso
             this.$store.commit('setToken', keycloak.token);
-            this.$store.commit('setResourceAccess', keycloak.resourceAccess);
+            const resourceAccess = [];
+            resourceAccess.push(keycloak.resourceAccess);
+            this.$store.commit('setResourceAccess', resourceAccess);
           } else {
             console.error("Falha na autenticação.");
           }

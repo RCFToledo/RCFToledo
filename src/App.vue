@@ -2,35 +2,21 @@
   <v-app>
     <!-- APP BAR -->
     <v-app-bar color="primary" app>
-      <v-app-bar-nav-icon
-        v-if="!$vuetify.display.smAndUp"
-        @click="
-          drawer = !drawer;
-          rail = false;
-        "
-        style="margin-top: 40px"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon v-if="!$vuetify.display.smAndUp" @click="
+        drawer = !drawer;
+      rail = false;
+      " style="margin-top: 40px"></v-app-bar-nav-icon>
       <a href="https://www.unicamp.br" style="text-decoration: none">
-        <img
-          src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo_unicamp.png"
-          alt="Logo UNICAMP"
-          style="height: 50px; margin-top: 15px; margin-left: 100px"
-        />
+        <img src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo_unicamp.png" alt="Logo UNICAMP"
+          style="height: 50px; margin-top: 15px; margin-left: 100px" />
       </a>
       <v-toolbar-title @click="$router.push('/')" style="cursor: pointer">
-        <img
-          src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo.png"
-          alt="Faculdade de Educação"
-          style="height: 50px; margin-top: 15px"
-        />
+        <img src="https://autenticacao.fe.unicamp.br/themes/custom/fe_theme/logo.png" alt="Faculdade de Educação"
+          style="height: 50px; margin-top: 15px" />
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <div>
-        <v-avatar
-          variant="plain"
-          icon="mdi-account"
-          style="margin-right: 10px; cursor: pointer"
-        ></v-avatar>
+        <v-avatar variant="plain" icon="mdi-account" style="margin-right: 10px; cursor: pointer"></v-avatar>
         <v-menu activator="parent" color="secondary" rounded>
           <v-card>
             <v-card-text>
@@ -73,54 +59,51 @@
             <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Pessoas e Grupos" v-if="$store.getters.getResourceAccess?.research || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
-            <div v-for="items in peopleGroups" :key="items.title">
-              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
-                :to="items.to"></v-list-item>
-            </div>
-          </v-list-group>
-          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
-            collapse-icon="mdi-chevron-up-box">
-            <template v-slot:activator="{ props }">
+<div v-for="items in peopleGroups" :key="items.title">
+  <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
+</div>
+</v-list-group>
+<v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
+  collapse-icon="mdi-chevron-up-box">
+  <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Entidades Organizacionais" v-if="$store.getters.getResourceAccess?.bapex || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
-            <div v-for="items in organizationalEntities" :key="items.title">
-              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
-                :to="items.to"></v-list-item>
-            </div>
-          </v-list-group>
-          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box"
-            collapse-icon="mdi-chevron-up-box">
-            <template v-slot:activator="{ props }">
+  <div v-for="items in organizationalEntities" :key="items.title">
+    <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
+  </div>
+</v-list-group>
+<v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+  <template v-slot:activator="{ props }">
               <v-list-item v-bind="props" title="Ações" v-if="$store.getters.getResourceAccess?.bapex"></v-list-item>
             </template>
-            <div v-for="items in actionsThemes" :key="items.title">
-              <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
-                :to="items.to"></v-list-item>
-            </div>
+  <div v-for="items in actionsThemes" :key="items.title">
+    <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
+  </div>
+</v-list-group>
+<v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title" :to="reports.to"></v-list-item>
+<v-divider></v-divider>
+</v-list>
+</v-list-item>
+<v-divider></v-divider>
+</v-navigation-drawer>-->
+    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
+      <v-list-item>
+        <v-list density="compact" nav>
+          <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
+          <v-divider></v-divider>
+          <v-list-group v-for="category in filteredCategories" :key="category.categoryId" :value="category.categoryId"
+            fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+            <template v-slot:activator="{ props }">
+              <v-list-item v-bind="props" :title="category.category"></v-list-item>
+            </template>
+            <v-list-item v-for="item in filteredItems(category)" :key="item.id" :title="item.title"
+              :prepend-icon="item.icon" :to="item.to"></v-list-item>
           </v-list-group>
-          <v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title"
-            :to="reports.to"></v-list-item>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
       <v-divider></v-divider>
-    </v-navigation-drawer>-->
-    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
-  <v-list-item>
-    <v-list density="compact" nav>
-      <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
-      <v-divider></v-divider>
-      <v-list-group v-for="category in filteredCategories" :key="category.categoryId" :value="category.categoryId" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" :title="category.category"></v-list-item>
-        </template>
-        <v-list-item v-for="item in filteredItems(category)" :key="item.id" :title="item.title" :prepend-icon="item.icon" :to="item.to"></v-list-item>
-      </v-list-group>
-      <v-divider></v-divider>
-    </v-list>
-  </v-list-item>
-  <v-divider></v-divider>
-</v-navigation-drawer>
+    </v-navigation-drawer>
     <!-- MAIN -->
     <v-main class="custom-main">
       <v-container fluid>
@@ -137,28 +120,28 @@
 export default {
   name: "App",
   methods: {
-  hasCategoryAccess(category) {
-    return category.items.some(item => this.hasItemAccess(item));
-  },
-  hasItemAccess(item) {
-    return this.resourceAccess.some(resource => {
-      return Object.values(resource).some(access => {
-        return access.roles.includes(item.id);
-      });
-    });
-  }
-},computed: {
-  filteredCategories() {
-    return this.menu.filter(category => {
+    hasCategoryAccess(category) {
       return category.items.some(item => this.hasItemAccess(item));
-    });
+    },
+    hasItemAccess(item) {
+      return this.$store.getters.getResourceAccess.some(resource => {
+        return Object.values(resource).some(access => {
+          return access.roles.includes(item.id);
+        });
+      });
+    }
+  }, computed: {
+    filteredCategories() {
+      return this.menu.filter(category => {
+        return category.items.some(item => this.hasItemAccess(item));
+      });
+    },
+    filteredItems() {
+      return category => {
+        return category.items.filter(item => this.hasItemAccess(item));
+      };
+    }
   },
-  filteredItems() {
-    return category => {
-      return category.items.filter(item => this.hasItemAccess(item));
-    };
-  }
-},
   data() {
     return {
       rail: true,
@@ -187,8 +170,44 @@ export default {
           ],
         },
         {
+          categoryId: "research",
+          category: "Grupos de Pesquisas",
+          items: [
+            {
+              id: "research.view",
+              title: "Grupos de Pesquisas",
+              icon: "mdi-account-group",
+              to: "/research-groups",
+            },
+          ],
+        },
+        {
+          categoryId: "bapex",
+          category: "Ações e Colaborações",
+          items: [
+            {
+              id: "action.view",
+              title: "Ações",
+              icon: "mdi-account-cog",
+              to: "/actions",
+            },
+            {
+              id: "institution.view",
+              title: "Instiuições Parceiras",
+              icon: "mdi-bank",
+              to: "/institutions-partners",
+            },
+            {
+              id: "action_subject.view",
+              title: "Ações (Temas Relacionados)",
+              icon: "mdi-table",
+              to: "/actions-subjects",
+            },
+          ],
+        },
+        {
           categoryId: "people",
-          category: "Pessoas e Grupos",
+          category: "Pessoas e Componentes Institucionais",
           items: [
             {
               id: "person.view",
@@ -197,55 +216,19 @@ export default {
               to: "/people",
             },
             {
-              id: "research_groups",
-              title: "Grupos de Pesquisas",
-              icon: "mdi-account-group",
-              to: "/research-groups",
-            },
-          ],
-        },
-        {
-          categoryId: "bapex_old",
-          category: "Ações e Temas Relacionados",
-          items: [
-            {
-              id: "actions",
-              title: "Ações",
-              icon: "mdi-account-cog",
-              to: "/actions",
-            },
-            {
-              id: "actions_subjects",
-              title: "Ações (Temas Relacionados)",
-              icon: "mdi-table",
-              to: "/actions-subjects",
-            },
-          ],
-        },
-        {
-          categoryId: "bapex",
-          category: "Entidades Organizacionais",
-          items: [
-            {
               id: "institution.view",
               title: "Instituições",
               icon: "mdi-school",
               to: "/institutions",
             },
             {
-              id: "institution_partners",
-              title: "Instituições Parceiras",
-              icon: "mdi-bank",
-              to: "/institutions-partners",
-            },
-            {
-              id: "departments",
+              id: "department.view",
               title: "Departamentos",
               icon: "mdi-briefcase",
               to: "/departments",
             },
             {
-              id: "sectors",
+              id: "sector.view",
               title: "Setores",
               icon: "mdi-view-list",
               to: "/sectors",

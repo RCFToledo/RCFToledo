@@ -8,7 +8,7 @@ export default createStore({
     userData: null,
     isAuthenticated: null,
     logout: null,
-    resourceAccess: null,
+    resourceAccess: [],
   },
   mutations: {
     setIsAuthenticated(state, newAuthenticated) {
