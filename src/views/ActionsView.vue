@@ -7,20 +7,23 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv"
+            :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle"
+              variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
+                dark
+                @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
             </template>
             <v-card>
               <v-toolbar color="primary">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-tabs v-model="tabModal">
                   <v-tab v-for="(item, index) in tabTitle" :key="index" @click="isTab = item" :value="index">{{ item
-                  }}</v-tab>
+                    }}</v-tab>
                 </v-tabs>
                 <v-spacer></v-spacer>
                 <v-tabs hide-slider>
@@ -35,20 +38,22 @@
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
-                        <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined" v-model="action.title" :rules="[
-                          () => !!action.title || 'Título é requerido!',
-                        ]" label="Título" :counter="120" required></v-text-field>
+                        <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined"
+                          v-model="action.title" :rules="[
+                            () => !!action.title || 'Título é requerido!',
+                          ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" :maxlength="60" variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
-                          item-title="full_name" item-value="id" :rules="[
+                        <v-autocomplete :disabled="input_disabled" :maxlength="60" variant="outlined"
+                          v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id"
+                          :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
                           ]" label="Responsável" :counter="60" required>
                         </v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" variant="outlined" v-model="action.assistant_id" :items="itemsPeople"
-                          item-title="full_name" item-value="id" :rules="[
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" v-model="action.assistant_id"
+                          :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
                         </v-autocomplete>
@@ -56,36 +61,39 @@
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
                       <v-col cols="12" md="12">
-                        <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo" :items="itemsType"
-                          item-title="label" item-value="type" :rules="[
+                        <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo"
+                          :items="itemsType" item-title="label" item-value="type" :rules="[
                             () => !!action.type || 'Tipo é requerido!',
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips :items="relatedSubjectsItems"
-                          item-title="subject" item-value="id" v-model="action.related_subjects"
-                          label="Temas relacionados" required></v-autocomplete>
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips
+                          :items="relatedSubjectsItems" item-title="subject" item-value="id"
+                          v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple v-model="action.keywords"
-                          label="Palavras-chave" required></v-combobox>
+                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple
+                          v-model="action.keywords" label="Palavras-chave" required></v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field :disabled="input_disabled" type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
-                          () => !!action.started_at || 'Data de ínicio é requirido',
-                        ]" required ></v-text-field>
+                        <v-text-field :disabled="input_disabled" type="date" variant="outlined"
+                          v-model="action.started_at" label="Data de início" :rules="[
+                            () => !!action.started_at || 'Data de ínicio é requirido',
+                          ]" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
-                        ]"  :disabled="disabled"></v-text-field>
+                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término"
+                          :rules="[
+                          ]" :disabled="disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch :disabled="input_disabled" variant="outlined" :color="action.international ? 'primary': 'green'" v-model="action.international" inset
+                        <v-switch :disabled="input_disabled" variant="outlined"
+                          :color="action.international ? 'primary' : 'green'" v-model="action.international" inset
                           :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free" inset
-                          :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
+                        <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free"
+                          inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="12">
                         <v-textarea :disabled="input_disabled" variant="outlined" v-model="action.description" :rules="[
@@ -106,13 +114,15 @@
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
-                    <v-card v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                    <v-card
+                      v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
                       <ActionsFinancialView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                    <v-card
+                      v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
                       <ActionsMembersView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
@@ -144,9 +154,11 @@
 
                     </v-card>
                     <v-col>
-                      <v-btn color="primary" variant="tonal" @click="action.title ? formSubmit : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{ isTab !== 'Enviar' ? 'Salvar' :
-                          'Finalizar' }}</v-btn>
+                      <v-btn color="primary" variant="tonal"
+                        @click="action.title ? formSubmit : $toast.error('Título é requerido');"
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{
+                          isTab !== 'Enviar' ? 'Salvar' :
+                        'Finalizar' }}</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
@@ -208,12 +220,14 @@
       <template v-slot:item.actions="{ item }">
         <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
-          <v-menu activator="parent" color="secondary" @click="item.status === 'in_progress' ? input_disabled = true : input_disabled = false">
+          <v-menu activator="parent" color="secondary"
+            @click="item.status === 'in_progress' ? input_disabled = true : input_disabled = false">
             <v-list>
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
                 @click="editAction(item, 'Título')"></v-list-item>
-              <v-list-item prepend-icon="mdi-database" title="Dados" @click="editAction(item, 'Dados', 1)"></v-list-item>
+              <v-list-item prepend-icon="mdi-database" title="Dados"
+                @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
@@ -310,7 +324,7 @@ export default {
       status: 'Estado',
       related_subjects: 'Temas relacionados',
       international: 'Internacional',
-      started_at:  'Começou em',
+      started_at: 'Começou em',
       ended_at: 'Acabou em',
       free: 'Grátis',
       assistant_id: 'Assistente',
@@ -397,7 +411,11 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`, {
+          headers: {
+            'Authorization': `Bearer ${this.$store.getters.getToken}`
+          }
+        })
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -411,13 +429,13 @@ export default {
         .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
-          this.loading = false;  
+          this.loading = false;
         })
         .catch((error) => {
           console.error(error);
         });
     },
-    
+
     initializePeople() {
       this.$axios
         .get("https://test-people.fe.unicamp.br/api/people")
@@ -434,12 +452,12 @@ export default {
           console.error(error);
         });
     },
-   initializeActionTypes() {
+    initializeActionTypes() {
       this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'").then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
-      }); 
+      });
     },
 
     editAction(item, tab, index) {
@@ -454,9 +472,9 @@ export default {
       this.itemsDelete = true;
     },
 
-   saveRelatedSubject() {
+    saveRelatedSubject() {
 
-    }, 
+    },
 
     deleteActionConfirm() {
       this.$axios
@@ -486,7 +504,7 @@ export default {
     save() {
       if (this.isTab === 'Enviar') {
         this.action.status = "in_progress"
-      } else if(this.tab !== 'Avaliar') {
+      } else if (this.tab !== 'Avaliar') {
         this.action.status = "draft"
       }
       if (this.action.id) {
@@ -577,5 +595,4 @@ export default {
   },
 }
 </script>
-<style>
-</style>
+<style></style>

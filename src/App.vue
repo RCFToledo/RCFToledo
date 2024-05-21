@@ -22,10 +22,10 @@
             <v-card-text>
               <div class="mx-auto text-center">
                 <v-avatar color="primary">
-                  <span class="text-h5">JM</span>
+                  <span class="text-h5">{{ $store.getters.getUserData.given_name[0] + $store.getters.getUserData.family_name[0] }}</span>
                 </v-avatar>
-                <h3>Juliana Marques</h3>
-                <p class="text-caption mt-1">juml@unicamp.br</p>
+                <h3>{{ $store.getters.getUserData.given_name +' '+ $store.getters.getUserData.family_name }}</h3>
+                <p class="text-caption mt-1">{{ $store.getters.getUserData.email }}</p>
                 <v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
                 <v-divider class="my-3"></v-divider>
@@ -158,18 +158,6 @@ export default {
       ],
       menu: [
         {
-          categoryId: "reports_category",
-          category: "Relatórios",
-          items: [
-            {
-              id: "reports",
-              title: "Relatórios",
-              icon: "mdi-file-chart-outline",
-              to: "/reports",
-            },
-          ],
-        },
-        {
           categoryId: "research",
           category: "Grupos de Pesquisas",
           items: [
@@ -202,6 +190,12 @@ export default {
               title: "Ações (Temas Relacionados)",
               icon: "mdi-table",
               to: "/actions-subjects",
+            },
+            {
+              id: "report.view",
+              title: "Relatórios",
+              icon: "mdi-file-chart-outline",
+              to: "/reports",
             },
           ],
         },
