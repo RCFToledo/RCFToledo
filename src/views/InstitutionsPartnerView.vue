@@ -6,7 +6,9 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Instituições Parceiras</v-toolbar-title>
           <v-spacer></v-spacer>
-          <ExportCSV url="https://test-bapex.fe.unicamp.br/api/institutions" name="partners_institutions" :lastPage="configPagination.last_page" />
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="instituições_parceiras.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
@@ -22,30 +24,23 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field v-model="institution.name" :rules="[
+                      <v-text-field :maxlength="60" variant="outlined" v-model="institution.name" :rules="[
                         () => !!institution.name || 'Nome é requerido!',
-                        () =>
-                          !(institution.name.length > 60) ||
-                          'Nome maior que o suportado'
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-text-field v-model="institution.abbr_name" label="Nome Abreviado" :rules="[
-                        () =>
-                          !((institution.abbr_name !== null) && (institution.abbr_name.length > 20)) ||
-                          'Nome Abreviado maior que o suportado'
-                      ]" :counter="20"></v-text-field>
+                      <v-text-field :maxlength="20" variant="outlined" v-model="institution.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.legal_category_id" label="Categoria jurídica" :items="institutionsLegalCategories"
+                      <v-select variant="outlined" v-model="institution.legal_category_id" label="Categoria jurídica" :items="[{id: 1, category: 'Setor Público'}, {id: 2, category: 'Setor Privado'}, {id: 3, category: 'Terceiro Setor'}]"
                         item-title="category" item-value="id"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-select v-model="institution.legal_nature_id" label="Natureza jurídica" :items="financialNature"
-                        item-title="nature" item-value="id"></v-select>
+                      <v-select variant="outlined" v-model="institution.legal_nature_id" label="Natureza jurídica" :items="institution.legal_category_id === 1 ? [{id: 1, nature: ' '}, {id: 2, nature: 'Estadual'}, {id: 3, nature: 'Federal'}] : []"
+                        item-title="nature" item-value="id" v-if="institution.legal_category_id == 1"></v-select>
                     </v-col>
                     <v-col cols="12">
-                      <v-autocomplete v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
+                      <v-autocomplete variant="outlined" v-model="institution.country_code" label="País" :items="institutionsCountryCode" item-title="name" item-value="code"
                         :rules="[
                           () =>
                             !!institution.country_code || 'País é requerido!',
@@ -90,14 +85,6 @@
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
-      <template v-slot:item.legal_category_id="{ item }">
-        {{ getCategoryById(item.legal_category_id) }}
-      </template>
-      <!-- eslint-disable-next-line -->
-      <template v-slot:item.legal_nature_id="{ item }">
-        {{ getNatureByCategoryIdNatureId(item.legal_category_id, item.legal_nature_id) }}
-      </template>
-      <!-- eslint-disable-next-line -->
       <template v-slot:item.country_code="{ item }">
         {{ getCountryCountryTitle(item.country_code) }}
       </template>
@@ -111,7 +98,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -124,8 +112,6 @@
 
 
 <script>
-import ExportCSV from "../components/ExportCSV.vue"
-
 export default {
   data: () => ({
     valid: false,
@@ -137,6 +123,8 @@ export default {
     institutionsCountryCode: [],
     dialog: false,
     institutionsDelete: false,
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Nome",
@@ -159,6 +147,16 @@ export default {
     institution: {},
     currentPage: 1,
     configPagination: [],
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      legal_category_id: 'Categoria Jurídica',
+      legal_nature_id: 'Natureza Jurídica',
+      country_code: 'Código do país',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultInstitution: {
       id: null,
       name: null,
@@ -169,9 +167,6 @@ export default {
     },
   }),
 
-  components: {
-    ExportCSV
-  },
 
   computed: {
     formTitle() {
@@ -179,16 +174,25 @@ export default {
     },
   },
 
-  watch: {
+  /*watch: {
     "institution.legal_category_id"(newValue, oldValue) {
       this.getNatureByCategory(this.institutionsLegalCategories, newValue, oldValue);
     },
-  },
+  },*/
 
   created() {
     this.initialize(1);
     this.initializeCountries();
-    this.initializeLegalCategories()
+    this.initializeLegalCategories();
+    this.initializeExportData();
+  },
+
+  watch: {
+    'institution.legal_category_id'(newValue) {
+      if(newValue !== 1) {
+        this.institution.legal_nature_id = null;
+      }
+    }
   },
   methods: {
     formSubmit() {
@@ -200,10 +204,22 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/institutions?page=${page}`)
+        .get(`http://127.0.0.1:8000/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData() {
+      this.$axios
+        .get(`https://test-bapex.fe.unicamp.br/api/institutions-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);
@@ -266,7 +282,7 @@ export default {
     save() {
       if (this.institution.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/institutions/" + this.institution.id, this.institution)
+          .put("http://127.0.0.1:8000/api/institutions/" + this.institution.id, this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -283,7 +299,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/institutions", this.institution)
+          .post("http://127.0.0.1:8000/api/institutions", this.institution)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {

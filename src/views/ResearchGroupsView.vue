@@ -5,8 +5,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Grupo de Pesquisa</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="grupo_de_pesquisa.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="grupos_de_pesquisa.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -23,36 +23,33 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="8">
-                      <v-text-field v-model="researchGroup.name" :rules="[
+                      <v-text-field :maxlength="60" variant="outlined" v-model="researchGroup.name" :rules="[
                         () => !!researchGroup.name || 'Nome é requerido!',
-                        () => !(researchGroup.name.length > 60) || 'Nome maior que o suportado',
                       ]" label="Nome" :counter="60" required></v-text-field>
                     </v-col>
                     <v-col cols="12" md="4">
-                      <v-text-field v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[
-                        () => !((researchGroup.abbr_name !== null) && (researchGroup.abbr_name.length > 20)) || 'Nome Abreviado maior que o suportado',
-                      ]" :counter="20"></v-text-field>
+                      <v-text-field :maxlength="20" variant="outlined" v-model="researchGroup.abbr_name" label="Nome Abreviado" :rules="[]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="2">
-                      <v-switch color="primary" v-model="researchGroup.removed" inset label="Extinto"></v-switch>
+                      <v-switch color="primary" v-model="researchGroup.removed" inset :label="researchGroup.removed ? 'Extinto' : 'Ativo'"></v-switch>
                     </v-col>
                     <v-col cols="12" md="10">
-                      <v-text-field v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"></v-text-field>
+                      <v-text-field variant="outlined" v-model="researchGroup.lattes_url" label="Página no Diretório da Plataforma Lattes"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="researchGroup.email" label="E-mail" :rules="[
+                      <v-text-field variant="outlined" v-model="researchGroup.email" label="E-mail" :rules="[
                         (v) => /.+@.+\..+/.test(v) || 'E-mail inválido',
                       ]" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="researchGroup.site_url" label="Website" :counter="20"></v-text-field>
+                      <v-text-field variant="outlined" v-model="researchGroup.site_url" label="Website" :counter="20"></v-text-field>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -82,7 +79,7 @@
           </v-dialog>
           <v-dialog fullscreen v-model="dialogMembers">
             <v-card>
-              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize();" :researchGroupId="researchGroupId" />
+              <ResearchGroupsMembersView @closeModal="dialogMembers = false; initialize(currentPage);" :researchGroupId="researchGroupId" />
             </v-card>
           </v-dialog>
         </v-toolbar>
@@ -110,7 +107,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -146,10 +144,22 @@ export default {
       { title: "Opções", key: "actions", sortable: false },
     ],
     items: [],
+    itemsExport: [],
+    loading: true,
     editedIndex: -1,
     researchGroup: {},
     researchGroupId: null,
     dialogMembers: false,
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      lattes_url: 'Lattes',
+      email: 'E-mail',
+      site_url: 'Site',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultResearchGroup: {
       id: null,
       name: null,
@@ -168,6 +178,7 @@ export default {
 
   created() {
     this.initialize(1);
+    this.initializeExportData();
   },
   methods: {
     formSubmit() {
@@ -183,6 +194,18 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData() {
+      this.$axios
+        .get(`https://test-research.fe.unicamp.br/api/research-groups-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);
@@ -205,7 +228,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.researchGroupDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -225,7 +248,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.researchGroup = this.defaultResearchGroup;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -242,7 +265,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.researchGroup = this.defaultResearchGroup;
               this.$toast.success(response.data.message);
               this.dialog = false;

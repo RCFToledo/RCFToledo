@@ -15,7 +15,33 @@
           style="height: 50px; margin-top: 15px" />
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!--<v-btn variant="plain" @click="logout()">Sair</v-btn> -->
+      <div>
+        <v-avatar variant="plain" icon="mdi-account" style="margin-right: 10px; cursor: pointer"></v-avatar>
+        <v-menu activator="parent" color="secondary" rounded>
+              <v-card>
+                <v-card-text>
+                  <div class="mx-auto text-center">
+                    <v-avatar color="primary">
+                      <span class="text-h5">JM</span>
+                    </v-avatar>
+                    <h3>Juliana Marques</h3>
+                    <p class="text-caption mt-1">
+                      juml@unicamp.br 
+                    </p>
+                    <v-divider class="my-3"></v-divider>
+                    <v-btn variant="text" rounded>
+                      Editar conta
+                    </v-btn>
+                    <v-divider class="my-3"></v-divider>
+                    <v-btn variant="text" rounded>
+                      Sair da sessão
+                    </v-btn>
+                  </div>
+                </v-card-text>
+              </v-card>
+        </v-menu>
+      </div>
+
       <!--<Logout />
       <AuthenticateBtn v-if="$store.state.token == null" :showCard="false" />
        -->
@@ -29,33 +55,35 @@
     </v-footer>
     <!--NAVIGATION DRAWER-->
 
-    <v-navigation-drawer v-model="drawer" color="secondary"
-      :permanent="$vuetify.display.smAndUp">
+    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
           <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
           <v-divider></v-divider>
-          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Pessoas e Grupos"></v-list-item>
+              <v-list-item v-bind="props" title="Pessoas e Grupos" v-if="$store.getters.getResourceAccess?.research || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
             <div v-for="items in peopleGroups" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
-          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Entidades Organizacionais"></v-list-item>
+              <v-list-item v-bind="props" title="Entidades Organizacionais" v-if="$store.getters.getResourceAccess?.bapex || $store.getters.getResourceAccess?.people"></v-list-item>
             </template>
             <div v-for="items in organizationalEntities" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
                 :to="items.to"></v-list-item>
             </div>
           </v-list-group>
-          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
+          <v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Ações"></v-list-item>
+              <v-list-item v-bind="props" title="Ações" v-if="$store.getters.getResourceAccess?.bapex"></v-list-item>
             </template>
             <div v-for="items in actionsThemes" :key="items.title">
               <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title"
@@ -63,7 +91,7 @@
             </div>
           </v-list-group>
           <v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title"
-                :to="reports.to"></v-list-item>
+            :to="reports.to"></v-list-item>
           <v-divider></v-divider>
         </v-list>
       </v-list-item>
@@ -85,19 +113,15 @@
 //import LogoutBtn from "./components/LogoutBtn.vue";
 export default {
   name: "App",
-  components: {
-    //AuthenticateBtn,
-    //LogoutBtn
-  },
   data() {
     return {
       rail: true,
       drawer: true,
-      model:true,
+      model: true,
       reports: {
-          title: "Relatórios",
-          icon: "mdi-file-chart-outline",
-          to: "/reports",
+        title: "Relatórios",
+        icon: "mdi-file-chart-outline",
+        to: "/reports",
       },
       peopleGroups: [
         {

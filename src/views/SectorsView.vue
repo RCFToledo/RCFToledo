@@ -5,8 +5,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Setores</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="setores.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="setores.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <!--dialog 1-->
           <v-dialog persistent v-model="dialogView" max-width="800px">
@@ -55,25 +55,22 @@
                   <v-form ref="form" lazy-validation>
                     <v-row dense>
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.name" :rules="[
+                        <v-text-field :maxlength="120" variant="outlined" v-model="sectors.name" :rules="[
                           () => !!sectors.name || 'Nome é requerido!',
                         ]" label="Nome" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
+                        <v-text-field :maxlength="20" variant="outlined" v-model="sectors.abbr_name" label="Nome Abreviado" :rules="[
                           () => !(sectors.abbr_name !== null && sectors.abbr_name.length > 20) || 'Nome Abreviado maior que o suportado',
                         ]" :counter="20"></v-text-field>
                       </v-col>
 
                       <v-col cols="12">
-                        <v-text-field v-model="sectors.code" label="Código da DGA" :rules="[
+                        <v-text-field :maxlength="30" variant="outlined" v-model="sectors.code" label="Código da DGA" :rules="[
                           () =>
                             !!sectors.code ||
                             'Código da DGA é requerido!',
                         ]" :counter="20"></v-text-field>
-                      </v-col>
-
-                      <v-col cols="12">
                       </v-col>
                     </v-row>
                   </v-form>
@@ -82,7 +79,7 @@
 
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialogEdit = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -140,7 +137,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -163,6 +161,8 @@ export default {
     sectorsDelete: false,
     currentPage: 1,
     configPagination: [],
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Nome",
@@ -176,19 +176,30 @@ export default {
     editedIndex: -1,
     sectors: [],
     itemsPeople: [],
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      abbr_name: 'Nome Abreviado',
+      type: 'Tipo',
+      code: 'Código',
+      members: 'membros',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultSector: {
       id: null,
       name: null,
       abbr_name: null,
       code: null,
       members: null,
-      peopleid: null,
+      people_id: null,
     },
   }),
 
   created() {
     this.initialize(1);
-    this.initializePeople()
+    this.initializePeople();
+    this.initializeExportData();
   },
 
   computed: {
@@ -210,6 +221,17 @@ export default {
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    initializeExportData() {
+      this.$axios
+        .get(`https://test-people.fe.unicamp.br/api/sectors-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);
@@ -253,7 +275,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.sectorsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -273,7 +295,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.sectors = this.defaultSector;
               this.$toast.success(response.data.message);
               this.dialogEdit = false;
@@ -290,7 +312,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.sectors = this.defaultSector;
               this.$toast.success(response.data.message);
               this.dialogEdit = false;

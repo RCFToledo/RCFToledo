@@ -6,8 +6,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações (Temas Relacionados)</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="ações_temas.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="temas_relacionados.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -24,7 +24,7 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-text-field v-model="actionSubject.subject" :rules="[
+                      <v-text-field variant="outlined" v-model="actionSubject.subject" :rules="[
                         () => !!actionSubject.subject || 'Tema é requerido',
                         () => !(actionSubject.subject.length > 60) || 'Tema maior que o suportado',
                       ]" label="Tema" :counter="60" required></v-text-field>
@@ -34,7 +34,7 @@
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -73,7 +73,8 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na páginas: <strong>{{items.length}}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
             @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
@@ -91,6 +92,9 @@ export default {
     valid: false,
     dialog: false,
     itemsDelete: false,
+    itemsExport: [],
+    loading: true,
+    totalItens: 0,
     headers: [
       {
         title: "Tema",
@@ -104,6 +108,12 @@ export default {
     currentPage: 1,
     actionSubject: {},
     relatedSubjectsItems: [],
+    labels: {
+      id: 'Registro',
+      subject: 'Tema',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultActionSubject: {
       id_: null,
       subject: null,
@@ -119,6 +129,7 @@ export default {
   },
   created() {
     this.initialize(1);
+    this.initializeExportData();
   },
   methods: {
     formSubmit() {
@@ -133,7 +144,19 @@ export default {
         .get(`https://test-bapex.fe.unicamp.br/api/action-subjects?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
+          this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData() {
+      this.$axios
+        .get(`https://test-bapex.fe.unicamp.br/api/subjects-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);
@@ -156,7 +179,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -176,7 +199,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.actionSubject = this.defaultActionSubject;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -193,7 +216,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.actionSubject = this.defaultActionSubject;
               this.$toast.success(response.data.message);
               this.dialog = false;

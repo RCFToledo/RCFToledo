@@ -8,6 +8,7 @@ export default createStore({
     userData: null,
     isAuthenticated: null,
     logout: null,
+    resourceAccess: null,
   },
   mutations: {
     setIsAuthenticated(state, newAuthenticated) {
@@ -25,6 +26,9 @@ export default createStore({
     setLogout(state, logoutFunction) {
       state.logout = logoutFunction;
     },
+    setResourceAccess(state, newResourceAccess) {
+      state.resourceAccess = newResourceAccess;
+    },
   },
   actions: {
     logout({ commit, state }) {
@@ -40,8 +44,12 @@ export default createStore({
     updateToken({ commit }, newToken) {
       commit('setToken', newToken);
     },
+    updateResourceAccess({ commit }, newResourceAccess) {
+      commit('setResourceAccess', newResourceAccess);
+    },
   },
   getters: {
+    getResourceAccess: state => state.resourceAccess,
     getUnicamp_id: state => state.unicamp_id,
     getUsername: state => state.username,
     getToken: state => state.token,

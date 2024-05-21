@@ -1,6 +1,6 @@
 <template>
     <download-csv :data="items" style="margin-right: 10px" :name="`${name}.csv`" :delimiter="';'">
-        <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+        <v-btn @click="exportItems()" icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
     </download-csv>
 </template>
   
@@ -14,13 +14,14 @@ export default {
     data() {
         return {
             items: [],
+            loading: false
         }
     },
-created() {
-    this.ExportItems();
-},
+    created() {
+        this.exportItems();
+    },
 methods: {
-    ExportItems() {
+    exportItems() {
         for (let i = 1; i <= this.lastPage; i++) {
             this.$axios.get(`${this.url}?page=${i}`).then((response) => {
                 this.items.push(...response.data.data);
@@ -28,7 +29,7 @@ methods: {
                 console.log(error);
             })
         }
-    }
+    },
 },
   };
 </script>

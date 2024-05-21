@@ -6,8 +6,8 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Membros</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="ações_membros.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ação_membros.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog persistent v-model="dialog" max-width="800px">
             <template v-slot:activator="{ props }">
@@ -24,32 +24,30 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="12">
-                      <v-autocomplete
+                      <v-autocomplete variant="outlined"
                         v-model="actionMembers.person_id" label="Pessoa" :items="itemsPeople" item-title="full_name" item-value="id" :rules="[ () => !!actionMembers.person_id || 'Membro é requerido' ]" required></v-autocomplete>
                     </v-col>
                     <v-col cols="12" md="12">
-                      <v-select v-model="actionMembers.degree"
-                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) === 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
+                      <v-select variant="outlined" v-model="actionMembers.degree"
+                        label="Nível no programa" v-if="getAcademicProfileByPeopleById(itemsPeople, actionMembers.person_id) !== 'student'" :items="student_degree" items-title="title" items-value="value"  :rules="[
                           () => !!actionMembers.degree || 'Nível no programa é requerido',
                         ]" required></v-select>
                     </v-col>
                     <v-col cols="12" md="6">
-                      <v-text-field v-model="actionMembers.stay_start" label="Data de início" :rules="[
-                        () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
-                        () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de inicio é maior que termino'
-                      ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field v-model="actionMembers.stay_end" label="Data de término" :rules="[
-                        () => !compareDates(actionMembers.stay_start, actionMembers.stay_end) || 'Data de termino é menor que inicial',
-                      ]" v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
-                    </v-col>
+                        <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_start" label="Data de início" :rules="[
+                          () => !!actionMembers.stay_start || 'Data de ínicio é requirido',
+                        ]" required ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <v-text-field type="date" variant="outlined" v-model="actionMembers.stay_end" label="Data de término" :rules="[
+                        ]"  :disabled="disabled"></v-text-field>
+                      </v-col>
                   </v-row>
                 </v-form>
               </v-card-text>
               <v-divider></v-divider>
               <v-card-actions class="d-flex justify-center bg-secondary">
-                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize();">
+                <v-btn color="blue-darken-1" variant="plain" @click="dialog = false; initialize(currentPage, actionId);">
                   Cancelar
                 </v-btn>
                 <v-btn color="primary" variant="tonal" @click="formSubmit">Salvar</v-btn>
@@ -84,6 +82,14 @@
         {{ getPersonNameById(item.person_id) }}
       </template>
       <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_start="{ item }">
+        {{ getDate(item.stay_start) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.stay_end="{ item }">
+        {{ getDate(item.stay_end) }}
+      </template>
+      <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-icon color="primary" title="Editar" size="small" class="me-2" @click="editActionMembers(item)">mdi-pencil</v-icon>
         <v-icon color="primary" title="Excluir" size="small" @click="deleteActionMembers(item)">mdi-delete</v-icon>
@@ -91,10 +97,11 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
           <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
-            @last="initialize(configPagination.last_page)">
+            @next="initialize(currentPage, actionId)" @prev="initialize(currentPage, actionId)" @first="initialize(1, actionId)"
+            @last="initialize(configPagination.last_page, actionId)">
           </v-pagination>
         </v-footer>
       </template>
@@ -117,6 +124,8 @@ export default {
     declareNoMembers: false,
     currentPage: 1,
     configPagination: [],
+    itemsExport: [],
+    loading: true,
     headers: [
       {
         title: "Pessoa",
@@ -131,12 +140,22 @@ export default {
     editedIndex: -1,
     itemsPeople: [],
     actionMembers: {},
+    labels: {
+      id: 'Registro',
+      degree: 'Grau acadêmico',
+      stay_start: 'Data de começo',
+      stay_end: 'Data de inicio',
+      action_id: 'Ação',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultActionMembers: {
       id: null,
       person_id: null,
       degree: null,
       stay_start: null,
       stay_end: null,
+      action_id: null,
     },
     student_degree: [
       {
@@ -164,12 +183,13 @@ export default {
   created() {
     this.initialize(1, this.actionId);
     this.initializePeople();
+    this.initializeExportData(this.actionId);
   },
   methods: {
     formSubmit() {
       this.$refs.form.validate().then((isValid) => {
         if (isValid.valid) {
-          this.save();
+          this.save(this.actionId);
         }
       });
     },
@@ -178,15 +198,19 @@ export default {
         .get(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
-          this.configPagination = response.data;
-          this.items.forEach((memberGroup) => {
-            if (!this.items.stay_start) {
-              memberGroup.stay_start = this.getDate(memberGroup.stay_start);
-            }
-            if (!this.items.stay_end) {
-              memberGroup.stay_end = this.getDate(memberGroup.stay_end);
-            }
-          })
+          this.configPagination = response.data.meta;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+
+    initializeExportData(id) {
+      this.$axios
+        .get(`https://test-bapex.fe.unicamp.br/api/members/${id}/export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
         })
         .catch((error) => {
           console.error(error);
@@ -220,7 +244,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage, this.actionId);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -233,18 +257,15 @@ export default {
       this.actionMembers = this.defaultActionMembers;
     },
 
-    save() {
-      this.actionMembers.stay_start = this.setDate(this.actionMembers.stay_start)
-      if (this.actionMembers.stay_end) {
-        this.actionMembers.stay_end = this.setDate(this.actionMembers.stay_end)
-      }
+    save(id) {
+      this.actionMembers.action_id = id;
       if (this.actionMembers.id) {
         this.$axios
-          .put(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members/${this.actionMembers.id}`, this.actionMembers)
+          .put(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members/${this.actionMembers.id}`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
+              this.initialize(this.currentPage, this.actionId);
               this.actionMembers = this.defaultActionMembers;
               this.items.forEach((actionMembers) => {
                 actionMembers.stay_start = this.getDate(actionMembers.stay_start);
@@ -261,11 +282,11 @@ export default {
           });
       } else {
         this.$axios
-          .post(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/members`, this.actionMembers)
+          .post(`https://test-bapex.fe.unicamp.br/api/actions/${id}/members`, this.actionMembers)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage, this.actionId);
               this.actionMembers = this.defaultActionMembers;
               this.$toast.success(response.data.message);
               this.dialog = false;
@@ -299,15 +320,6 @@ export default {
         return null;
       }
 
-    },
-    setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
-      if (momentDate.isValid()) {
-        return formatDate;
-      } else {
-        return null;
-      }
     },
     getAcademicProfileByPeopleById(people, personId) {
       const profile = people.find((profile) => {

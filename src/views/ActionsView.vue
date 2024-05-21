@@ -1,17 +1,19 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage" :items-per-page="configPagination.per_page">
+    {{ action.started_at }}
+    <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
+      :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :data="items" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
+          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv" :delimiter="';'">
+            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle" variant="tonal"></v-btn>
           </download-csv>
           <v-dialog v-model="dialog" fullscreen>
             <template v-slot:activator="{ props }">
               <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título'"></v-btn>
+                dark @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
             </template>
             <v-card>
               <v-toolbar color="primary">
@@ -23,7 +25,7 @@
                 <v-spacer></v-spacer>
                 <v-tabs hide-slider>
                   <v-tab v-ripple="false"><v-btn icon title="Fechar" class="rounded-circle ml-2" variant="tonal"
-                      @click="dialog = false, initialize()">
+                      @click="dialog = false, initialize(currentPage)">
                       <v-icon>mdi-close</v-icon>
                     </v-btn></v-tab>
                 </v-tabs>
@@ -33,140 +35,105 @@
                   <v-form ref="form" lazy-validation>
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
-                        <v-text-field v-model="action.title" :rules="[
+                        <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined" v-model="action.title" :rules="[
                           () => !!action.title || 'Título é requerido!',
-                          () => !(action.title.length > 60) || 'Título maior que o suportado',
-                        ]" label="Título" :counter="60" required></v-text-field>
+                        ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-text-field v-model="action.responsible_id" :rules="[
-                          () => !!action.responsible_id || 'Responsável é requerido!',
-                          () => !(action.responsible_id.length > 60) || 'Nome maior que o suportado',
-                        ]" label="Responsável" :counter="60" required>
-                        </v-text-field>
-                        <v-col cols="12" md="12">
-                          <v-text-field v-model="action.assistant_id" :rules="[
+                        <v-autocomplete :disabled="input_disabled" :maxlength="60" variant="outlined" v-model="action.responsible_id" :items="itemsPeople"
+                          item-title="full_name" item-value="id" :rules="[
+                            () => !!action.responsible_id || 'Responsável é requerido!',
+                          ]" label="Responsável" :counter="60" required>
+                        </v-autocomplete>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" v-model="action.assistant_id" :items="itemsPeople"
+                          item-title="full_name" item-value="id" :rules="[
                             () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
                           ]" label="Auxiliar" :counter="60">
-                          </v-text-field>
-                        </v-col>
+                        </v-autocomplete>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
                       <v-col cols="12" md="12">
-                        <v-select v-model="action.type" label="Tipo" :items="itemsType" item-title="label"
-                          item-value="type" :rules="[
+                        <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo" :items="itemsType"
+                          item-title="label" item-value="type" :rules="[
                             () => !!action.type || 'Tipo é requerido!',
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete multiple chips :items="relatedSubjectsItems" item-title="subject" item-value="id"
-                          v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+                        <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips :items="relatedSubjectsItems"
+                          item-title="subject" item-value="id" v-model="action.related_subjects"
+                          label="Temas relacionados" required></v-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox chips multiple v-model="action.keywords" @keydown="getKeySpace" label="Palavras-chave"
-                          required></v-combobox>
+                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple v-model="action.keywords"
+                          label="Palavras-chave" required></v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field v-model="action.started_at" label="Data de início" :rules="[
+                        <v-text-field :disabled="input_disabled" type="date" variant="outlined" v-model="action.started_at" label="Data de início" :rules="[
                           () => !!action.started_at || 'Data de ínicio é requirido',
-                          () => !compareDates(action.started_at, action.ended_at) || 'Data de inicio é maior que termino'
-                        ]" required v-mask-date.br><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        ]" required ></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-text-field v-model="action.ended_at" label="Data de término" :rules="[
-                          () => !compareDates(action.started_at, action.ended_at) || 'Data de termino é menor que inicial',
-                        ]" v-mask-date.br :disabled="disabled"><v-icon>mdi-calendar-range</v-icon></v-text-field>
+                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término" :rules="[
+                        ]"  :disabled="disabled"></v-text-field>
                       </v-col>
-
                       <v-col cols="12" md="3">
-                        <v-switch color="primary" v-model="action.international" inset
+                        <v-switch :disabled="input_disabled" variant="outlined" :color="action.international ? 'primary': 'green'" v-model="action.international" inset
                           :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="3">
-                        <v-switch color="primary" v-model="action.free" inset
+                        <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free" inset
                           :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea v-model="action.description" :rules="[
+                        <v-textarea :disabled="input_disabled" variant="outlined" v-model="action.description" :rules="[
                           () => !!action.description || 'Descrição é requerida!',
-                          () => !(action.description.length > 200) || 'Descrição maior que o suportado',
-                        ]" label="Descrição" :counter="200" required></v-textarea>
+                        ]" label="Descrição" required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Avaliar'">
                       <v-col cols="12" md="12">
-                        <v-select v-model="action.status" :items="status" item-value="value" item-title="title"
-                          label="Situação" :rules="[
+                        <v-select variant="outlined" v-model="action.status" :items="status" item-value="value"
+                          item-title="title" label="Situação" :rules="[
                             () => !!action.status || 'Situação é requerida',
                           ]" required></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-textarea v-model="action.justify" label="Justificativa" required></v-textarea>
+                        <v-textarea variant="outlined" v-model="action.justify" label="Justificativa"
+                          required></v-textarea>
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
-                    <v-card v-if="isTab === 'Financiamentos'">
-                      <ActionsFinancialView />
+                    <v-card v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                      <ActionsFinancialView :actionId="action.id" />
                     </v-card>
-                    <v-card v-if="isTab === 'Membros'">
-                      <ActionsMembersView :actionId="action.id || items.length++" />
+                    <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
+                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card v-if="isTab === 'Enviar'" variant="tonal">
-                      <v-card-title>Termo de responsabilidades</v-card-title>
-                      <v-card-text class="text-body-1 text-left">
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-                          the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
-                          of
-                          type and scrambled it to make a type specimen book. It has survived not only five centuries, but
-                          also the leap into electronic typesetting, remaining essentially unchanged. It was popularised
-                          in
-                          the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                          with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-
-                        <p>Why do we use it?
-                          It is a long established fact that a reader will be distracted by the readable content of a page
-                          when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal
-                          distribution of letters, as opposed to using 'Content here, content here', making it look like
-                          readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as
-                          their default model text, and a search for 'lorem ipsum' will uncover many web sites still in
-                          their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on
-                          purpose (injected humour and the like).</p><br>
-
-
-                        <p>Where does it come from?
-                          Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of
-                          classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a
-                          Latin
-                          professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words,
-                          consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical
-                          literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and
-                          1.10.33
-                          of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC.
-                          This book is a treatise on the theory of ethics, very popular during the Renaissance. The first
-                          line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p>
-                        <br>
-
-                        <p>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those
-                          interested.
-                          Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced
-                          in
-                          their exact original form, accompanied by English versions from the 1914 translation by H.
-                          Rackham.</p><br>
-
-                        <p>Where can I get some?
-                          There are many variations of passages of Lorem Ipsum available, but the majority have suffered
-                          alteration in some form, by injected humour, or randomised words which don't look even slightly
-                          believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't
-                          anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the
-                          Internet
-                          tend to repeat predefined chunks as necessary, making this the first true generator on the
-                          Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model
-                          sentence
-                          structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is
-                          therefore
-                          always free from repetition, injected humour, or non-characteristic words etc.</p><br>
-                      </v-card-text>
+                    <v-card v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                      <ActionsMembersView :actionId="action.id" />
+                    </v-card>
+                    <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
+                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
+                    </v-card>
+                    <v-card v-if="isTab === 'Enviar' && user !== 'staff'" variant="tonal">
+                      <v-col cols="12" md="12" class="text-body-1 text-left">
+                        <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                          style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
+                        <v-text-field clearable variant="outlined" v-model="term_title"
+                          :disabled="title_disabled"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-btn @click="term_disabled = !term_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                          style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
+                        <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
+                      </v-col>
+                    </v-card>
+                    <v-card v-if="isTab === 'Enviar' && user === 'staff'" variant="tonal">
+                      <v-card-title> {{ term_title }}</v-card-title>
+                      <v-card-text class="text-body-1 text-left">{{ term }}</v-card-text>
                       <v-card-actions>
                         <v-checkbox class="elevation-0"
                           label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="acceptTerm"
@@ -174,16 +141,16 @@
                             () => !!acceptTerm || 'Aceitar o termo é requerido',
                           ]" required></v-checkbox>
                       </v-card-actions>
+
                     </v-card>
                     <v-col>
-                      <v-btn color="primary" variant="tonal" @click="formSubmit"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros'">{{ isTab !== 'Enviar' ? 'Salvar' :
+                      <v-btn color="primary" variant="tonal" @click="action.title ? formSubmit : $toast.error('Título é requerido');"
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{ isTab !== 'Enviar' ? 'Salvar' :
                           'Finalizar' }}</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
               </v-container>
-              {{ }}
             </v-card>
           </v-dialog>
           <!-- Confirm delete -->
@@ -230,16 +197,23 @@
         {{ getStatusTitle(item.status) }}
       </template>
       <!-- eslint-disable-next-line -->
+      <template v-slot:item.started_at="{ item }">
+        {{ getDate(item.started_at) }}
+      </template>
+      <!-- eslint-disable-next-line -->
+      <template v-slot:item.ended_at="{ item }">
+        {{ getDate(item.ended_at) }}
+      </template>
+      <!-- eslint-disable-next-line -->
       <template v-slot:item.actions="{ item }">
         <v-btn variant="tonal" size="small" icon="mdi-dots-vertical" flat color="primary">
           <v-icon>mdi-dots-vertical</v-icon>
-          <v-menu activator="parent" color="secondary">
+          <v-menu activator="parent" color="secondary" @click="item.status === 'in_progress' ? input_disabled = true : input_disabled = false">
             <v-list>
               <v-list-item class="bg-primary" size="small">Editar</v-list-item>
               <v-list-item prepend-icon="mdi-pencil" title="Título" size="small"
                 @click="editAction(item, 'Título')"></v-list-item>
-              <v-list-item prepend-icon="mdi-database" title="Dados"
-                @click="editAction(item, 'Dados', 1)"></v-list-item>
+              <v-list-item prepend-icon="mdi-database" title="Dados" @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
@@ -255,9 +229,10 @@
       <template v-slot:bottom>
         <v-footer flat color="secondary">
           <v-spacer></v-spacer>
-          <p>Itens por páginas: <strong>{{ configPagination.per_page }}</strong></p>
-          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1" v-model="currentPage"
-            @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
+          <p style="margin-right: 1vw">total de itens: <strong>{{ configPagination.total }}</strong></p>
+          <p>Itens na página: <strong>{{ items.length }}</strong></p>
+          <v-pagination rounded="circle" show-first-last-page :length="configPagination.last_page" :total-visible="1"
+            v-model="currentPage" @next="initialize(currentPage)" @prev="initialize(currentPage)" @first="initialize(1)"
             @last="initialize(configPagination.last_page)">
           </v-pagination>
         </v-footer>
@@ -282,6 +257,8 @@ export default {
     dialog: false,
     itemsDelete: false,
     dialogMembers: false,
+    term: "",
+    term_title: "",
     acceptTerm: false,
     isTab: 'Título',
     tabModal: null,
@@ -295,7 +272,9 @@ export default {
       'Enviar',
       'Avaliar',
     ],
-    user: 'professor',
+    user: 'staff',
+    itemsExport: [],
+    loading: true,
     dialogFinancing: false,
     headers: [
       {
@@ -316,15 +295,38 @@ export default {
     itemsPeople: [],
     itemsType: [],
     action: {},
+    input_disabled: false,
+    title_disabled: true,
+    term_disabled: true,
     disabled: null,
+    labels: {
+      id: 'Registro',
+      name: 'Nome',
+      title: "Titulo",
+      description: 'Descrição',
+      type: 'Tipo',
+      keywords: 'Palavras Chaves',
+      responsible_id: 'Responsável',
+      status: 'Estado',
+      related_subjects: 'Temas relacionados',
+      international: 'Internacional',
+      started_at:  'Começou em',
+      ended_at: 'Acabou em',
+      free: 'Grátis',
+      assistant_id: 'Assistente',
+      justify: 'Justificativa',
+      updated_at: 'Atualizado em',
+      created_at: 'Criado em',
+    },
     defaultAction: {
       id: null,
       type: null,
+      title: null,
       description: null,
       keywords: null,
       responsible_id: null,
       status: null,
-      related_subjects: null,
+      subjects: null,
       international: null,
       started_at: null,
       ended_at: null,
@@ -348,6 +350,14 @@ export default {
       {
         title: "Cancelada",
         value: "cancelled"
+      },
+      {
+        title: "Rascunho",
+        value: "draft"
+      },
+      {
+        title: "Devolvido para alteração",
+        value: "returned_to_change"
       }
     ]
   }),
@@ -375,6 +385,7 @@ export default {
     this.getActionSubjects();
     this.initializePeople();
     this.initializeActionTypes();
+    this.initializeExportData();
   },
   methods: {
     formSubmit() {
@@ -386,23 +397,27 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/action?page=${page}`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
-          this.items.forEach((memberGroup) => {
-            if (!this.items.started_at) {
-              memberGroup.started_at = this.getDate(memberGroup.started_at);
-            }
-            if (!this.items.ended_at) {
-              memberGroup.ended_at = this.getDate(memberGroup.ended_at);
-            }
-          })
         })
         .catch((error) => {
           console.error(error);
         });
     },
+    initializeExportData() {
+      this.$axios
+        .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
+        .then((response) => {
+          this.itemsExport = response.data.data;
+          this.loading = false;  
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    
     initializePeople() {
       this.$axios
         .get("https://test-people.fe.unicamp.br/api/people")
@@ -419,12 +434,12 @@ export default {
           console.error(error);
         });
     },
-    initializeActionTypes() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-types").then((response) => {
+   initializeActionTypes() {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'").then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
-      });
+      }); 
     },
 
     editAction(item, tab, index) {
@@ -439,13 +454,17 @@ export default {
       this.itemsDelete = true;
     },
 
+   saveRelatedSubject() {
+
+    }, 
+
     deleteActionConfirm() {
       this.$axios
         .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.initialize();
+            this.initialize(this.currentPage);
             this.itemsDelete = false;
             this.$toast.success(response.data.message);
           } else {
@@ -465,9 +484,10 @@ export default {
     },
 
     save() {
-      this.action.started_at = this.setDate(this.action.started_at);
-      if (this.action.ended_at) {
-        this.action.ended_at = this.setDate(this.action.ended_at);
+      if (this.isTab === 'Enviar') {
+        this.action.status = "in_progress"
+      } else if(this.tab !== 'Avaliar') {
+        this.action.status = "draft"
       }
       if (this.action.id) {
         this.$axios
@@ -475,11 +495,7 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
-              this.initialize();
-              this.items.forEach((action) => {
-                action.started_at = this.getDate(action.started_at);
-                action.ended_at = this.getDate(action.ended_at);
-              })
+              this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
@@ -498,11 +514,12 @@ export default {
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
-              this.initialize();
+              this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = this.defaultAction;
+
               }
             } else {
               this.$toast.error(response.data.message);
@@ -541,15 +558,6 @@ export default {
       }
 
     },
-    setDate(date) {
-      let momentDate = moment.utc(date, "DD/MM/YYYY");
-      let formatDate = momentDate.format('YYYY-MM-DD');
-      if (momentDate.isValid()) {
-        return formatDate;
-      } else {
-        return null;
-      }
-    },
     getResponsibleNameById(responsibleId) {
       const responsible = this.itemsPeople.find(
         (item) => item.id === responsibleId
@@ -569,4 +577,5 @@ export default {
   },
 }
 </script>
-<style></style>
+<style>
+</style>
