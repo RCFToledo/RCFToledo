@@ -105,22 +105,45 @@
       </v-list-item>
       <v-divider></v-divider>
     </v-navigation-drawer>-->
-    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
-  <v-list-item>
-    <v-list density="compact" nav>
-      <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
+    <v-navigation-drawer
+      v-model="drawer"
+      color="secondary"
+      :permanent="$vuetify.display.smAndUp"
+    >
+      <v-list-item>
+        <v-list density="compact" nav>
+          <v-list-item
+            title="BAPEX"
+            class="d-flex justify-center"
+          ></v-list-item>
+          <v-divider></v-divider>
+          <v-list-group
+            v-for="category in filteredCategories"
+            :key="category.categoryId"
+            :value="category.categoryId"
+            fluid
+            expand-icon="mdi-chevron-down-box"
+            collapse-icon="mdi-chevron-up-box"
+          >
+            <template v-slot:activator="{ props }">
+              <v-list-item
+                v-bind="props"
+                :title="category.category"
+              ></v-list-item>
+            </template>
+            <v-list-item
+              v-for="item in filteredItems(category)"
+              :key="item.id"
+              :title="item.title"
+              :prepend-icon="item.icon"
+              :to="item.to"
+            ></v-list-item>
+          </v-list-group>
+          <v-divider></v-divider>
+        </v-list>
+      </v-list-item>
       <v-divider></v-divider>
-      <v-list-group v-for="category in filteredCategories" :key="category.categoryId" :value="category.categoryId" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
-        <template v-slot:activator="{ props }">
-          <v-list-item v-bind="props" :title="category.category"></v-list-item>
-        </template>
-        <v-list-item v-for="item in filteredItems(category)" :key="item.id" :title="item.title" :prepend-icon="item.icon" :to="item.to"></v-list-item>
-      </v-list-group>
-      <v-divider></v-divider>
-    </v-list>
-  </v-list-item>
-  <v-divider></v-divider>
-</v-navigation-drawer>
+    </v-navigation-drawer>
     <!-- MAIN -->
     <v-main class="custom-main">
       <v-container fluid>
@@ -134,20 +157,30 @@
 <script>
 //import AuthenticateBtn from "./components/AuthenticateBtn.vue";
 //import LogoutBtn from "./components/LogoutBtn.vue";
+import store from './store';
+import { mapGetters } from 'vuex';
 export default {
   name: "App",
+  async created() {        
+    console.log(store.getters.getIsAuthenticated);
+    this.resourceAccess = []; //store.getters.getResourceAccess;
+  },
   methods: {
   hasCategoryAccess(category) {
     return category.items.some(item => this.hasItemAccess(item));
   },
   hasItemAccess(item) {
+  if (this.resourceAccess) {
     return this.resourceAccess.some(resource => {
       return Object.values(resource).some(access => {
         return access.roles.includes(item.id);
       });
     });
+  } else {
+    return false; // Retorna falso se resourceAccess for nulo
   }
-},computed: {
+
+}},computed: {
   filteredCategories() {
     return this.menu.filter(category => {
       return category.items.some(item => this.hasItemAccess(item));
@@ -157,22 +190,18 @@ export default {
     return category => {
       return category.items.filter(item => this.hasItemAccess(item));
     };
-  }
+  },
+    ...mapGetters(['getIsAuthenticated']),
+    isAuthenticated() {
+      return store.getters.getIsAuthenticated;
+    }  
 },
   data() {
     return {
       rail: true,
       drawer: true,
       model: true,
-      resourceAccess: [
-        {
-          bapex: { roles: ["institution.view"] },
-          people: { roles: ["person.viewAny", "person.view"] },
-          account: {
-            roles: ["manage-account", "manage-account-links", "view-profile"],
-          },
-        },
-      ],
+      resourceAccess: null,
       menu: [
         {
           categoryId: "reports_category",
