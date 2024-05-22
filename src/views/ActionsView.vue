@@ -421,6 +421,7 @@ export default {
           this.configPagination = response.data.meta;
         })
         .catch((error) => {
+          console.log(this.$store.getters.getToken);
           console.error(error);
         });
     },
