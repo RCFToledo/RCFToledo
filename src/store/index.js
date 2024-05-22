@@ -33,9 +33,9 @@ export default createStore({
   actions: {
     logout({ commit, state }) {
       console.log(state)
-      if (typeof state.logout === 'function') { 
-        state.logout();
-      }
+      state.logout();
+      commit('setUserData', {});
+      commit('setToken', "");
       commit('setIsAuthenticated', false);
     },
     updateUsername({ commit }, newUsername) {
@@ -49,6 +49,7 @@ export default createStore({
     },
   },
   getters: {
+    getKeycloak: state => state.keycloak, 
     getResourceAccess: state => state.resourceAccess,
     getUnicamp_id: state => state.unicamp_id,
     getUsername: state => state.username,

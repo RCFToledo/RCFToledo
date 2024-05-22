@@ -54,15 +54,13 @@ export default {
         .init({ onLoad: "login-required" })
         .then((authenticated) => {
           if (authenticated) {
-            this.$store.commit('setIsAuthenticated', true);
+           /* this.$store.commit('setIsAuthenticated', true);
             console.log("Autenticado com sucesso!");
             // Acesse os dados do usuário
             this.$store.commit('setUserData', keycloak.idTokenParsed);
             // Acesse o token de acesso
             this.$store.commit('setToken', keycloak.token);
-            const resourceAccess = [];
-            resourceAccess.push(keycloak.resourceAccess);
-            this.$store.commit('setResourceAccess', resourceAccess);
+            this.$store.commit('setResourceAccess', keycloak.resourceAccess);*/
           } else {
             console.error("Falha na autenticação.");
           }
@@ -89,10 +87,10 @@ export default {
   created() {
     console.log(keycloak)
     if (keycloak.authenticated) {
-      this.$store.commit('setIsAuthenticated', true);
+      /*this.$store.commit('setIsAuthenticated', true);
       this.$store.commit('setUserData', keycloak.idTokenParsed);
       this.$store.commit('setToken', keycloak.token);
-      this.$store.commit('setResourceAccess', keycloak.resourceAccess);
+      this.$store.commit('setResourceAccess', keycloak.resourceAccess);*/
     } else {
       this.login();
     }
