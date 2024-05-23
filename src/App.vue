@@ -29,7 +29,7 @@
                 <v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
                 <v-divider class="my-3"></v-divider>
-                <v-btn variant="text" rounded @click="this.$store.logout('setLogout')"> Sair da sessão </v-btn>
+                <v-btn variant="text" rounded @click="this.logout()"> Sair da sessão </v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -99,6 +99,7 @@
 <script>
 //import AuthenticateBtn from "./components/AuthenticateBtn.vue";
 //import LogoutBtn from "./components/LogoutBtn.vue";
+import keycloak from './plugins/keycloak';
 export default {
   name: "App",
   beforeCreate() {
@@ -117,6 +118,13 @@ export default {
   hasCategoryAccess(category) {
     return category.items.some(item => this.hasItemAccess(item));
   },
+  logout() {
+      keycloak.logout();
+      this.$store.commit('setIsAuthenticated', false);
+      this.$store.commit('setUserData', {});
+      this.$store.commit('setToken', "");
+      console.log("Logout realizado.");
+    },
   hasItemAccess(item) {
   if (this.resourceAccess) {
     return this.resourceAccess.some(resource => {
