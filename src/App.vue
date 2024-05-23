@@ -29,7 +29,7 @@
                 <v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
                 <v-divider class="my-3"></v-divider>
-                <v-btn variant="text" rounded @click="logout()"> Sair da sessão </v-btn>
+                <v-btn variant="text" rounded @click="this.$store.logout('setLogout')"> Sair da sessão </v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -46,46 +46,7 @@
         © {{ new Date().getFullYear() }} - Faculdade de Educação - UNICAMP -
         todos os direitos reservados
       </p>
-    </v-footer>
-    <!--NAVIGATION DRAWER-->
-    <!--
-    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
-      <v-list-item>
-        <v-list density="compact" nav>
-          <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
-          <v-divider></v-divider>
-          <v-list-group value="peopleGroups" fluid expand-icon="mdi-chevron-down-box"
-            collapse-icon="mdi-chevron-up-box">
-            <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Pessoas e Grupos" v-if="$store.getters.getResourceAccess?.research || $store.getters.getResourceAccess?.people"></v-list-item>
-            </template>
-<div v-for="items in peopleGroups" :key="items.title">
-  <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
-</div>
-</v-list-group>
-<v-list-group value="organizationalEntities" fluid expand-icon="mdi-chevron-down-box"
-  collapse-icon="mdi-chevron-up-box">
-  <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Entidades Organizacionais" v-if="$store.getters.getResourceAccess?.bapex || $store.getters.getResourceAccess?.people"></v-list-item>
-            </template>
-  <div v-for="items in organizationalEntities" :key="items.title">
-    <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
-  </div>
-</v-list-group>
-<v-list-group value="actionsThemes" fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
-  <template v-slot:activator="{ props }">
-              <v-list-item v-bind="props" title="Ações" v-if="$store.getters.getResourceAccess?.bapex"></v-list-item>
-            </template>
-  <div v-for="items in actionsThemes" :key="items.title">
-    <v-list-item :title="items.title" :prepend-icon="items.icon" :value="items.title" :to="items.to"></v-list-item>
-  </div>
-</v-list-group>
-<v-list-item :title="reports.title" :prepend-icon="reports.icon" :value="reports.title" :to="reports.to"></v-list-item>
-<v-divider></v-divider>
-</v-list>
-</v-list-item>
-<v-divider></v-divider>
-</v-navigation-drawer>-->
+    </v-footer>   
     <v-navigation-drawer
       v-model="drawer"
       color="secondary"
@@ -136,26 +97,19 @@
 </template>
 
 <script>
-import keycloak from './plugins/keycloak';
 //import AuthenticateBtn from "./components/AuthenticateBtn.vue";
 //import LogoutBtn from "./components/LogoutBtn.vue";
-import store from './store';
-import { mapGetters } from 'vuex';
 export default {
   name: "App",
-  created() {
-    console.log(store.getters.getIsAuthenticated);
+  beforeCreate() {
+    // Subscreva a mudança da variável global do Vuex
     this.$store.watch(
-      () => this.$store.getters.getIsAuthenticated,
-      (newValue, oldValue) => {
-        // Verifique se a variável mudou de null para true
-        if (oldValue === null && newValue === true) {
-          // Execute o código desejado
-          console.log('A variável global do Vuex mudou de null para true.');
-          this.isAuth = this.$store.getters.getIsAuthenticated
-          this.resourceAccess = this.$store.getters.getResourceAccess;
-          // Por exemplo, redirecione para outra rota
-        }
+      () => this.$store.getters.getResourceAccess,   
+      (newValue, oldValue) => {        
+        if (oldValue != newValue) {          
+          this.resourceAccess = [this.$store.getters.getResourceAccess];
+          
+        }        
       }
     );
   },
@@ -163,13 +117,6 @@ export default {
   hasCategoryAccess(category) {
     return category.items.some(item => this.hasItemAccess(item));
   },
-  logout() {
-      keycloak.logout();
-      this.$store.commit('setIsAuthenticated', false);
-      // Limpe os dados do usuário e o token ao fazer logout
-      this.$store.commit('setUserData', {});
-      this.$store.commit('setToken', "");
-    },
   hasItemAccess(item) {
   if (this.resourceAccess) {
     return this.resourceAccess.some(resource => {
@@ -191,19 +138,14 @@ export default {
     return category => {
       return category.items.filter(item => this.hasItemAccess(item));
     };
-  },
-    ...mapGetters(['getIsAuthenticated']),
-    isAuthenticated() {
-       return store.getters.getIsAuthenticated;
-    }  
+  },  
 },
   data() {
     return {
       rail: true,
       drawer: true,
       model: true,
-      resourceAccess: null,
-      isAuth: false,
+      resourceAccess: [],      
       menu: [
         {
           categoryId: "research",
@@ -247,8 +189,7 @@ export default {
             },
           ],
         },
-        {
-          categoryId: "people",
+        {      categoryId: "people",
           category: "Pessoas e Componentes Institucionais",
           items: [
             {
@@ -278,58 +219,6 @@ export default {
           ],
         },
       ],
-      /*,
-      reports: {
-        title: "Relatórios",
-        icon: "mdi-file-chart-outline",
-        to: "/reports",        
-      },
-      peopleGroups: [
-        {
-          title: "Pessoas",
-          icon: "mdi-account-multiple",
-          to: "/people",
-        },
-        {
-          title: "Grupos de Pesquisas",
-          icon: "mdi-account-group",
-          to: "/research-groups",
-        },
-      ],
-      actionsThemes: [
-        {
-          title: "Ações",
-          icon: "mdi-account-cog",
-          to: "/actions",
-        },
-        {
-          title: "Ações (Temas Relacionados)",
-          icon: "mdi-table",
-          to: "/actions-subjects",
-        },
-      ],
-      organizationalEntities: [
-        {
-          title: "Instituições",
-          icon: "mdi-school",
-          to: "/institutions",
-        },
-        {
-          title: "Instiuições Parceiras",
-          icon: "mdi-bank",
-          to: "/institutions-partners",
-        },
-        {
-          title: "Departamentos",
-          icon: "mdi-briefcase",
-          to: "/departments",
-        },
-        {
-          title: "Setores",
-          icon: "mdi-view-list",
-          to: "/sectors",
-        },
-      ],*/
     };
   },
 };
