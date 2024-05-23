@@ -29,7 +29,7 @@
                 <v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
                 <v-divider class="my-3"></v-divider>
-                <v-btn variant="text" rounded @click="this.logout()"> Sair da sessão </v-btn>
+                <v-btn variant="text" rounded @click="logout()"> Sair da sessão </v-btn>
               </div>
             </v-card-text>
           </v-card>

@@ -84,7 +84,7 @@ router.beforeEach((to, from, next) => {
   // Verifica se a rota requer autenticação
   if (to.matched.some(record => record.meta.requiresAuth)) {    
     // Se o Keycloak não estiver inicializado ou não estiver autenticado, redirecione para a página de login
-    if (!keycloak.initialized || !keycloak.authenticated) {
+    if ((!keycloak.initialized || !keycloak.authenticated) && !keycloak.idTokenParsed) {
       keycloak
         .init({ onLoad: "login-required" })
         .then((authenticated) => {
