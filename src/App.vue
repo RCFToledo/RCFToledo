@@ -29,7 +29,7 @@
                 <v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
                 <v-divider class="my-3"></v-divider>
-                <v-btn variant="text" rounded @click="this.$store.logout('setLogout')"> Sair da sessão </v-btn>
+                <v-btn variant="text" rounded @click="logout()"> Sair da sessão </v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -136,6 +136,7 @@
 </template>
 
 <script>
+import keycloak from './plugins/keycloak';
 //import AuthenticateBtn from "./components/AuthenticateBtn.vue";
 //import LogoutBtn from "./components/LogoutBtn.vue";
 import store from './store';
@@ -144,9 +145,6 @@ export default {
   name: "App",
   created() {
     console.log(store.getters.getIsAuthenticated);
-  },
-  beforeCreate() {
-    // Subscreva a mudança da variável global do Vuex
     this.$store.watch(
       () => this.$store.getters.getIsAuthenticated,
       (newValue, oldValue) => {
@@ -154,7 +152,8 @@ export default {
         if (oldValue === null && newValue === true) {
           // Execute o código desejado
           console.log('A variável global do Vuex mudou de null para true.');
-          console.log(this.$store.getters.getIsAuthenticated);
+          this.isAuth = this.$store.getters.getIsAuthenticated
+          this.resourceAccess = this.$store.getters.getResourceAccess;
           // Por exemplo, redirecione para outra rota
         }
       }
@@ -164,6 +163,13 @@ export default {
   hasCategoryAccess(category) {
     return category.items.some(item => this.hasItemAccess(item));
   },
+  logout() {
+      keycloak.logout();
+      this.$store.commit('setIsAuthenticated', false);
+      // Limpe os dados do usuário e o token ao fazer logout
+      this.$store.commit('setUserData', {});
+      this.$store.commit('setToken', "");
+    },
   hasItemAccess(item) {
   if (this.resourceAccess) {
     return this.resourceAccess.some(resource => {
@@ -197,7 +203,7 @@ export default {
       drawer: true,
       model: true,
       resourceAccess: null,
-      isAuth: null,
+      isAuth: false,
       menu: [
         {
           categoryId: "research",
