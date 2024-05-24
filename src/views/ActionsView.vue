@@ -101,7 +101,7 @@
                         ]" label="Descrição" required></v-textarea>
                       </v-col>
                     </v-row>
-                    <v-row dense v-else-if="isTab === 'Avaliar' && filterRoles(this.$store.getters.getResourceAccess, 'action.evaluate')">
+                    <v-row dense v-else-if="isTab === 'Avaliar' && filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">
                       <v-col cols="12" md="12">
                         <v-select variant="outlined" v-model="action.status" :items="status" item-value="value"
                           item-title="title" label="Situação" :rules="[
@@ -128,7 +128,7 @@
                     <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card v-if="isTab === 'Enviar' && user !== 'staff' && filterRoles(this.$store.getters.getResourceAccess, 'action.send')" variant="tonal">
+                    <v-card v-if="isTab === 'Enviar' && user !== 'staff' && filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.send')" variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
                         <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
@@ -141,7 +141,7 @@
                         <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
-                    <v-card v-if="isTab === 'Enviar' && user === 'staff' && filterRoles(this.$store.getters.getResourceAccess, 'action.send')" variant="tonal">
+                    <v-card v-if="isTab === 'Enviar' && user === 'staff' && filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.send')" variant="tonal">
                       <v-card-title> {{ term_title }}</v-card-title>
                       <v-card-text class="text-body-1 text-left">{{ term }}</v-card-text>
                       <v-card-actions>
@@ -410,7 +410,7 @@ export default {
       });
     },
     filterRoles(groupRoles, roleTab) {
-      const isRole = groupRoles.bapex.filter(role => role === roleTab)
+      const isRole = groupRoles.filter(role => role === roleTab)
       return isRole === roleTab;
     },
     initialize(page) {
