@@ -411,11 +411,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`, {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -426,11 +422,7 @@ export default {
     },
     initializeExportData() {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions-export`, {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+        .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;
@@ -442,11 +434,7 @@ export default {
 
     initializePeople() {
       this.$axios
-        .get("https://test-people.fe.unicamp.br/api/people", {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+        .get("https://test-people.fe.unicamp.br/api/people")
         .then((response) => {
           let people = response.data.data;
           console.log(response.data);
@@ -461,11 +449,7 @@ export default {
         });
     },
     initializeActionTypes() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'", {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        }).then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'", ).then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
@@ -486,11 +470,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -508,11 +488,7 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects", {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        }).then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects", ).then((response) => {
         this.relatedSubjectsItems = response.data.data;
       })
     },
@@ -525,11 +501,7 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action,  {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -548,11 +520,7 @@ export default {
           });
       } else {
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action, {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
