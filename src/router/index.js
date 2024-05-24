@@ -88,13 +88,13 @@ router.beforeEach((to, from, next) => {
       keycloak
         .init({ onLoad: "login-required" })
         .then((authenticated) => {
-          if (authenticated) {
+          if (authenticated) { 
             store.commit('setIsAuthenticated', keycloak.authenticated);
             store.commit('setUserData', keycloak.idTokenParsed);
             store.commit('setToken', keycloak.token);
             store.commit('setResourceAccess', keycloak.resourceAccess);
 
-            next(); // Continua para a próxima rota
+            next('/'); // Continua para a próxima rota
           } else {
             console.error("Falha na autenticação.");
             next('/'); // Redireciona para a página inicial
