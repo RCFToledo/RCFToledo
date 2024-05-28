@@ -129,7 +129,8 @@ export default {
   if (this.resourceAccess) {
     return this.resourceAccess.some(resource => {
       return Object.values(resource).some(access => {
-        return access.roles.includes(item.id);
+        let roleAcces = access.roles.map(role => role.split(".").shift())
+        return roleAcces.includes(item.id);
       });
     });
   } else {
@@ -160,7 +161,7 @@ export default {
           category: "Grupos de Pesquisas",
           items: [
             {
-              id: "research.view",
+              id: "research",
               title: "Grupos de Pesquisas",
               icon: "mdi-account-group",
               to: "/research-groups",
@@ -172,54 +173,54 @@ export default {
           category: "Ações e Colaborações",
           items: [
             {
-              id: "action.view",
+              id: "action",
               title: "Ações",
               icon: "mdi-account-cog",
               to: "/actions",
             },
             {
-              id: "institution.view",
+              id: "institution",
               title: "Instiuições Parceiras",
               icon: "mdi-bank",
               to: "/institutions-partners",
             },
             {
-              id: "action_subject.view",
+              id: "action_subject",
               title: "Ações (Temas Relacionados)",
               icon: "mdi-table",
               to: "/actions-subjects",
             },
             {
-              id: "report.view",
+              id: "report",
               title: "Relatórios",
               icon: "mdi-file-chart-outline",
               to: "/reports",
             },
           ],
         },
-        {      categoryId: "people",
+        { categoryId: "people",
           category: "Pessoas e Componentes Institucionais",
           items: [
             {
-              id: "person.view",
+              id: "person",
               title: "Pessoas",
               icon: "mdi-account-multiple",
               to: "/people",
             },
             {
-              id: "institution.view",
+              id: "institution",
               title: "Instituições",
               icon: "mdi-school",
               to: "/institutions",
             },
             {
-              id: "department.view",
+              id: "department",
               title: "Departamentos",
               icon: "mdi-briefcase",
               to: "/departments",
             },
             {
-              id: "sector.view",
+              id: "sector",
               title: "Setores",
               icon: "mdi-view-list",
               to: "/sectors",
