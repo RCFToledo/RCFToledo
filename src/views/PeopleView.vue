@@ -313,7 +313,11 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}&include[]=department&include[]=sector&include[]=institution`)
+        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}&include[]=department&include[]=sector&include[]=institution`, {
+          headers: {
+            'Authorization': `Bearer ${this.$store.getters.getToken}`
+          }
+        })
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
