@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ institution }}
     <v-data-table :headers="headers" :items="items" :sort-by="[{ key: 'name', order: 'asc' }]" class="elevation-1"
       :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
