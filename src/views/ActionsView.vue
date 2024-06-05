@@ -137,26 +137,26 @@
                       <v-col cols="12" md="12" class="text-body-1 text-left">
                         <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
-                        <v-text-field clearable variant="outlined" v-model="term_title"
+                        <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
                         <v-btn @click="term_disabled = !term_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
-                        <v-textarea clearable variant="outlined" v-model="term" :disabled="term_disabled"></v-textarea>
+                        <v-textarea clearable variant="outlined" v-model="term.term" :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
                     <v-card
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.send')"
                       variant="tonal">
-                      <v-card-title> {{ this.term.term_title }}</v-card-title>
-                      <v-card-text class="text-body-1 text-left">{{ this.term.term }}</v-card-text>
+                      <v-card-title> {{ term.term_title }}</v-card-title>
+                      <v-card-text class="text-body-1 text-left">{{ term.term }}</v-card-text>
                       <v-card-actions>
                         <v-checkbox class="elevation-0"
-                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="this.action.acceptTerm"
+                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="action.acceptTerm"
                           :rules="[
-                            () => !!this.action.acceptTerm || 'Aceitar o termo é requerido',
-                          ]" required @click="this.action.term = this.term.term, this.action.term_title = this.term.term_title"></v-checkbox>
+                            () => !!action.acceptTerm || 'Aceitar o termo é requerido',
+                          ]" required @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
                       </v-card-actions>
 
                     </v-card>
