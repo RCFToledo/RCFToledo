@@ -2,13 +2,11 @@ import axios from 'axios';
 
 const authInterceptor = (config, keycloak) => {
   // Verifique se o usuário está autenticado no Keycloak
-  if (keycloak.authenticated) {
-    // Obtém o token do Keycloak
-    const token = keycloak.token;
-
+  if (keycloak.authenticated) {        
     // Defina o cabeçalho Authorization com o token
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${keycloak.token}`;    
   }
+  
 
   return config;
 };
