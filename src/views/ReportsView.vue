@@ -373,7 +373,7 @@ export default {
     },
     methods: {
         initialize(year) {
-            this.$axios.get(`http://127.0.0.1:8000/api/actions/reports/${year}`).then((response) => {
+            this.$axios.get(`https://test-bapex.fe.unicamp.br/api/actions/reports/${year}`).then((response) => {
                 this.items = response.data.data;
                 this.itemsType = response.data.data.types;
                 this.itemsStatus = response.data.data.status;
@@ -395,7 +395,7 @@ export default {
             });
         },
         initializeReporSubjects(year) {
-            this.$axios.get(`http://127.0.0.1:8000/api/action-subjects?year=${year}`).then((response) => {
+            this.$axios.get(`https://test-bapex.fe.unicamp.br/api/action-subjects?year=${year}`).then((response) => {
                 this.itemsReportsSubjects = response.data.data;
                 this.related_subjects = this.itemsReportsSubjects.map(subject => {
                     let related_subject = {

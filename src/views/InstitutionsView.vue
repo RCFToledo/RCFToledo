@@ -179,7 +179,7 @@ export default {
     },
     initialize(page) {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/institutions?page=${page}`)
+        .get(`https://test-people.fe.unicamp.br/api/institutions?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;

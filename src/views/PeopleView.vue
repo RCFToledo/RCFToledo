@@ -312,19 +312,17 @@ export default {
       });
     },
     initialize(page) {
+      const url = `https://test-people.fe.unicamp.br/api/people?page=${page}`;
+      console.log("Request URL:", url);
       this.$axios
-        .get(`https://test-people.fe.unicamp.br/api/people?page=${page}&include[]=department&include[]=sector&include[]=institution`, {
-          headers: {
-            'Authorization': `Bearer ${this.$store.getters.getToken}`
-          }
-        })
+        .get(url)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
-          console.log(response.data);
         })
         .catch((error) => {
-          console.error(error);
+            console.error("Error Response:", error.response.data);
+            console.error("Error Status:", error.response.status);
         });
     },
 

@@ -224,7 +224,7 @@ export default {
 
     deleteGroupConfirm() {
       this.$axios
-        .delete("https://test-research.fe.unicamp.br/api/research-groups" + this.researchGroup.id)
+        .delete("https://test-research.fe.unicamp.br/api/research-groups/" + this.researchGroup.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -244,7 +244,7 @@ export default {
     save() {
       if (this.researchGroup.id) {
         this.$axios
-          .put("https://test-research.fe.unicamp.br/api/research-groups" + this.researchGroup.id, this.researchGroup)
+          .put("https://test-research.fe.unicamp.br/api/research-groups/" + this.researchGroup.id, this.researchGroup)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {

@@ -135,15 +135,16 @@
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @click="title_disabled = !title_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="title_disabled = !title_disabled, saveTherm(term.term_title)" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
                         <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="term_disabled = !term_disabled, saveTherm(term.term)" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
-                        <v-textarea clearable variant="outlined" v-model="term.term" :disabled="term_disabled"></v-textarea>
+                        <v-textarea clearable variant="outlined" v-model="term.term"
+                          :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
                     <v-card
@@ -153,10 +154,11 @@
                       <v-card-text class="text-body-1 text-left">{{ term.term }}</v-card-text>
                       <v-card-actions>
                         <v-checkbox class="elevation-0"
-                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação" v-model="action.acceptTerm"
-                          :rules="[
+                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação"
+                          v-model="action.acceptTerm" :rules="[
                             () => !!action.acceptTerm || 'Aceitar o termo é requerido',
-                          ]" required @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
+                          ]" required
+                          @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
                       </v-card-actions>
 
                     </v-card>
@@ -411,7 +413,7 @@ export default {
     this.initializePeople();
     this.initializeActionTypes();
     this.initializeExportData();
-    this. initializeTerm();
+    this.initializeTerm();
   },
   methods: {
     formSubmit() {
@@ -435,14 +437,16 @@ export default {
       return isRole[0] === roleTab;
     },
     initialize(page) {
+      const url = `https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`;
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`)
+        .get(url)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
         })
         .catch((error) => {
-          console.error(error);
+            console.error("Error Response:", error.response.data);
+            console.error("Error Status:", error.response.status);
         });
     },
 
@@ -457,27 +461,27 @@ export default {
         });
     },
     saveTherm(item) {
-      if(this.term.id) {
-      this.$axios
-        .put("https://test-bapex.fe.unicamp.br/api/actions/term" + this.term.id, item)
-        .then((response) => {
-          this.initializeTerm();
-          this.$toast.success(response.data.message);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+      if (this.term.id) {
+        this.$axios
+          .put("https://test-bapex.fe.unicamp.br/api/actions/term" + this.term.id, item)
+          .then((response) => {
+            this.initializeTerm();
+            this.$toast.success(response.data.message);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       }
       else {
         this.$axios
-        .post("https://test-bapex.fe.unicamp.br/api/actions/term", item)
-        .then((response) => {
-          this.initialize();
-          this.$toast.success(response.data.message);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+          .post("https://test-bapex.fe.unicamp.br/api/actions/term", item)
+          .then((response) => {
+            this.initialize();
+            this.$toast.success(response.data.message);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
       }
     },
 
@@ -510,7 +514,7 @@ export default {
         });
     },
     initializeActionTypes() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-'types'", ).then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-types",).then((response) => {
         this.itemsType = response.data.data;
       }).catch((error) => {
         console.log(error)
@@ -549,7 +553,7 @@ export default {
     },
 
     getActionSubjects() {
-      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects", ).then((response) => {
+      this.$axios.get("https://test-bapex.fe.unicamp.br/api/action-subjects",).then((response) => {
         this.relatedSubjectsItems = response.data.data;
       })
     },
