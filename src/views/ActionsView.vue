@@ -135,7 +135,7 @@
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @click="title_disabled = !title_disabled, saveTherm(term.term_title)" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @="title_disabled = !title_disabled, saveTherm(term.term_title)" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
                         <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
