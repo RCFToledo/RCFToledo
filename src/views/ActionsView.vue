@@ -164,7 +164,7 @@
                     </v-card>
                     <v-col>
                       <v-btn color="primary" variant="tonal"
-                        @click="action.title ? formSubmit : $toast.error('Título é requerido');"
+                        @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
                         v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{
                           isTab !== 'Enviar' ? 'Salvar' :
                             'Finalizar' }}</v-btn>
@@ -244,7 +244,7 @@
               <v-list-item prepend-icon="mdi-poll" title="Avaliação"
                 @click="editAction(item, 'Avaliar', 5)"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteAction(item)"></v-list-item>
+                @click="deleteAction(item)" v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.delete')"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -434,7 +434,7 @@ export default {
     filterRoles(groupRoles, roleTab) {
       const isRole = groupRoles.filter(role => role === roleTab)
       console.log(isRole)
-      return isRole[0] === roleTab;
+      return isRole[0] === roleTab ? true : false;
     },
     initialize(page) {
       const url = `https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`;
@@ -564,6 +564,7 @@ export default {
       } else if (this.tab !== 'Avaliar') {
         this.action.status = "draft"
       }
+      console.log('Salvando')
       if (this.action.id) {
         this.$axios
           .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)

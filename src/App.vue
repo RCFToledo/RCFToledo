@@ -22,9 +22,10 @@
             <v-card-text>
               <div class="mx-auto text-center">
                 <v-avatar color="primary">
-                  <span class="text-h5">{{ $store.getters.getUserData.given_name[0] + $store.getters.getUserData.family_name[0] }}</span>
+                  <span class="text-h5">{{ $store.getters.getUserData.given_name[0] +
+                    $store.getters.getUserData.family_name[0] }}</span>
                 </v-avatar>
-                <h3>{{ $store.getters.getUserData.given_name +' '+ $store.getters.getUserData.family_name }}</h3>
+                <h3>{{ $store.getters.getUserData.given_name + ' ' + $store.getters.getUserData.family_name }}</h3>
                 <p class="text-caption mt-1">{{ $store.getters.getUserData.email }}</p>
                 <!--<v-divider class="my-3"></v-divider>
                 <v-btn variant="text" rounded> Editar conta </v-btn>
@@ -47,40 +48,19 @@
         © {{ new Date().getFullYear() }} - Faculdade de Educação - UNICAMP -
         todos os direitos reservados
       </p>
-    </v-footer>   
-    <v-navigation-drawer
-      v-model="drawer"
-      color="secondary"
-      :permanent="$vuetify.display.smAndUp"
-    >
+    </v-footer>
+    <v-navigation-drawer v-model="drawer" color="secondary" :permanent="$vuetify.display.smAndUp">
       <v-list-item>
         <v-list density="compact" nav>
-          <v-list-item
-            title="BAPEX"
-            class="d-flex justify-center"
-          ></v-list-item>
+          <v-list-item title="BAPEX" class="d-flex justify-center"></v-list-item>
           <v-divider></v-divider>
-          <v-list-group
-            v-for="category in filteredCategories"
-            :key="category.categoryId"
-            :value="category.categoryId"
-            fluid
-            expand-icon="mdi-chevron-down-box"
-            collapse-icon="mdi-chevron-up-box"
-          >
+          <v-list-group v-for="category in filteredCategories" :key="category.categoryId" :value="category.categoryId"
+            fluid expand-icon="mdi-chevron-down-box" collapse-icon="mdi-chevron-up-box">
             <template v-slot:activator="{ props }">
-              <v-list-item
-                v-bind="props"
-                :title="category.category"
-              ></v-list-item>
+              <v-list-item v-bind="props" :title="category.category"></v-list-item>
             </template>
-            <v-list-item
-              v-for="item in filteredItems(category)"
-              :key="item.id"
-              :title="item.title"
-              :prepend-icon="item.icon"
-              :to="item.to"
-            ></v-list-item>
+            <v-list-item v-for="item in filteredItems(category)" :key="item.id" :title="item.title"
+              :prepend-icon="item.icon" :to="item.to"></v-list-item>
           </v-list-group>
           <v-divider></v-divider>
         </v-list>
@@ -106,56 +86,57 @@ export default {
   beforeCreate() {
     // Subscreva a mudança da variável global do Vuex
     this.$store.watch(
-      () => this.$store.getters.getResourceAccess,   
-      (newValue, oldValue) => {        
-        if (oldValue != newValue) {          
+      () => this.$store.getters.getResourceAccess,
+      (newValue, oldValue) => {
+        if (oldValue != newValue) {
           this.resourceAccess = [this.$store.getters.getResourceAccess];
-          
-        }        
+
+        }
       }
     );
   },
   methods: {
-  hasCategoryAccess(category) {
-    return category.items.some(item => this.hasItemAccess(item));
-  },
-  logout() {
+    hasCategoryAccess(category) {
+      return category.items.some(item => this.hasItemAccess(item));
+    },
+    logout() {
       keycloak.logout();
       this.$store.commit('setIsAuthenticated', false);
       this.$store.commit('setUserData', {});
       this.$store.commit('setToken', "");
       console.log("Logout realizado.");
     },
-  hasItemAccess(item) {
-  if (this.resourceAccess) {
-    return this.resourceAccess.some(resource => {
-      return Object.values(resource).some(access => {
-        let roleAcces = access.roles.map(role => role.split(".").shift())
-        return roleAcces.includes(item.id);
-      });
-    });
-  } else {
-    return false; // Retorna falso se resourceAccess for nulo
-  }
+    hasItemAccess(item) {
+      if (this.resourceAccess) {
+        return this.resourceAccess.some(resource => {
+          return Object.values(resource).some(access => {
+            let roleAcces = access.roles.map(role => role.split(".").shift())
+            return roleAcces.includes(item.id);
+          });
+        });
+      } else {
+        return false; // Retorna falso se resourceAccess for nulo
+      }
 
-}},computed: {
-  filteredCategories() {
-    return this.menu.filter(category => {
-      return category.items.some(item => this.hasItemAccess(item));
-    });
+    }
+  }, computed: {
+    filteredCategories() {
+      return this.menu.filter(category => {
+            return category.items.some(item => this.hasItemAccess(item));
+      });
+    },
+    filteredItems() {
+      return category => {
+        return category.items.filter(item => this.hasItemAccess(item));
+      };
+    },
   },
-  filteredItems() {
-    return category => {
-      return category.items.filter(item => this.hasItemAccess(item));
-    };
-  },  
-},
   data() {
     return {
       rail: true,
       drawer: true,
       model: true,
-      resourceAccess: [],      
+      resourceAccess: [],
       menu: [
         {
           categoryId: "research",
@@ -199,7 +180,8 @@ export default {
             },
           ],
         },
-        { categoryId: "people",
+        {
+          categoryId: "people",
           category: "Pessoas e Componentes Institucionais",
           items: [
             {
