@@ -242,7 +242,7 @@
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
                 @click="editAction(item, 'Membros', 3)"></v-list-item>
               <v-list-item prepend-icon="mdi-poll" title="Avaliação"
-                @click="editAction(item, 'Avaliar', 5)"></v-list-item>
+                @click="editAction(item, 'Avaliar', 5)" v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
                 @click="deleteAction(item)" v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.delete')"></v-list-item>
             </v-list>
@@ -564,7 +564,6 @@ export default {
       } else if (this.tab !== 'Avaliar') {
         this.action.status = "draft"
       }
-      console.log('Salvando')
       if (this.action.id) {
         this.$axios
           .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
@@ -575,7 +574,7 @@ export default {
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
-                this.action = this.defaultAction;
+                this.action = {...this.defaultAction};
               }
             } else {
               this.$toast.error(response.data.message);
@@ -592,10 +591,10 @@ export default {
             if (response.status == 201) {
               this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
+              this.action = response.data.data;
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
-                this.action = this.defaultAction;
-
+                this.action = {...this.defaultAction};
               }
             } else {
               this.$toast.error(response.data.message);
