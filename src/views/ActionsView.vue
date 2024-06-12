@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ this.term }}
     <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
       :items-per-page="configPagination.per_page">
       <template v-slot:top>
@@ -135,13 +134,13 @@
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @click="title_disabled = !title_disabled, saveTherm(term.term_title, title_disabled)" :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="title_disabled = !title_disabled, saveTerm(term, title_disabled)" :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
                         <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled, saveTherm(term.term, term_disabled)" :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="term_disabled = !term_disabled, saveTerm(term, term_disabled)" :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
                         <v-textarea clearable variant="outlined" v-model="term.term"
                           :disabled="term_disabled"></v-textarea>
@@ -459,7 +458,8 @@ export default {
           console.error(error);
         });
     },
-    saveTherm(item, isDisabled) {
+    saveTerm(item, isDisabled) {
+      console.log(item);
       if (this.term.id && isDisabled) {
         this.$axios
           .put("http://127.0.0.1:8000/api/actions-term/" + this.term.id, item)
