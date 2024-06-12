@@ -430,7 +430,6 @@ export default {
 
     filterRoles(groupRoles, roleTab) {
       const isRole = groupRoles.filter(role => role === roleTab)
-      console.log(isRole)
       return isRole[0] === roleTab ? true : false;
     },
     initialize(page) {
@@ -451,7 +450,11 @@ export default {
       this.$axios
         .get(`http://127.0.0.1:8000/api/actions-term`)
         .then((response) => {
-          this.term = response.data.data[0];
+          if(response.data.data[0].term || response.data.data[0].term_title) {
+            this.term = response.data.data[0];
+          } else {
+            this.term = this.defaultTerm;
+          }
           console.log(response.data.data);
         })
         .catch((error) => {
