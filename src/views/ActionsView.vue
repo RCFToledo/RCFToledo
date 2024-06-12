@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ action.started_at }}
+    {{ this.term }}
     <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
       :items-per-page="configPagination.per_page">
       <template v-slot:top>
@@ -135,20 +135,20 @@
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @="title_disabled = !title_disabled, saveTherm(term.term_title)" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="title_disabled = !title_disabled, saveTherm(term.term_title, title_disabled)" :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
                         <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled, saveTherm(term.term)" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="term_disabled = !term_disabled, saveTherm(term.term, term_disabled)" :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
                         <v-textarea clearable variant="outlined" v-model="term.term"
                           :disabled="term_disabled"></v-textarea>
                       </v-col>
                     </v-card>
                     <v-card
-                      v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.send')"
+                      v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.send') && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-card-title> {{ term.term_title }}</v-card-title>
                       <v-card-text class="text-body-1 text-left">{{ term.term }}</v-card-text>
@@ -165,7 +165,7 @@
                     <v-col>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar')">{{
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar') && (!filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate'))">{{
                           isTab !== 'Enviar' ? 'Salvar' :
                             'Finalizar' }}</v-btn>
                     </v-col>
@@ -285,7 +285,6 @@ export default {
     tabModal: null,
     currentPage: 1,
     configPagination: [],
-
     tabTitle: [
       'Título',
       'Dados',
@@ -428,7 +427,6 @@ export default {
         tabTitle = tabTitle.filter(title => title !== 'Avaliar');
       }
       return tabTitle;
-
     },
 
     filterRoles(groupRoles, roleTab) {
@@ -452,18 +450,19 @@ export default {
 
     initializeTerm() {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions/term`)
+        .get(`http://127.0.0.1:8000/api/actions-term`)
         .then((response) => {
-          this.term = response.data.data;
+          this.term = response.data.data[0];
+          console.log(response.data.data);
         })
         .catch((error) => {
           console.error(error);
         });
     },
-    saveTherm(item) {
-      if (this.term.id) {
+    saveTherm(item, isDisabled) {
+      if (this.term.id && isDisabled) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/actions/term" + this.term.id, item)
+          .put("http://127.0.0.1:8000/api/actions-term/" + this.term.id, item)
           .then((response) => {
             this.initializeTerm();
             this.$toast.success(response.data.message);
@@ -472,9 +471,10 @@ export default {
             console.error(error);
           });
       }
-      else {
+      else if(isDisabled){
+        console.log('post')
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/actions/term", item)
+          .post("https://test-bapex.fe.unicamp.br/api/actions-term", item)
           .then((response) => {
             this.initialize();
             this.$toast.success(response.data.message);
