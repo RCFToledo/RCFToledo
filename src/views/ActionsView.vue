@@ -45,7 +45,7 @@
                           ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" :maxlength="60" variant="outlined"
+                        <v-autocomplete ref="autocomplete" @update:search="textFilter('full_name',this.$refs.autocomplete.search, 'http://127.0.0.1:8000/api/people')" :disabled="input_disabled" :maxlength="60" variant="outlined"
                           v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id"
                           :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
@@ -421,6 +421,18 @@ export default {
         }
       });
     },
+   textFilter(index, value, url) {
+      this.$axios
+        .get(`${url}?textFilters[${index}]=${encodeURIComponent(value)}`)
+        .then((response) => {
+          this.itemsPeople = response.data.data;
+          console.log(value);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    },
+
     filterTabTitles(tabTitle) {
       if (!this.filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.evaluate')) {
         tabTitle = tabTitle.filter(title => title !== 'Avaliar');
@@ -441,14 +453,13 @@ export default {
           this.configPagination = response.data.meta;
         })
         .catch((error) => {
-            console.error("Error Response:", error.response.data);
-            console.error("Error Status:", error.response.status);
+            console.error(error);
         });
     },
 
     initializeTerm() {
       this.$axios
-        .get(`http://127.0.0.1:8000/api/actions-term`)
+        .get(`https://test-bapex.fe.unicamp.br/api/actions-term`)
         .then((response) => {
           if(response.data.data[0].term || response.data.data[0].term_title) {
             this.term = response.data.data[0];
@@ -465,7 +476,7 @@ export default {
       console.log(item);
       if (this.term.id && isDisabled) {
         this.$axios
-          .put("http://127.0.0.1:8000/api/actions-term/" + this.term.id, item)
+          .put("https://test-bapex.fe.unicamp.br/api/actions-term/" + this.term.id, item)
           .then((response) => {
             this.initializeTerm();
             this.$toast.success(response.data.message);
