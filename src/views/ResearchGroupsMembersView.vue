@@ -23,11 +23,12 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12">
-                      <v-autocomplete variant="outlined" v-model="groupMember.person_id" :items="itemsPeople" item-title="full_name"
-                        item-value="id" :rules="[
-                          () => !!groupMember.person_id || 'Pessoa é requerido!',
-                        ]" label="Pessoa" :counter="60" required>
-                      </v-autocomplete>
+                      <my-autocomplete
+                          v-model="groupMember.person_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
+                          :rules="[
+                            () => !!groupMember.person_id || 'Membro é requerido!',
+                          ]" label="Membro" >
+                        </my-autocomplete>
                     </v-col>
                     <v-col cols="12">
                       <v-select variant="outlined" v-model="groupMember.role" label="Papel" :items="itemsRole" :title="itemsRole.title"

@@ -82,21 +82,27 @@
                   </v-row>
                   <v-row dense>
                     <v-col cols="12" md="6">
-                      <v-autocomplete variant="outlined" v-model="people.institution_id" label="Instituição" :items="itemsInstitutions"
-                        item-title="name" item-value="id" :rules="[
-                          () =>
+                        <my-autocomplete
+                          v-model="people.institution_id" :items="itemsInstitutions" url="http://127.0.0.1:8000/api/institutions" itemTitle="name" itemValue="id"
+                          :rules="[
+                          () => () =>
                             !((people.academic_profile !== 'other') && !people.institution_id) ||
                             'Instituição é requerida!',
-                        ]"></v-autocomplete>
+                        ]" label="Instituição" >
+                        </my-autocomplete>  
                     </v-col>
                     <v-col cols="12" md="6"
                       v-if="people.institution_id === $store.getters.getUnicamp_id && people.academic_profile === 'professor'">
-                      <v-autocomplete variant="outlined" v-model="people.department_id" label="Departamento" :items="itemsDepartments"
-                        item-title="name" item-value="id"></v-autocomplete>
+                        <my-autocomplete
+                          v-model="people.department_id" :items="itemsDepartments" url="http://127.0.0.1:8000/api/departaments" itemTitle="name" itemValue="id"
+                           label="Departamento" >
+                        </my-autocomplete>  
                     </v-col>
                     <v-col cols="12" md="6" v-else-if="people.academic_profile === 'staff'">
-                      <v-autocomplete variant="outlined" v-model="people.sector_id" label="Setor" :items="itemsSectors" item-title="name"
-                        item-value="id"></v-autocomplete>
+                        <my-autocomplete
+                          v-model="people.people.sector_id" :items="itemsSectors" url="http://127.0.0.1:8000/api/sectors" itemTitle="name" itemValue="id"
+                           label="Setor" >
+                        </my-autocomplete>  
                     </v-col>
                   </v-row>
                 </v-form>

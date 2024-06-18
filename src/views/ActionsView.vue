@@ -56,7 +56,7 @@
                         <my-autocomplete :disabled="input_disabled"
                           v-model="action.assistant_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
                           :rules="[
-                            () => !(action.assistant_id !== null && action.assistant_id.length > 60),
+                            () => !!action.assistant_id  || 'Auxiliar é requerido!',
                           ]" label="Auxiliar" >
                         </my-autocomplete>
                       </v-col>
@@ -69,11 +69,8 @@
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips
-                          :items="relatedSubjectsItems" item-title="subject" item-value="id"
-                          v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
                           <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
-                          v-model="action.related_subjects" :items="relatedSubjectsItems" url="http://127.0.0.1:8000/api/people" itemTitle="subject" itemValue="id"
+                          v-model="action.related_subjects" :items="relatedSubjectsItems" url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
                           label="Temas relacionados" >
                         </my-autocomplete>
                       </v-col>

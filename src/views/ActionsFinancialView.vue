@@ -26,10 +26,12 @@
                 <v-form ref="form" lazy-validation>
                   <v-row dense>
                     <v-col cols="12" md="8">
-                      <v-autocomplete variant="outlined" v-model="action.institution_id" :items="itemsInstitutionsFinancial"
-                        item-title="name" item-value="id" :rules="[
+                      <my-autocomplete
+                          v-model="action.institution_id" :items="itemsInstitutionsFinancial" url="http://127.0.0.1:8000/api/institutions" itemTitle="name" itemValue="id"
+                          :rules="[
                           () => !!action.institution_id || 'Instituição é requerida!',
-                        ]" label="Instituição" required></v-autocomplete>
+                        ]" label="Instituição" >
+                        </my-autocomplete>  
                     </v-col>
                     <v-col cols="12" md="4">
                       <v-text-field variant="outlined" v-model="action.amount" label="R$" required :rules="[
