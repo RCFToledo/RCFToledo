@@ -12,6 +12,7 @@ import './plugins/VSwitch.css';
 import JsonCSV from 'vue-json-csv';
 //import VueChartJS from 'vue-chartjs';
 import VueMask from '@devindex/vue-mask';
+import MyAutocomplete from './components/MyAutocomplete.vue';
 //import VueMoment from 'vue-moment';
 
   
@@ -23,7 +24,7 @@ const app = createApp(App);
   // Configuração do z-index para o vue-toast-notification
 app.use(store).use(router).use(VueMask).use(vuetify).use(ToastPlugin, {position: 'top-right', duration:4000, dismissible:true});  
 
-app.component('download-csv', JsonCSV);
+app.component('download-csv', JsonCSV).component('my-autocomplete', MyAutocomplete);
 
 
 app.use(axios, { keycloak });

@@ -45,19 +45,20 @@
                           ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete ref="autocomplete" @update:search="textFilter('full_name',this.$refs.autocomplete.search, 'http://127.0.0.1:8000/api/people')" :disabled="input_disabled" :maxlength="60" variant="outlined"
-                          v-model="action.responsible_id" :items="itemsPeople" item-title="full_name" item-value="id"
+                        <my-autocomplete :disabled="input_disabled"
+                          v-model="action.responsible_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
                           :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
-                          ]" label="Responsável" :counter="60" required>
-                        </v-autocomplete>
+                          ]" label="Responsável" >
+                        </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-autocomplete :disabled="input_disabled" variant="outlined" v-model="action.assistant_id"
-                          :items="itemsPeople" item-title="full_name" item-value="id" :rules="[
-                            () => !(action.assistant_id !== null && action.assistant_id.length > 60) || 'Nome maior que o suportado',
-                          ]" label="Auxiliar" :counter="60">
-                        </v-autocomplete>
+                        <my-autocomplete :disabled="input_disabled"
+                          v-model="action.assistant_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
+                          :rules="[
+                            () => !(action.assistant_id !== null && action.assistant_id.length > 60),
+                          ]" label="Auxiliar" >
+                        </my-autocomplete>
                       </v-col>
                     </v-row>
                     <v-row dense v-else-if="isTab === 'Dados'">
@@ -71,6 +72,10 @@
                         <v-autocomplete :disabled="input_disabled" variant="outlined" multiple chips
                           :items="relatedSubjectsItems" item-title="subject" item-value="id"
                           v-model="action.related_subjects" label="Temas relacionados" required></v-autocomplete>
+                          <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
+                          v-model="action.related_subjects" :items="relatedSubjectsItems" url="http://127.0.0.1:8000/api/people" itemTitle="subject" itemValue="id"
+                          label="Temas relacionados" >
+                        </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
                         <v-combobox :disabled="input_disabled" variant="outlined" chips multiple
@@ -272,7 +277,7 @@ import ActionsFinancialView from '../views/ActionsFinancialView.vue'
 export default {
   components: {
     ActionsMembersView,
-    ActionsFinancialView
+    ActionsFinancialView,
   },
   data: () => ({
     valid: false,
