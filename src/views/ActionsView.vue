@@ -45,19 +45,17 @@
                           ]" label="Título" :counter="120" required></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <my-autocomplete :disabled="input_disabled"
-                          v-model="action.responsible_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
-                          :rules="[
+                        <my-autocomplete :disabled="input_disabled" v-model="action.responsible_id" :items="itemsPeople"
+                          url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id" :rules="[
                             () => !!action.responsible_id || 'Responsável é requerido!',
-                          ]" label="Responsável" >
+                          ]" label="Responsável">
                         </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <my-autocomplete :disabled="input_disabled"
-                          v-model="action.assistant_id" :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id"
-                          :rules="[
-                            () => !!action.assistant_id  || 'Auxiliar é requerido!',
-                          ]" label="Auxiliar" >
+                        <my-autocomplete :disabled="input_disabled" v-model="action.assistant_id" :items="itemsPeople"
+                          url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id" :rules="[
+                            () => !!action.assistant_id || 'Auxiliar é requerido!',
+                          ]" label="Auxiliar">
                         </my-autocomplete>
                       </v-col>
                     </v-row>
@@ -69,9 +67,10 @@
                           ]"></v-select>
                       </v-col>
                       <v-col cols="12" md="12">
-                          <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
-                          v-model="action.related_subjects" :items="relatedSubjectsItems" url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
-                          label="Temas relacionados" >
+                        <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
+                          v-model="action.related_subjects" :items="relatedSubjectsItems"
+                          url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
+                          label="Temas relacionados">
                         </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
@@ -136,13 +135,15 @@
                       v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
                       variant="tonal">
                       <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @click="title_disabled = !title_disabled, saveTerm(term, title_disabled)" :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="title_disabled = !title_disabled, saveTerm(term, title_disabled)"
+                          :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
                         <v-text-field clearable variant="outlined" v-model="term.term_title"
                           :disabled="title_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled, saveTerm(term, term_disabled)" :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                        <v-btn @click="term_disabled = !term_disabled, saveTerm(term, term_disabled)"
+                          :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
                           style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
                         <v-textarea clearable variant="outlined" v-model="term.term"
                           :disabled="term_disabled"></v-textarea>
@@ -242,10 +243,10 @@
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
                 @click="editAction(item, 'Membros', 3)"></v-list-item>
-              <v-list-item prepend-icon="mdi-poll" title="Avaliação"
-                @click="editAction(item, 'Avaliar', 5)" v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"></v-list-item>
-              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small"
-                @click="deleteAction(item)" v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.delete')"></v-list-item>
+              <v-list-item prepend-icon="mdi-poll" title="Avaliação" @click="editAction(item, 'Avaliar', 5)"
+                v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"></v-list-item>
+              <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteAction(item)"
+                v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.delete')"></v-list-item>
             </v-list>
           </v-menu>
         </v-btn>
@@ -423,7 +424,7 @@ export default {
         }
       });
     },
-   textFilter(index, value, url) {
+    textFilter(index, value, url) {
       this.$axios
         .get(`${url}?textFilters[${index}]=${encodeURIComponent(value)}`)
         .then((response) => {
@@ -431,7 +432,7 @@ export default {
           console.log(value);
         })
         .catch((error) => {
-            console.error(error);
+          console.error(error);
         });
     },
 
@@ -455,7 +456,7 @@ export default {
           this.configPagination = response.data.meta;
         })
         .catch((error) => {
-            console.error(error);
+          console.error(error);
         });
     },
 
@@ -463,7 +464,7 @@ export default {
       this.$axios
         .get(`https://test-bapex.fe.unicamp.br/api/actions-term`)
         .then((response) => {
-          if(response.data.data[0].term || response.data.data[0].term_title) {
+          if (response.data.data[0].term || response.data.data[0].term_title) {
             this.term = response.data.data[0];
           } else {
             this.term = this.defaultTerm;
@@ -487,7 +488,7 @@ export default {
             console.error(error);
           });
       }
-      else if(isDisabled){
+      else if (isDisabled) {
         console.log('post')
         this.$axios
           .post("https://test-bapex.fe.unicamp.br/api/actions-term", item)
@@ -590,7 +591,7 @@ export default {
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
-                this.action = {...this.defaultAction};
+                this.action = { ...this.defaultAction };
               }
             } else {
               this.$toast.error(response.data.message);
@@ -610,7 +611,7 @@ export default {
               this.action = response.data.data;
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
-                this.action = {...this.defaultAction};
+                this.action = { ...this.defaultAction };
               }
             } else {
               this.$toast.error(response.data.message);
