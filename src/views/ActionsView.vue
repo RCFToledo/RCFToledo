@@ -37,6 +37,7 @@
               <v-container fluid>
                 <v-card-text>
                   <v-form ref="form" lazy-validation>
+                    {{ action.keywords ? action.keywords.join(', ') : 'Não foi' }}
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
                         <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined"
@@ -167,9 +168,12 @@
                     <v-col>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && (input_disabled === false || isTab === 'Avaliar') && (!filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate'))">{{
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
                           isTab !== 'Enviar' ? 'Salvar' :
                             'Finalizar' }}</v-btn>
+                      <v-btn color="primary" variant="tonal"
+                        @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
+                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros'">Salvar</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
@@ -435,7 +439,44 @@ export default {
           console.error(error);
         });
     },
-
+    saveSubjectsByAction() {
+      this.action.keywords = this.action.keywords ? this.action.keywords.join(', ') : null;
+      if (this.action.id) {
+        this.$axios
+          .put("http://127.0.0.1:8000/api/action-related-subjects/" + this.action.id, this.action)
+          .then((response) => {
+            console.log(response);
+            if (response.status == 200) {
+              if (this.isTab === 'Enviar') {
+                this.dialog = false;
+                this.action = { ...this.defaultAction };
+              }
+            } else {
+              this.$toast.error(response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        this.$axios
+          .post("http://127.0.0.1:8000/api/action-related-subjects", this.action)
+          .then((response) => {
+            console.log(response);
+            if (response.status == 201) {
+              if (this.isTab === 'Enviar') {
+                this.dialog = false;
+                this.action = { ...this.defaultAction };
+              }
+            } else {
+              this.$toast.error(response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    },
     filterTabTitles(tabTitle) {
       if (!this.filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.evaluate')) {
         tabTitle = tabTitle.filter(title => title !== 'Avaliar');
@@ -540,6 +581,7 @@ export default {
 
     editAction(item, tab, index) {
       this.action = item;
+      this.action.keywords = this.action.keywords ? this.action.keywords.split(', ') : null;
       this.dialog = true;
       this.isTab = tab;
       this.tabModal = index;
@@ -588,6 +630,7 @@ export default {
             console.log(response);
             if (response.status == 200) {
               this.initialize(this.currentPage);
+              this.action = response.data.data;
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
