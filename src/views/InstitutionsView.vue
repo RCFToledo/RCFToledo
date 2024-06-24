@@ -35,7 +35,7 @@
                         label="Nome Abreviado" :counter="20"></v-text-field>
                     </v-col>
                     <v-col cols="12">
-                      <v-select variant="outlined" v-model="institution.type" multiple label="Tipo"
+                      <v-select variant="outlined" v-model="institution.type" label="Tipo"
                         :items="institutionsType" item-title="typeTitle" item-value="typeValue"></v-select>
                     </v-col>
                     <v-col cols="12">

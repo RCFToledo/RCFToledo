@@ -37,7 +37,6 @@
               <v-container fluid>
                 <v-card-text>
                   <v-form ref="form" lazy-validation>
-                    {{ action.keywords ? action.keywords.join(', ') : 'Não foi' }}
                     <v-row v-if="isTab === 'Título'">
                       <v-col cols="12" md="12">
                         <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined"
@@ -69,7 +68,7 @@
                       </v-col>
                       <v-col cols="12" md="12">
                         <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
-                          v-model="action.related_subjects" :items="relatedSubjectsItems"
+                          v-model="action.subjects" :items="relatedSubjectsItems"
                           url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
                           label="Temas relacionados">
                         </my-autocomplete>
@@ -285,7 +284,6 @@ export default {
     valid: false,
     dialog: false,
     itemsDelete: false,
-    dialogMembers: false,
     term: {},
     isTab: 'Título',
     tabModal: null,
@@ -302,7 +300,6 @@ export default {
     user: 'staff',
     itemsExport: [],
     loading: true,
-    dialogFinancing: false,
     headers: [
       {
         title: "Título",
@@ -320,6 +317,7 @@ export default {
     editedIndex: -1,
     relatedSubjectsItems: [],
     itemsPeople: [],
+  
     itemsType: [],
     action: {},
     input_disabled: false,
@@ -440,7 +438,6 @@ export default {
         });
     },
     saveSubjectsByAction() {
-      this.action.keywords = this.action.keywords ? this.action.keywords.join(', ') : null;
       if (this.action.id) {
         this.$axios
           .put("http://127.0.0.1:8000/api/action-related-subjects/" + this.action.id, this.action)
@@ -489,7 +486,7 @@ export default {
       return isRole[0] === roleTab ? true : false;
     },
     initialize(page) {
-      const url = `https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=related-subject`;
+      const url = `https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=subjects`;
       this.$axios
         .get(url)
         .then((response) => {
@@ -652,6 +649,7 @@ export default {
               this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               this.action = response.data.data;
+              this.$axios.post("http://127.0.0.1:8000/api/action-keywords")
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = { ...this.defaultAction };
