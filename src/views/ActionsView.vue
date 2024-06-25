@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ saveKeywords(['a', 'b', 'c', 'd'], 2) }}
     <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
       :items-per-page="configPagination.per_page">
       <template v-slot:top>
@@ -317,7 +318,6 @@ export default {
     editedIndex: -1,
     relatedSubjectsItems: [],
     itemsPeople: [],
-  
     itemsType: [],
     action: {},
     input_disabled: false,
@@ -437,6 +437,38 @@ export default {
           console.error(error);
         });
     },
+    saveKeywords(keywords, actionId) {
+      const keywordsList = keywords.map(keyword => {
+        return {
+          keyword: keyword,
+          action_id: actionId
+        };
+      })
+      if(this.action.keywords && keywordsList.length > 0) {
+        const deleteKeywords = this.actions.keywords.map(keyword => keyword.id).join(',');
+        this.$axios
+          .delete("http://127.0.0.1:8000/api/action-keyword/"+ deleteKeywords)
+          .then((response) => {
+            if (response.status !== 200) {
+              this.$toast.error(response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+        this.$axios
+          .post("http://127.0.0.1:8000/api/action-keyword", keywordsList)
+          .then((response) => {
+            if (response.status !== 200) {
+              this.$toast.error(response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      },
+
     saveSubjectsByAction() {
       if (this.action.id) {
         this.$axios
