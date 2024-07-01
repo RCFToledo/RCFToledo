@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ saveKeywords(['a', 'b', 'c', 'd'], 2) }}
     <v-data-table :headers="headers" :items="items" item-key="id" class="elevation-1" :page="currentPage"
       :items-per-page="configPagination.per_page">
       <template v-slot:top>
@@ -22,8 +21,8 @@
               <v-toolbar color="primary">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-tabs v-model="tabModal">
-                  <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index" @click="isTab = item"
-                    :value="index">{{
+                  <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index"
+                    @click="isTab = item, getKeyword(this.action.keywords);" :value="index">{{
                       item
                     }}</v-tab>
                 </v-tabs>
@@ -75,8 +74,12 @@
                         </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple
-                          v-model="action.keywords" label="Palavras-chave" required></v-combobox>
+                        {{ action.keywords }}
+                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple :return-object="false"
+                          v-model="action.keywords" :items="action.keywords" item-title="keyword" item-value="id"
+                          label="Palavras-chave" required>
+                          <!-- eslint-disable-next-line -->
+                        </v-combobox>
                       </v-col>
                       <v-col cols="12" md="3">
                         <v-text-field :disabled="input_disabled" type="date" variant="outlined"
@@ -301,6 +304,7 @@ export default {
     user: 'staff',
     itemsExport: [],
     loading: true,
+    keywords: [],
     headers: [
       {
         title: "Título",
@@ -437,6 +441,7 @@ export default {
           console.error(error);
         });
     },
+
     saveKeywords(keywords, actionId) {
       const keywordsList = keywords.map(keyword => {
         return {
@@ -444,10 +449,10 @@ export default {
           action_id: actionId
         };
       })
-      if(this.action.keywords && keywordsList.length > 0) {
+      if (this.action.keywords && keywordsList.length > 0) {
         const deleteKeywords = this.actions.keywords.map(keyword => keyword.id).join(',');
         this.$axios
-          .delete("http://127.0.0.1:8000/api/action-keyword/"+ deleteKeywords)
+          .delete("http://127.0.0.1:8000/api/action-keyword/" + deleteKeywords)
           .then((response) => {
             if (response.status !== 200) {
               this.$toast.error(response.data.message);
@@ -456,7 +461,7 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-      }
+      } else
         this.$axios
           .post("http://127.0.0.1:8000/api/action-keyword", keywordsList)
           .then((response) => {
@@ -467,7 +472,7 @@ export default {
           .catch((error) => {
             console.error(error);
           });
-      },
+    },
 
     saveSubjectsByAction() {
       if (this.action.id) {
@@ -518,11 +523,12 @@ export default {
       return isRole[0] === roleTab ? true : false;
     },
     initialize(page) {
-      const url = `https://test-bapex.fe.unicamp.br/api/actions?page=${page}&include[]=subjects`;
+      const url = `http://127.0.0.1:8000/api/actions?page=${page}&include[]=subjects&include[]=keywords`;
       this.$axios
         .get(url)
         .then((response) => {
           this.items = response.data.data;
+          console.log(this.items);
           this.configPagination = response.data.meta;
         })
         .catch((error) => {
@@ -610,10 +616,12 @@ export default {
 
     editAction(item, tab, index) {
       this.action = item;
-      this.action.keywords = this.action.keywords ? this.action.keywords.split(', ') : null;
       this.dialog = true;
       this.isTab = tab;
       this.tabModal = index;
+      if (tab === 'Dados' && this.action.keywords) {
+        this.getKeyword(this.action.keywords);
+      }
     },
 
     deleteAction(item) {
@@ -623,7 +631,7 @@ export default {
 
     deleteActionConfirm() {
       this.$axios
-        .delete("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id)
+        .delete("http://127.0.0.1:8000/api/actions/" + this.action.id)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -654,7 +662,7 @@ export default {
       }
       if (this.action.id) {
         this.$axios
-          .put("https://test-bapex.fe.unicamp.br/api/actions/" + this.action.id, this.action)
+          .put("http://127.0.0.1:8000/api/actions/" + this.action.id, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -674,14 +682,13 @@ export default {
           });
       } else {
         this.$axios
-          .post("https://test-bapex.fe.unicamp.br/api/actions", this.action)
+          .post("http://127.0.0.1:8000/api/actions", this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
               this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               this.action = response.data.data;
-              this.$axios.post("http://127.0.0.1:8000/api/action-keywords")
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
                 this.action = { ...this.defaultAction };
@@ -728,6 +735,22 @@ export default {
         (item) => item.id === responsibleId
       );
       return responsible ? responsible.full_name : "";
+    },
+    getKeyword(keywords) {
+      if(!this.isSimpleArray(keywords)) {
+        this.action.keywords = keywords.map(item => item.keyword);
+      }
+    },
+    isSimpleArray(array) {
+      return array.every(item => {
+        return (
+          typeof item === 'string' ||
+          typeof item === 'number' ||
+          typeof item === 'boolean' ||
+          item === null ||
+          item === undefined
+        );
+      });
     },
     getBooleanType(isTrue) {
       return isTrue ? 'Sim' : 'Não';
