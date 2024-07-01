@@ -76,7 +76,7 @@
                       <v-col cols="12" md="12">
                         {{ action.keywords }}
                         <v-combobox :disabled="input_disabled" variant="outlined" chips multiple :return-object="false"
-                          v-model="action.keywords" :items="action.keywords" item-title="keyword" item-value="id"
+                          v-model="action.keywords" item-title="keyword" item-value="id"
                           label="Palavras-chave" required>
                           <!-- eslint-disable-next-line -->
                         </v-combobox>
@@ -178,6 +178,7 @@
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
                         v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros'">Salvar</v-btn>
                     </v-col>
+                    {{ action }}
                   </v-form>
                 </v-card-text>
               </v-container>
@@ -324,6 +325,7 @@ export default {
     itemsPeople: [],
     itemsType: [],
     action: {},
+    deleteKeywords: null,
     input_disabled: false,
     title_disabled: true,
     term_disabled: true,
@@ -352,7 +354,6 @@ export default {
       type: null,
       title: null,
       description: null,
-      keywords: null,
       responsible_id: null,
       status: null,
       subjects: null,
@@ -450,9 +451,8 @@ export default {
         };
       })
       if (this.action.keywords && keywordsList.length > 0) {
-        const deleteKeywords = this.actions.keywords.map(keyword => keyword.id).join(',');
         this.$axios
-          .delete("http://127.0.0.1:8000/api/action-keyword/" + deleteKeywords)
+          .delete("http://127.0.0.1:8000/api/action-keyword/" + this.deleteKeywords)
           .then((response) => {
             if (response.status !== 200) {
               this.$toast.error(response.data.message);
@@ -660,12 +660,13 @@ export default {
       } else if (this.tab !== 'Avaliar') {
         this.action.status = "draft"
       }
+      const actionKeywords = this.action.keywords;
       if (this.action.id) {
         this.$axios
           .put("http://127.0.0.1:8000/api/actions/" + this.action.id, this.action)
           .then((response) => {
-            console.log(response);
             if (response.status == 200) {
+              this.saveKeywords(actionKeywords, this.action.id);
               this.initialize(this.currentPage);
               this.action = response.data.data;
               this.$toast.success(response.data.message);
@@ -684,8 +685,8 @@ export default {
         this.$axios
           .post("http://127.0.0.1:8000/api/actions", this.action)
           .then((response) => {
-            console.log(response);
             if (response.status == 201) {
+              this.saveKeywords(actionKeywords, response.data.data.id);
               this.initialize(this.currentPage);
               this.$toast.success(response.data.message);
               this.action = response.data.data;
@@ -738,6 +739,7 @@ export default {
     },
     getKeyword(keywords) {
       if(!this.isSimpleArray(keywords)) {
+        this.deleteKeywords = this.keywords.map(keyword => keyword.id).join(',');
         this.action.keywords = keywords.map(item => item.keyword);
       }
     },
