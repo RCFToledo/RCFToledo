@@ -21,8 +21,8 @@
               <v-toolbar color="primary">
                 <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
                 <v-tabs v-model="tabModal">
-                  <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index"
-                    @click="isTab = item, getKeyword(this.action.keywords);" :value="index">{{
+                  <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index" @click="isTab = item"
+                    :value="index">{{
                       item
                     }}</v-tab>
                 </v-tabs>
@@ -75,9 +75,10 @@
                       </v-col>
                       <v-col cols="12" md="12">
                         {{ action.keywords }}
-                        <v-combobox :disabled="input_disabled" variant="outlined" chips multiple :return-object="false"
-                          v-model="action.keywords" item-title="keyword" item-value="id"
-                          label="Palavras-chave" required>
+                        <v-combobox :disabled="input_disabled" variant="outlined"
+                          @update:modelValue="getKeyword(action.keywords)" chips multiple :return-object="false"
+                          v-model="action.keywords" item-title="keyword" item-value="id" label="Palavras-chave"
+                          required>
                           <!-- eslint-disable-next-line -->
                         </v-combobox>
                       </v-col>
@@ -305,7 +306,6 @@ export default {
     user: 'staff',
     itemsExport: [],
     loading: true,
-    keywords: [],
     headers: [
       {
         title: "Título",
@@ -450,66 +450,28 @@ export default {
           action_id: actionId
         };
       })
-      if (this.action.keywords && keywordsList.length > 0) {
+      console.log(keywordsList);
         this.$axios
-          .delete("http://127.0.0.1:8000/api/action-keyword/" + this.deleteKeywords)
-          .then((response) => {
-            if (response.status !== 200) {
-              this.$toast.error(response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else
-        this.$axios
-          .post("http://127.0.0.1:8000/api/action-keyword", keywordsList)
-          .then((response) => {
-            if (response.status !== 200) {
-              this.$toast.error(response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-    },
-
-    saveSubjectsByAction() {
-      if (this.action.id) {
-        this.$axios
-          .put("http://127.0.0.1:8000/api/action-related-subjects/" + this.action.id, this.action)
-          .then((response) => {
-            console.log(response);
-            if (response.status == 200) {
-              if (this.isTab === 'Enviar') {
-                this.dialog = false;
-                this.action = { ...this.defaultAction };
-              }
-            } else {
-              this.$toast.error(response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } else {
-        this.$axios
-          .post("http://127.0.0.1:8000/api/action-related-subjects", this.action)
-          .then((response) => {
-            console.log(response);
-            if (response.status == 201) {
-              if (this.isTab === 'Enviar') {
-                this.dialog = false;
-                this.action = { ...this.defaultAction };
-              }
-            } else {
-              this.$toast.error(response.data.message);
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
+        .delete("http://127.0.0.1:8000/api/action-keywords/" + this.deleteKeywords)
+        .then((response) => {
+          if (response.status !== 200) {
+            this.$toast.error(response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      this.$axios
+        .post("http://127.0.0.1:8000/api/action-keywords", keywordsList)
+        .then((response) => {
+          if (response.status !== 200) {
+            this.action.keywords = response.data.data;
+            this.getKeyword(this.action.keywords);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     filterTabTitles(tabTitle) {
       if (!this.filterRoles(this.$store.getters.getResourceAccess.bapex.roles, 'action.evaluate')) {
@@ -668,7 +630,6 @@ export default {
             if (response.status == 200) {
               this.saveKeywords(actionKeywords, this.action.id);
               this.initialize(this.currentPage);
-              this.action = response.data.data;
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
@@ -738,8 +699,8 @@ export default {
       return responsible ? responsible.full_name : "";
     },
     getKeyword(keywords) {
-      if(!this.isSimpleArray(keywords)) {
-        this.deleteKeywords = this.keywords.map(keyword => keyword.id).join(',');
+      if (!this.isSimpleArray(keywords)) {
+        this.deleteKeywords = this.action.keywords.map(keyword => keyword.id).join(',');
         this.action.keywords = keywords.map(item => item.keyword);
       }
     },
