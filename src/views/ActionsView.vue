@@ -6,206 +6,212 @@
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
           <v-spacer></v-spacer>
-          <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv"
-            :delimiter="';'">
-            <v-btn icon="mdi-microsoft-excel" :loading="loading" title="Exportar CSV" class="rounded-circle"
-              variant="tonal"></v-btn>
-          </download-csv>
-          <v-dialog v-model="dialog" fullscreen>
-            <template v-slot:activator="{ props }">
-              <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
-                dark
-                @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
-            </template>
-            <v-card>
-              <v-toolbar color="primary">
-                <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
-                <v-tabs v-model="tabModal">
-                  <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index" @click="isTab = item"
-                    :value="index">{{
-                      item
-                    }}</v-tab>
-                </v-tabs>
-                <v-spacer></v-spacer>
-                <v-tabs hide-slider>
-                  <v-tab v-ripple="false"><v-btn icon title="Fechar" class="rounded-circle ml-2" variant="tonal"
-                      @click="dialog = false, initialize(currentPage)">
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn></v-tab>
-                </v-tabs>
-              </v-toolbar>
-              <v-container fluid>
-                <v-card-text>
-                  <v-form ref="form" lazy-validation>
-                    <v-row v-if="isTab === 'Título'">
-                      <v-col cols="12" md="12">
-                        <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined"
-                          v-model="action.title" :rules="[
-                            () => !!action.title || 'Título é requerido!',
-                          ]" label="Título" :counter="120" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <my-autocomplete :disabled="input_disabled" v-model="action.responsible_id" :items="itemsPeople"
-                          url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id" :rules="[
-                            () => !!action.responsible_id || 'Responsável é requerido!',
-                          ]" label="Responsável">
-                        </my-autocomplete>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <my-autocomplete :disabled="input_disabled" v-model="action.assistant_id" :items="itemsPeople"
-                          url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id" :rules="[
-                            () => !!action.assistant_id || 'Auxiliar é requerido!',
-                          ]" label="Auxiliar">
-                        </my-autocomplete>
-                      </v-col>
-                    </v-row>
-                    <v-row dense v-else-if="isTab === 'Dados'">
-                      <v-col cols="12" md="12">
-                        <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo"
-                          :items="itemsType" item-title="label" item-value="type" :rules="[
-                            () => !!action.type || 'Tipo é requerido!',
-                          ]"></v-select>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
-                          v-model="action.subjects" :items="relatedSubjectsItems"
-                          url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
-                          label="Temas relacionados">
-                        </my-autocomplete>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        {{ action.keywords }}
-                        <v-combobox :disabled="input_disabled" variant="outlined"
-                          @update:modelValue="getKeyword(action.keywords)" chips multiple :return-object="false"
-                          v-model="action.keywords" item-title="keyword" item-value="id" label="Palavras-chave"
-                          required>
-                          <!-- eslint-disable-next-line -->
-                        </v-combobox>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-text-field :disabled="input_disabled" type="date" variant="outlined"
-                          v-model="action.started_at" label="Data de início" :rules="[
-                            () => !!action.started_at || 'Data de ínicio é requirido',
-                          ]" required></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término"
-                          :rules="[
-                          ]" :disabled="disabled"></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-switch :disabled="input_disabled" variant="outlined"
-                          :color="action.international ? 'primary' : 'green'" v-model="action.international" inset
-                          :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
-                      </v-col>
-                      <v-col cols="12" md="3">
-                        <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free"
-                          inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <v-textarea :disabled="input_disabled" variant="outlined" v-model="action.description" :rules="[
-                          () => !!action.description || 'Descrição é requerida!',
-                        ]" label="Descrição" required></v-textarea>
-                      </v-col>
-                    </v-row>
-                    <v-row dense
-                      v-else-if="isTab === 'Avaliar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">
-                      <v-col cols="12" md="12">
-                        <v-select variant="outlined" v-model="action.status" :items="status" item-value="value"
-                          item-title="title" label="Situação" :rules="[
-                            () => !!action.status || 'Situação é requerida',
-                          ]" required></v-select>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <v-textarea variant="outlined" v-model="action.justify" label="Justificativa"
-                          required></v-textarea>
-                      </v-col>
-                    </v-row>
-                    <v-spacer></v-spacer>
-                    <v-card
-                      v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
-                      <ActionsFinancialView :actionId="action.id" />
-                    </v-card>
-                    <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
-                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
-                    </v-card>
-                    <v-card
-                      v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
-                      <ActionsMembersView :actionId="action.id" />
-                    </v-card>
-                    <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
-                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
-                    </v-card>
-                    <v-card
-                      v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
-                      variant="tonal">
-                      <v-col cols="12" md="12" class="text-body-1 text-left">
-                        <v-btn @click="title_disabled = !title_disabled, saveTerm(term, title_disabled)"
-                          :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
-                          style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do texto</v-btn>
-                        <v-text-field clearable variant="outlined" v-model="term.term_title"
-                          :disabled="title_disabled"></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <v-btn @click="term_disabled = !term_disabled, saveTerm(term, term_disabled)"
-                          :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
-                          style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
-                        <v-textarea clearable variant="outlined" v-model="term.term"
-                          :disabled="term_disabled"></v-textarea>
-                      </v-col>
-                    </v-card>
-                    <v-card
-                      v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.send') && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
-                      variant="tonal">
-                      <v-card-title> {{ term.term_title }}</v-card-title>
-                      <v-card-text class="text-body-1 text-left">{{ term.term }}</v-card-text>
-                      <v-card-actions>
-                        <v-checkbox class="elevation-0"
-                          label="Declaro que estou ciente de todas responsabilidades sobre a Ação"
-                          v-model="action.acceptTerm" :rules="[
-                            () => !!action.acceptTerm || 'Aceitar o termo é requerido',
-                          ]" required
-                          @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
-                      </v-card-actions>
+          <v-btn variant="tonal" style="margin-right: 10px" size="x-large" density="compact" icon="mdi-magnify" @click="searchClick = !searchClick" v-if="searchClick">
+          </v-btn>
+          <v-card-text v-else>
+            <v-text-field append-inner-icon="mdi-magnify" density="compact" label="Buscar docente"
+              variant="solo" hide-details single-line @click:append-inner="searchClick = !searchClick"></v-text-field></v-card-text>
+            <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv"
+              :delimiter="';'">
+              <v-btn icon="mdi-microsoft-excel" size="x-large" density="compact" :loading="loading" title="Exportar CSV"
+                variant="tonal"></v-btn>
+            </download-csv>
+            <v-dialog v-model="dialog" fullscreen>
+              <template v-slot:activator="{ props }">
+                <v-btn color="secondary" size="x-large" density="compact" icon="mdi-plus" v-bind="props" variant="tonal"
+                  dark
+                  @click="action = { ...defaultAction }, tabModal = 0, isTab = 'Título', input_disabled = false"></v-btn>
+              </template>
+              <v-card>
+                <v-toolbar color="primary">
+                  <v-toolbar-title>{{ formTitle }}</v-toolbar-title>
+                  <v-tabs v-model="tabModal">
+                    <v-tab v-for="(item, index) in filterTabTitles(tabTitle)" :key="index" @click="isTab = item"
+                      :value="index">{{
+                        item
+                      }}</v-tab>
+                  </v-tabs>
+                  <v-spacer></v-spacer>
+                  <v-tabs hide-slider>
+                    <v-tab v-ripple="false"><v-btn icon title="Fechar" class="rounded-circle ml-2" variant="tonal"
+                        @click="dialog = false, initialize(currentPage)">
+                        <v-icon>mdi-close</v-icon>
+                      </v-btn></v-tab>
+                  </v-tabs>
+                </v-toolbar>
+                <v-container fluid>
+                  <v-card-text>
+                    <v-form ref="form" lazy-validation>
+                      <v-row v-if="isTab === 'Título'">
+                        <v-col cols="12" md="12">
+                          <v-text-field :disabled="input_disabled" :maxlength="120" variant="outlined"
+                            v-model="action.title" :rules="[
+                              () => !!action.title || 'Título é requerido!',
+                            ]" label="Título" :counter="120" required></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <my-autocomplete :disabled="input_disabled" v-model="action.responsible_id"
+                            :items="itemsPeople" url="http://127.0.0.1:8000/api/people" itemTitle="full_name"
+                            itemValue="id" :rules="[
+                              () => !!action.responsible_id || 'Responsável é requerido!',
+                            ]" label="Responsável">
+                          </my-autocomplete>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <my-autocomplete :disabled="input_disabled" v-model="action.assistant_id" :items="itemsPeople"
+                            url="http://127.0.0.1:8000/api/people" itemTitle="full_name" itemValue="id" :rules="[
+                              () => !!action.assistant_id || 'Auxiliar é requerido!',
+                            ]" label="Auxiliar">
+                          </my-autocomplete>
+                        </v-col>
+                      </v-row>
+                      <v-row dense v-else-if="isTab === 'Dados'">
+                        <v-col cols="12" md="12">
+                          <v-select :disabled="input_disabled" variant="outlined" v-model="action.type" label="Tipo"
+                            :items="itemsType" item-title="label" item-value="type" :rules="[
+                              () => !!action.type || 'Tipo é requerido!',
+                            ]"></v-select>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <my-autocomplete :disabled="input_disabled" :multiple="true" :chips="true"
+                            v-model="action.subjects" :items="relatedSubjectsItems"
+                            url="http://127.0.0.1:8000/action-subjects" itemTitle="subject" itemValue="id"
+                            label="Temas relacionados">
+                          </my-autocomplete>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          {{ action.keywords }}
+                          <v-combobox :disabled="input_disabled" variant="outlined"
+                            @update:modelValue="getKeyword(action.keywords)" chips multiple :return-object="false"
+                            v-model="action.keywords" item-title="keyword" item-value="id" label="Palavras-chave"
+                            required>
+                            <!-- eslint-disable-next-line -->
+                          </v-combobox>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-text-field :disabled="input_disabled" type="date" variant="outlined"
+                            v-model="action.started_at" label="Data de início" :rules="[
+                              () => !!action.started_at || 'Data de ínicio é requirido',
+                            ]" required></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término"
+                            :rules="[
+                            ]" :disabled="disabled"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-switch :disabled="input_disabled" variant="outlined"
+                            :color="action.international ? 'primary' : 'green'" v-model="action.international" inset
+                            :label="action.international ? 'Internacional' : 'Nacional'"></v-switch>
+                        </v-col>
+                        <v-col cols="12" md="3">
+                          <v-switch :disabled="input_disabled" variant="outlined" color="primary" v-model="action.free"
+                            inset :label="action.free ? 'Gratuito' : 'Pago'"></v-switch>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <v-textarea :disabled="input_disabled" variant="outlined" v-model="action.description" :rules="[
+                            () => !!action.description || 'Descrição é requerida!',
+                          ]" label="Descrição" required></v-textarea>
+                        </v-col>
+                      </v-row>
+                      <v-row dense
+                        v-else-if="isTab === 'Avaliar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">
+                        <v-col cols="12" md="12">
+                          <v-select variant="outlined" v-model="action.status" :items="status" item-value="value"
+                            item-title="title" label="Situação" :rules="[
+                              () => !!action.status || 'Situação é requerida',
+                            ]" required></v-select>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <v-textarea variant="outlined" v-model="action.justify" label="Justificativa"
+                            required></v-textarea>
+                        </v-col>
+                      </v-row>
+                      <v-spacer></v-spacer>
+                      <v-card
+                        v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                        <ActionsFinancialView :actionId="action.id" />
+                      </v-card>
+                      <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
+                        <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
+                      </v-card>
+                      <v-card
+                        v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                        <ActionsMembersView :actionId="action.id" />
+                      </v-card>
+                      <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
+                        <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
+                      </v-card>
+                      <v-card
+                        v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
+                        variant="tonal">
+                        <v-col cols="12" md="12" class="text-body-1 text-left">
+                          <v-btn @click="title_disabled = !title_disabled, saveTerm(term, title_disabled)"
+                            :color="title_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                            style="margin-bottom: 1vw;">{{ title_disabled ? "Editar" : "Salvar" }} titulo do
+                            texto</v-btn>
+                          <v-text-field clearable variant="outlined" v-model="term.term_title"
+                            :disabled="title_disabled"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" md="12">
+                          <v-btn @click="term_disabled = !term_disabled, saveTerm(term, term_disabled)"
+                            :color="term_disabled ? '' : 'green'" variant="tonal" prepend-icon="mdi-pencil-box"
+                            style="margin-bottom: 1vw;">{{ term_disabled ? "Editar" : "Salvar" }} corpo do texto</v-btn>
+                          <v-textarea clearable variant="outlined" v-model="term.term"
+                            :disabled="term_disabled"></v-textarea>
+                        </v-col>
+                      </v-card>
+                      <v-card
+                        v-if="isTab === 'Enviar' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.send') && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"
+                        variant="tonal">
+                        <v-card-title> {{ term.term_title }}</v-card-title>
+                        <v-card-text class="text-body-1 text-left">{{ term.term }}</v-card-text>
+                        <v-card-actions>
+                          <v-checkbox class="elevation-0"
+                            label="Declaro que estou ciente de todas responsabilidades sobre a Ação"
+                            v-model="action.acceptTerm" :rules="[
+                              () => !!action.acceptTerm || 'Aceitar o termo é requerido',
+                            ]" required
+                            @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
+                        </v-card-actions>
 
-                    </v-card>
-                    <v-col>
-                      <v-btn color="primary" variant="tonal"
-                        @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
-                          isTab !== 'Enviar' ? 'Salvar' :
-                            'Finalizar' }}</v-btn>
-                      <v-btn color="primary" variant="tonal"
-                        @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros'">Salvar</v-btn>
-                    </v-col>
-                    {{ action }}
-                  </v-form>
+                      </v-card>
+                      <v-col>
+                        <v-btn color="primary" variant="tonal"
+                          @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
+                          v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
+                            isTab !== 'Enviar' ? 'Salvar' :
+                              'Finalizar' }}</v-btn>
+                        <v-btn color="primary" variant="tonal"
+                          @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
+                          v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros'">Salvar</v-btn>
+                      </v-col>
+                    </v-form>
+                  </v-card-text>
+                </v-container>
+              </v-card>
+            </v-dialog>
+            <!-- Confirm delete -->
+            <v-dialog v-model="itemsDelete" max-width="420px">
+              <v-card class="rounded-lg">
+                <v-card-title class="bg-primary">
+                  Confirmar exclusão
+                </v-card-title>
+                <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
+                  <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
+                  excluir esse item?
                 </v-card-text>
-              </v-container>
-            </v-card>
-          </v-dialog>
-          <!-- Confirm delete -->
-          <v-dialog v-model="itemsDelete" max-width="420px">
-            <v-card class="rounded-lg">
-              <v-card-title class="bg-primary">
-                Confirmar exclusão
-              </v-card-title>
-              <v-card-text class="text-body-1 text-md-center pa-4 ma-4">
-                <v-icon icon="mdi-alert" size="large"></v-icon> Tem certeza que deseja
-                excluir esse item?
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions class="bg-secondary d-flex justify-center">
-                <v-btn color="blue-darken-1" variant="plain" @click="itemsDelete = false">
-                  Cancelar
-                </v-btn>
-                <v-btn color="primary" variant="tonal" @click="deleteActionConfirm">
-                  Excluir
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+                <v-divider></v-divider>
+                <v-card-actions class="bg-secondary d-flex justify-center">
+                  <v-btn color="blue-darken-1" variant="plain" @click="itemsDelete = false">
+                    Cancelar
+                  </v-btn>
+                  <v-btn color="primary" variant="tonal" @click="deleteActionConfirm">
+                    Excluir
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
         </v-toolbar>
       </template>
       <!-- eslint-disable-next-line -->
@@ -271,7 +277,7 @@
           </v-pagination>
         </v-footer>
       </template>
-      <template v-slot:no-data> Não há dados para exibir!</template>
+      <template v-slot:no-data>Não há dados para exibir!</template>
     </v-data-table>
   </div>
 </template>
@@ -281,6 +287,7 @@
 import moment from 'moment'
 import ActionsMembersView from '../views/ActionsMembersView.vue'
 import ActionsFinancialView from '../views/ActionsFinancialView.vue'
+
 export default {
   components: {
     ActionsMembersView,
@@ -306,6 +313,7 @@ export default {
     user: 'staff',
     itemsExport: [],
     loading: true,
+    searchClick: true,
     headers: [
       {
         title: "Título",
@@ -451,7 +459,7 @@ export default {
         };
       })
       console.log(keywordsList);
-        this.$axios
+      this.$axios
         .delete("http://127.0.0.1:8000/api/action-keywords/" + this.deleteKeywords)
         .then((response) => {
           if (response.status !== 200) {
@@ -619,7 +627,7 @@ export default {
     save() {
       if (this.isTab === 'Enviar') {
         this.action.status = "in_progress"
-      } else if (this.tab !== 'Avaliar') {
+      } else if (this.isTab !== 'Avaliar') {
         this.action.status = "draft"
       }
       const actionKeywords = this.action.keywords;
