@@ -122,7 +122,7 @@ export default {
   }, computed: {
     filteredCategories() {
       return this.menu.filter(category => {
-            return category.items.some(item => this.hasItemAccess(item));
+        return category.items.some(item => this.hasItemAccess(item));
       });
     },
     filteredItems() {
@@ -171,6 +171,12 @@ export default {
               title: "Ações (Temas Relacionados)",
               icon: "mdi-table",
               to: "/actions-subjects",
+            },
+            {
+              id: 'action',
+              title: 'Ações (Atividades de Extensões)',
+              icon: 'mdi-puzzle',
+              to: "/actions/extension-activies"
             },
             {
               id: "report",
