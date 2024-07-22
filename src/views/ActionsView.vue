@@ -136,6 +136,13 @@
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
                     <v-card
+                      v-if="isTab === 'Curricularização' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                      <ActionsExtensionActivitiesView :actionId="action.id" />
+                    </v-card>
+                    <v-card variant="tonal" v-if="isTab === 'Curricularização' && !action.id">
+                      <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
+                    </v-card>
+                    <v-card
                       v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
                       <ActionsMembersView :actionId="action.id" />
                     </v-card>
@@ -179,12 +186,12 @@
                     <v-col>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
+                        v-if="isTab !== 'Financiamentos' && isTab !== 'Curricularização' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
                           isTab !== 'Enviar' ? 'Salvar' :
                             'Finalizar' }}</v-btn>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros'">Salvar</v-btn>
+                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros' && isTab !== 'Curricularização'">Salvar</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
@@ -256,9 +263,11 @@
                 @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
+                <v-list-item prepend-icon="mdi-puzzle" title="Curricularização"
+                @click="editAction(item, 'Curricularização', 3)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
-                @click="editAction(item, 'Membros', 3)"></v-list-item>
-              <v-list-item prepend-icon="mdi-poll" title="Avaliação" @click="editAction(item, 'Avaliar', 5)"
+                @click="editAction(item, 'Membros', 4)"></v-list-item>
+              <v-list-item prepend-icon="mdi-poll" title="Avaliação" @click="editAction(item, 'Avaliar', 6)"
                 v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')"></v-list-item>
               <v-list-item prepend-icon="mdi-delete" title="Excluir" size="small" @click="deleteAction(item)"
                 v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.delete')"></v-list-item>
@@ -287,11 +296,13 @@
 import moment from 'moment'
 import ActionsMembersView from '../views/ActionsMembersView.vue'
 import ActionsFinancialView from '../views/ActionsFinancialView.vue'
+import ActionsExtensionActivitiesView from '../views/ActionsExtensionActivitiesView.vue'
 
 export default {
   components: {
     ActionsMembersView,
     ActionsFinancialView,
+    ActionsExtensionActivitiesView,
   },
   data: () => ({
     valid: false,
@@ -306,6 +317,7 @@ export default {
       'Título',
       'Dados',
       'Financiamentos',
+      'Curricularização',
       'Membros',
       'Enviar',
       'Avaliar',

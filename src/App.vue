@@ -173,12 +173,6 @@ export default {
               to: "/actions-subjects",
             },
             {
-              id: 'action',
-              title: 'Ações (Atividades de Extensões)',
-              icon: 'mdi-puzzle',
-              to: "/actions/extension-activies"
-            },
-            {
               id: "report",
               title: "Relatórios",
               icon: "mdi-file-chart-outline",

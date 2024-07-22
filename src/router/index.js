@@ -12,7 +12,6 @@ import ActionsView from '../views/ActionsView.vue'
 import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
 import ReportsView from '../views/ReportsView.vue'
 import keycloak from '../plugins/keycloak';
-import ActionsExtensionActivitiesView from '../views/ActionsExtensionActivitiesView.vue';
 
 const routes = [
   {
@@ -61,12 +60,6 @@ const routes = [
     path: '/actions',
     name: 'actions',
     component: ActionsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/actions/extension-activies',
-    name: 'ActionsExtensionActivities',
-    component: ActionsExtensionActivitiesView,
     meta: { requiresAuth: true } 
   },
   {
