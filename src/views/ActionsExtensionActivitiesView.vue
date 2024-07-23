@@ -210,6 +210,7 @@ export default {
       estimated_cost: null,
       started_at: null,
       ended_at: null,
+      action_id: null
     },
   }),
 
@@ -249,7 +250,7 @@ export default {
     },
     initialize(page, id) {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions/${id}/curricularization?page=${page}`)
+        .get(`http://127.0.0.1:8000/api/actions/${id}/curricularization?page=${page}`)
         .then((response) => {
           this.items = response.data.data;
           this.configPagination = response.data.meta;
@@ -261,7 +262,7 @@ export default {
 
     initializeExportData() {
       this.$axios
-        .get(`https://test-bapex.fe.unicamp.br/api/actions-export`)
+        .get(`http://127.0.0.1:8000/api/actions-export`)
         .then((response) => {
           this.itemsExport = response.data.data;
           this.loading = false;
@@ -270,19 +271,19 @@ export default {
           console.error(error);
         });
     },
-    editAction(item) {
+    editItem(item) {
       this.action = item;
       this.dialog = true;
     },
 
-    deleteAction(item) {
+    deleteItem(item) {
       this.action = item;
       this.itemsDelete = true;
     },
 
     deleteActionConfirm() {
       this.$axios
-        .delete(`https://test-bapex.fe.unicamp.br/api/actions/${this.actionId}/curricularization/${this.actions.id}`)
+        .delete(`http://127.0.0.1:8000/api/actions/${this.actionId}/curricularization/${this.action.id}`)
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
@@ -302,7 +303,7 @@ export default {
       this.action.action_id = id;
       if (this.action.id) {
         this.$axios
-          .put(`https://test-bapex.fe.unicamp.br/api/actions/${id}/curricularization/${this.action.id}`, this.action)
+          .put(`http://127.0.0.1:8000/api/actions/${id}/curricularization/${this.action.id}`, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 200) {
@@ -323,7 +324,7 @@ export default {
           });
       } else {
         this.$axios
-          .post(`https://test-bapex.fe.unicamp.br/api/actions/${id}/curricularization`, this.action)
+          .post(`http://127.0.0.1:8000/api/actions/${id}/curricularization`, this.action)
           .then((response) => {
             console.log(response);
             if (response.status == 201) {
