@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :search="search" :items="items" item-key="id" class="elevation-1" :page="currentPage"
-      :items-per-page="configPagination.per_page">
+    <v-data-table :headers="headers" :search="search" :items="items" item-key="id" class="elevation-1"
+      :page="currentPage" :items-per-page="configPagination.per_page">
       <template v-slot:top>
         <v-toolbar flat color="primary">
           <v-toolbar-title>Ações</v-toolbar-title>
@@ -11,7 +11,8 @@
           </v-btn>
           <v-card-text v-else>
             <v-text-field append-inner-icon="mdi-magnify" density="compact" label="Buscar docente" variant="solo"
-              hide-details single-line @click:append-inner="searchClick = !searchClick" v-model="search" @update:modelValue="handleSearchUpdate(search)"></v-text-field></v-card-text>
+              hide-details single-line @click:append-inner="searchClick = !searchClick" v-model="search"
+              @update:modelValue="handleSearchUpdate(search)"></v-text-field></v-card-text>
           <download-csv :labels="labels" :data="itemsExport" style="margin-right: 10px" name="ações.csv"
             :delimiter="';'">
             <v-btn icon="mdi-microsoft-excel" size="x-large" density="compact" :loading="loading" title="Exportar CSV"
@@ -80,7 +81,6 @@
                         </my-autocomplete>
                       </v-col>
                       <v-col cols="12" md="12">
-                        {{ action.keywords }}
                         <v-combobox :disabled="input_disabled" variant="outlined"
                           @update:modelValue="getKeyword(action.keywords)" chips multiple :return-object="false"
                           v-model="action.keywords" item-title="keyword" item-value="id" label="Palavras-chave"
@@ -97,7 +97,7 @@
                       <v-col cols="12" md="3">
                         <v-text-field type="date" variant="outlined" v-model="action.ended_at" label="Data de término"
                           :rules="[
-                          ]" :disabled="disabled"></v-text-field>
+                          ]" :disabled="input_disabled"></v-text-field>
                       </v-col>
                       <v-col cols="12" md="3">
                         <v-switch :disabled="input_disabled" variant="outlined"
@@ -263,7 +263,7 @@
                 @click="editAction(item, 'Dados', 1)"></v-list-item>
               <v-list-item prepend-icon="mdi-cash-multiple" title="Financiamentos"
                 @click="editAction(item, 'Financiamentos', 2)"></v-list-item>
-                <v-list-item prepend-icon="mdi-puzzle" title="Curricularização"
+              <v-list-item prepend-icon="mdi-puzzle" title="Curricularização"
                 @click="editAction(item, 'Curricularização', 3)"></v-list-item>
               <v-list-item prepend-icon="mdi-account-multiple" title="Membros"
                 @click="editAction(item, 'Membros', 4)"></v-list-item>
@@ -729,9 +729,40 @@ export default {
       return responsible ? responsible.full_name : "";
     },
     getKeyword(keywords) {
-      if (!this.isSimpleArray(keywords)) {
-        this.deleteKeywords = this.action.keywords.map(keyword => keyword.id).join(',');
-        this.action.keywords = keywords.map(item => item.keyword);
+      // Verifique se keywords é um array e não está vazio
+      if (Array.isArray(keywords) && keywords.length > 0) {
+        console.log('Keywords array é válido:', keywords);
+
+        // Verifique se this.action e this.action.keywords estão definidos e são arrays
+        if (this.action && Array.isArray(this.action.keywords)) {
+          console.log('this.action.keywords inicial:', this.action.keywords);
+
+          // Verifique se todos os elementos de this.action.keywords possuem a propriedade id
+          const allHaveId = this.action.keywords.every(keyword => Object.prototype.hasOwnProperty.call(keyword, 'id'));
+
+          if (allHaveId) {
+            // Extraia os IDs dos elementos de this.action.keywords
+            this.deleteKeywords = this.action.keywords.map(keyword => keyword.id).join(',');
+            console.log('IDs extraídos:', this.deleteKeywords);
+
+            // Verifique se todos os elementos de keywords possuem a propriedade keyword
+            const allHaveKeyword = keywords.every(item => Object.prototype.hasOwnProperty.call(item, 'keyword'));
+
+            if (allHaveKeyword) {
+              // Atualize this.action.keywords para conter apenas as keywords do novo array
+              this.action.keywords = keywords.map(item => item.keyword);
+              console.log('this.action.keywords atualizado:', this.action.keywords);
+            } else {
+              console.error('Erro: Nem todos os elementos de keywords possuem a propriedade keyword');
+            }
+          } else {
+            console.error('Erro: Nem todos os elementos de this.action.keywords possuem a propriedade id');
+          }
+        } else {
+          console.error('Erro: this.action.keywords não é um array ou está indefinido');
+        }
+      } else {
+        console.error('Erro: keywords não é um array válido ou está vazio');
       }
     },
     isSimpleArray(array) {
