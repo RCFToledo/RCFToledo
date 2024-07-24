@@ -128,22 +128,22 @@
                       </v-col>
                     </v-row>
                     <v-spacer></v-spacer>
-                    <v-card
-                      v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                    <v-card :disabled="action.status === 'in_progress'"
+                      v-if="isTab === 'Financiamentos' && action.status !== 'cancelled' && action.status !== 'repproved' && action.id">
                       <ActionsFinancialView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Financiamentos' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card
-                      v-if="isTab === 'Curricularização' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                    <v-card :disabled="action.status === 'in_progress'"
+                      v-if="isTab === 'Curricularização' && action.status !== 'cancelled' && action.status !== 'repproved' && action.id">
                       <ActionsExtensionActivitiesView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Curricularização' && !action.id">
                       <v-card-title>Os dados precisam ser inseridos no sistema para liberar essa parte</v-card-title>
                     </v-card>
-                    <v-card
-                      v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'in_progress' && action.status !== 'repproved' && action.id">
+                    <v-card :disabled="action.status === 'in_progress'"
+                      v-if="isTab === 'Membros' && action.status !== 'cancelled' && action.status !== 'repproved' && action.id">
                       <ActionsMembersView :actionId="action.id" />
                     </v-card>
                     <v-card variant="tonal" v-if="isTab === 'Membros' && !action.id">
@@ -186,12 +186,12 @@
                     <v-col>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="isTab !== 'Financiamentos' && isTab !== 'Curricularização' && isTab !== 'Membros' && !filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
+                        v-if="action.status !== 'in_progress' && isTab !== 'Financiamentos' && isTab !== 'Curricularização' && isTab !== 'Membros' && filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate')">{{
                           isTab !== 'Enviar' ? 'Salvar' :
                             'Finalizar' }}</v-btn>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' || isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros' && isTab !== 'Curricularização'">Salvar</v-btn>
+                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' && isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros' && isTab !== 'Curricularização'">Salvar</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
