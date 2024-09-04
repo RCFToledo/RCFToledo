@@ -1,16 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '../store'; // Verifique o caminho correto para o seu arquivo store
+import HomeView from '@/views/HomeView.vue';
 
-import HomeView from '../views/HomeView.vue'
-import InstitutionsView from '../views/InstitutionsView.vue'
-import DepartmentsView from '../views/DepartmentsView.vue'
-import SectorsView from '../views/SectorsView.vue'
-import PeopleView from '../views/PeopleView.vue'
-import ResearchGroupsView from '../views/ResearchGroupsView.vue'
-import InstitutionsPartnerView from '../views/InstitutionsPartnerView.vue'
-import ActionsView from '../views/ActionsView.vue'
-import ActionsSubjectsView from '../views/ActionsSubjectsView.vue'
-import ReportsView from '../views/ReportsView.vue'
 import keycloak from '../plugins/keycloak';
 
 const routes = [
@@ -19,59 +10,6 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { requiresAuth: true } 
-  },
-  {
-    path: '/institutions',
-    name: 'institutions',
-    component: InstitutionsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/departments',
-    name: 'departments',
-    component: DepartmentsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/sectors',
-    name: 'sectors',
-    component: SectorsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/people',
-    name: 'people',
-    component: PeopleView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/research-groups',
-    name: 'ResearchGroups',
-    component: ResearchGroupsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/institutions-partners',
-    name: 'InstitutionsPartners',
-    component: InstitutionsPartnerView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/actions',
-    name: 'actions',
-    component: ActionsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/actions-subjects',
-    name: 'ActionsSubjects',
-    component: ActionsSubjectsView,
-    meta: { requiresAuth: true } 
-  },
-  {
-    path: '/reports',
-    name: 'reports',
-    component: ReportsView
   },
 ]
 
