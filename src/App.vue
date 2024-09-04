@@ -143,7 +143,7 @@ export default {
           category: "Grupos de Pesquisas",
           items: [
             {
-              id: "research_group",
+              id: "research-group",
               title: "Grupos de Pesquisas",
               icon: "mdi-account-group",
               to: "/research-groups",
@@ -167,7 +167,7 @@ export default {
               to: "/institutions-partners",
             },
             {
-              id: "action_subject",
+              id: "action-subject",
               title: "Ações (Temas Relacionados)",
               icon: "mdi-table",
               to: "/actions-subjects",

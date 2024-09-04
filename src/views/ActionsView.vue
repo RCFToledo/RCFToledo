@@ -181,7 +181,6 @@
                           ]" required
                           @click="action.term = term.term, action.term_title = term.term_title"></v-checkbox>
                       </v-card-actions>
-
                     </v-card>
                     <v-col>
                       <v-btn color="primary" variant="tonal"
@@ -191,7 +190,7 @@
                             'Finalizar' }}</v-btn>
                       <v-btn color="primary" variant="tonal"
                         @click="action.title ? formSubmit() : $toast.error('Título é requerido');"
-                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' && isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros' && isTab !== 'Curricularização'">Salvar</v-btn>
+                        v-if="filterRoles($store.getters.getResourceAccess.bapex.roles, 'action.evaluate') && (isTab === 'Avaliar' && isTab !== 'Enviar') && isTab !== 'Financiamentos' && isTab !== 'Membros' && isTab !== 'Curricularização' && action.status === 'in_progress'">Enviar</v-btn>
                     </v-col>
                   </v-form>
                 </v-card-text>
@@ -437,6 +436,7 @@ export default {
   },
 
   created() {
+    console.log(this.items)
     this.initialize(1);
     this.getActionSubjects();
     this.initializePeople();
@@ -466,7 +466,7 @@ export default {
 
     handleSearchUpdate(value) {
       if (value) {
-        this.items = this.textFilter('responsible_id', value, 'http://127.0.0.1:8000/actions') || [];
+        this.items = this.professorFilterByAction(value);
       } else {
         this.items = [];
       }
@@ -663,7 +663,7 @@ export default {
               this.$toast.success(response.data.message);
               if (this.isTab === 'Enviar') {
                 this.dialog = false;
-                this.action = { ...this.defaultAction };
+                this.action = { ...this.defaultAction};
               }
             } else {
               this.$toast.error(response.data.message);
@@ -776,6 +776,18 @@ export default {
         );
       });
     },
+    professorFilterByAction(value) {
+      this.$axios
+        .get(`http://127.0.0.1:8000/api/actions/responsible/${value}`)
+        .then((response) => {
+          this.items = response.data.data
+          console.log(response.data.data)
+        })
+        .catch((error) => {
+          console.error('API Error:', error);
+        });
+    },
+
     getBooleanType(isTrue) {
       return isTrue ? 'Sim' : 'Não';
     },
