@@ -1,22 +1,22 @@
-// Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
-import colors from 'vuetify/lib/util/colors'
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
+import { createVuetify } from 'vuetify';
 
-// Vuetify
-import { createVuetify } from 'vuetify'
 export default createVuetify({
   theme: {
+    defaultTheme: 'light',
     themes: {
-      light: {          
+      light: {
         colors: {
-          primary: "#01579B", 
-          secondary: colors.grey.lighten3, 
-          successColor: '#628b48',  
-          warningColor: '#FFC43D',  
-          errorColor: '#d74d45',  
-        }
+          primary: '#005691',
+          secondary: '#424242',
+          accent: '#82B1FF',
+          error: '#FF5252',
+          info: '#2196F3',
+          success: '#4CAF50',
+          warning: '#FFC107',
+        },
       },
     },
   },
-})
+});

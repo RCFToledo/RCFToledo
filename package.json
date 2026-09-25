@@ -1,6 +1,6 @@
 {
-  "name": "bapex",
-  "version": "0.1.0",
+  "name": "vuejs-web",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -27,7 +27,9 @@
     "vue-json-csv": "^2.1.0",
     "vue-moment": "^4.1.0",
     "vue-router": "^5.0.6",
+    "vue-scrollto": "^2.20.0",
     "vue-toast-notification": "3.1",
+    "vue3-scroll-spy": "^1.0.8",
     "vuetify": "^4.0.6",
     "vuex": "^4.1.0",
     "webfontloader": "^1.6.28"
@@ -65,5 +67,13 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "overrides": {
+    "cross-spawn": "^7.0.6",
+    "serialize-javascript": "^6.0.2",
+    "uuid": "^11.1.1",
+    "vue-json-csv": {
+      "lodash.pick": "$lodash.pick"
+    }
+  }
 }

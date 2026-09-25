@@ -1,9 +1,10 @@
-import Keycloak from 'keycloak-js';
+import Keycloak from 'keycloak-js'
 
-const keycloakConfig = {
-  realm: 'fe',
-  url: 'https://test-contas.fe.unicamp.br:8443/',
-  clientId: 'bapex-web',
-};
+const keycloak = new Keycloak({
+  realm: process.env.VUE_APP_KC_REALM,
+  url: process.env.VUE_APP_KC_URL,
+  clientId: process.env.VUE_APP_KC_CLIENT_ID
+})
 
-export default new Keycloak(keycloakConfig);
+window.keycloak = keycloak
+export default keycloak
