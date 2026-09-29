@@ -174,7 +174,7 @@ export default {
     logout() {
       keycloak.logout({ redirectUri: window.location.origin + '/' });
       this.$store.commit('setIsAuthenticated', false);
-      this.$store.commit('setUserData', { given_name: '', family_name: '', email: '', kc_username: '' });
+      this.$store.commit('setUserData', { given_name: '', family_name: '', email: '', kc_uuid: '' });
       this.$store.commit('setToken', '');
     },
   },
